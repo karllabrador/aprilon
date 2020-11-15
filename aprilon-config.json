@@ -1,0 +1,16 @@
+{
+  "production": {
+    "config": "production",
+    "cards": {
+      "steam_api_key": "4BE06ACF6CFB24F42F4E6F2630B9831F",
+      "debug": false
+    }
+  },
+  "development": {
+    "config": "development",
+    "cards": {
+      "steam_api_key": "4BE06ACF6CFB24F42F4E6F2630B9831F",
+      "debug": true
+    }
+  }
+}

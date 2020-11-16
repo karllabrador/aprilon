@@ -12,6 +12,7 @@ For the app to function properly, it requires a ```aprilon-config.json``` file. 
     "config": "production",
     "cards": {
       "steam_api_key": "<your Steam API key>",
+      "reference_file": "config/contributors.json",
       "debug": false
     }
   },
@@ -19,6 +20,7 @@ For the app to function properly, it requires a ```aprilon-config.json``` file. 
     "config": "development",
     "cards": {
       "steam_api_key": "<your Steam API key>",
+      "reference_file": "config/contributors.json",
       "debug": true
     }
   }

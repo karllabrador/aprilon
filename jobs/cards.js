@@ -81,6 +81,8 @@ function getQueryURL() {
  * Initializes the card objects
  */
 function initCards() {
+    if (cards.length !== 0) return;
+
     let contributors = getReference();
 
     contributors.forEach((contributor) => {
@@ -169,6 +171,7 @@ function generate() {
  */
 function write() {
     let json = JSON.stringify(cards);
+
     fs.writeFile(path.join(__dirname, '..', 'public', 'cards.json'), json, function(err) {
        if (err) return console.log(err);
        console.log('Wrote cards to file');

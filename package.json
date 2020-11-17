@@ -1,6 +1,13 @@
 {
   "name": "aprilon",
-  "version": "0.0.0",
+  "description": "a Node.js project for the Aprilon homepage",
+  "author": {
+    "name": "Karl Labrador",
+    "email": "karl.labrad@gmail.com",
+    "url": "https://github.com/karllabrador"
+  },
+  "homepage": "https://aprilon.org",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "start": "node ./bin/www"

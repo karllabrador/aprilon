@@ -1,0 +1,81 @@
+@charset "utf-8"
+@import "node_modules/bulma/bulma"
+
+$color-base: #525252
+$color-accent: #414141
+$color-dark: #313131
+$color-red: #CA3E47
+$color-dark-grey: #27282C
+
+
+$font-family-arial: Arial, Helvetica, sans-serif
+$font-family-arial-size: 12px
+$font-family-arial-color: #F3F5F7
+
+html
+    background: $color-dark-grey
+
+body
+    background: $color-dark-grey
+    color: #FFFFFF
+
+.aprilon-fullheight-bg
+    background-color: $color-dark-grey
+    background-image: url('https://aprilon.org/minecraft/assets/img/cover-hd.jpg')
+    color: #FFFFFF
+
+.card
+    background-color: $color-dark
+    border: 1px solid #282828
+    padding: 10px
+    box-shadow: 0 0 4px #202020
+
+    .avatar
+        padding: 4px 4px 0 4px
+        //padding: 4px 4px 0 4px
+        background: linear-gradient(to bottom, #706C6B 5%, #4E4D4D 95%) repeat scroll 0 0 rgba(0, 0, 0, 0)
+        border-radius: 4px
+        display: inline-block
+        color: #FFFFFF
+
+        img
+            border-radius: 4px
+            margin-bottom: -2px
+
+    .is-online
+        background: linear-gradient(to bottom, #7BAFD6 5%, #506D92 95%) repeat scroll 0 0 rgba(0, 0, 0, 0)
+
+    .is-ingame
+        background: linear-gradient(to bottom, #9BC861 5%, #789E4C 95%) repeat scroll 0 0 rgba(0, 0, 0, 0)
+
+    .details
+        margin-left: 10px
+        display: inline-block
+
+        p.name
+            color: $font-family-arial-color
+            font-size: $font-family-arial-size
+            font-family: $font-family-arial
+
+        p.desc
+            color: #4a4a4a
+
+.hero-minecraft
+    background-image: url('https://aprilon.org/minecraft/assets/img/cover-hd.jpg')
+    background-position: center
+    color: #FFFFFF
+    box-shadow: 0 8px 6px #202020, 0 -8px 6px #202020
+
+.error
+    background-color: $white
+    border-top: 5px solid #D9D9D9
+    padding: 5px 5px 0 5px
+    box-shadow: 0 0 20px -1px #202020
+
+    h1
+        font-family: $font-family-arial
+        font-size: 30px
+
+    h1, h2
+        color: #6B6B6B
+        margin: 0 0 6px 10px

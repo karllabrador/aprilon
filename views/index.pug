@@ -1,5 +1,43 @@
 extends layout
 
 block content
-  h1= title
-  p Welcome to #{title}
+    // Hero, fullheight
+
+    section(class="hero is-medium is-dark" style="background-color: #0C1010")
+        div(class="hero-body")
+            div(class="container")
+                h1(class="title")=title
+                h2(class="subtitle")="Subtitle"
+
+    // Stats
+    include stats
+
+    // Minecraft
+    section(class="hero is-medium is-dark hero-minecraft")
+        div(class="hero-body")
+            div(class="container")
+                div(class="columns is-mobile")
+                    div(class="column is-8")
+                        h1(class="title") Minecraft Worlds
+                        h2(class="subtitle") Previous worlds are available for download
+
+                    div(class="column is-4 has-text-right")
+                        div(class="columns is-multiline")
+                            div(class="column has-text-centered")
+                                p(class="heading has-text-light")="First world"
+                                p(class="heading has-text-light")="(2010-2012)"
+                                p(class="title has-text-light")="7GB"
+                                button(class="button is-link") Download
+
+                            div(class="column has-text-centered")
+                                p(class="heading has-text-light")="Second world"
+                                p(class="heading has-text-light")="(2014-2015)"
+                                p(class="title has-text-light")="0.7GB"
+
+                                button(class="button is-link") Download
+
+    // Cards
+    include cards
+
+
+

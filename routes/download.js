@@ -1,6 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const path = require('path')
 
 const worlds = {
   1: 'https://aprilon.org/gamefiles/a=mc/world_20120621.tar.gz',
@@ -9,7 +8,7 @@ const worlds = {
 
 // TODO: Eventually I want to track download clicks
 
-/* GET world 1 download */
+/* GET world download */
 router.get('/world-:WorldId', function(req, res, next) {
   let world_id = req.params.WorldId;
   let url = worlds[world_id];

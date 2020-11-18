@@ -2,6 +2,8 @@
 
 This is the app running [on the aprilon.org website](https://aprilon.org), written with nodejs, sass and js.
 
+![Preview](https://i.imgur.com/XkSpEzP.jpg)
+
 ## Configuration
 
 For the app to function properly, it requires a ```aprilon-config.json``` file. Below is a config template.
@@ -34,7 +36,7 @@ sandbox server.
 
 It further expanded into Team Fortress 2 and Minecraft in the later years, and the playerbase growth and community was strong.
 
-As personal interests in the management dwindled, community operations was closed down (for the second time, hehe) in May 2015.
+As personal interests in the management dwindled, community operations closed (for the second time hehe) in May 2015.
 
 The purpose of this app is act as a legacy to the community history, where I show my thanks to those who contributed to the project in development, management and moderation.
 
@@ -44,4 +46,4 @@ The data I've gathered are based on analysis of our latest SQL data backups from
 
 ## Feedback
 
-I'm very newb with this stack and using this as an opportunity to get familiar. I'm very thankful for feedback on my code!
+I'm very newb with this stack and using this as an opportunity to get familiar. I'm very thankful for feedback!

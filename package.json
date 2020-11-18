@@ -1,0 +1,32 @@
+{
+  "name": "aprilon",
+  "description": "a Node.js project for the Aprilon homepage",
+  "author": {
+    "name": "Karl Labrador",
+    "email": "karl.labrad@gmail.com",
+    "url": "https://github.com/karllabrador"
+  },
+  "homepage": "https://aprilon.org",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node ./bin/www"
+  },
+  "dependencies": {
+    "cookie-parser": "~1.4.4",
+    "debug": "~2.6.9",
+    "express": "~4.16.1",
+    "http-errors": "~1.6.3",
+    "lodash.merge": "^4.6.2",
+    "morgan": "~1.9.1",
+    "node-cron": "^2.0.3",
+    "node-sass-middleware": "0.11.0",
+    "pug": "2.0.0-beta11",
+    "sprintf-js": "^1.1.2",
+    "steamid": "^1.1.3",
+    "xml2js": "^0.4.23"
+  },
+  "devDependencies": {
+    "bulma": "^0.9.1"
+  }
+}

@@ -143,7 +143,15 @@ function generate() {
 
          res.on('end', function() {
              let data = Buffer.concat(chunks);
-             let parsed = JSON.parse(data.toString());
+             let parsed;
+
+             try {
+                 parsed = JSON.parse(data.toString());
+             } catch (err) {
+                 if (err) return console.log('Cards experienced error: ' + err);
+             }
+
+
              let players = parsed['response']['players']['player'];
 
              Array.from(players).forEach((player) => {

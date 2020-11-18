@@ -2,12 +2,39 @@ extends layout
 
 block content
     // Hero, fullheight
-
-    section(class="hero is-medium is-dark" style="background-color: #0C1010")
-        div(class="hero-body")
+    section(class="hero hero-intro is-medium is-dark" style="background-color: #0C1010")
+        div(class="hero-body dark-layer")
             div(class="container")
-                h1(class="title")=title
-                h2(class="subtitle")="Subtitle"
+                div(class="columns")
+                    div(class="column is-one-third")
+                        img(src="/img/aprilon-small-compact.png")
+                        //h2(class="subtitle")="Subtitle"
+                        p(style="white-space: pre;")
+                        | Aprilon was a gaming community that hosted game servers for a multidude of games, including Garry's Mod, Team Fortress 2 and Minecraft.
+                        br
+                        br
+                        | The community was founded in 2009, and eventually closed its operations in 2015.
+                        br
+                        br
+                        | We're thankful for the support we've received from the community.
+                        | This website represents the history of Aprilon.
+                        br
+                        br
+                        |
+                        a(href="https://discord.gg/sTBfWTG" class="button button-discord is-dark is-rounded")
+                            //img(src="https://aprilon.org/forum/assets/img/discord.png")
+                            img(src="/img/discord-128x144.png" width="16px")
+                            p(class="heading")="Discord"
+
+                        a(href="https://steamcommunity.com/groups/aprilon" class="button button-steam is-dark is-rounded")
+                            img(src="https://aprilon.org/forum/assets/img/steam.png" width="16px")
+                            p(class="heading")="Steam Group"
+
+                    div(class="column has-text-right")
+                        p
+                        |
+
+
 
     // Stats
     include stats
@@ -27,17 +54,33 @@ block content
                                 p(class="heading has-text-light")="First world"
                                 p(class="heading has-text-light")="(2010-2012)"
                                 p(class="title has-text-light")="7GB"
-                                button(class="button is-link") Download
+                                a(href="/download/world-1" class="button is-rounded is-link download-button")="Download"
 
                             div(class="column has-text-centered")
                                 p(class="heading has-text-light")="Second world"
                                 p(class="heading has-text-light")="(2014-2015)"
                                 p(class="title has-text-light")="0.7GB"
 
-                                button(class="button is-link") Download
+                                a(href="/download/world-2" class="button is-rounded is-link download-button")="Download"
 
     // Cards
     include cards
+
+    // Footer
+    div(class="simple-footer has-text-centered")
+        p
+        | Made by Karl Labrador. Code is open source and available on&nbsp;
+        a(href="https://github.com/karllabrador/aprilon")="GitHub"
+        |.
+        | Looking for the forums?&nbsp;
+        a(href="https://aprilon.org/forum")="Here they are"
+        |.
+        br
+        p(style="margin-top: 3px")
+            a(href="https://bulma.io")
+                img(src="https://bulma.io/images/made-with-bulma--dark.png" alt="Made with Bulma" width="128" height="24")
+
+
 
 
 

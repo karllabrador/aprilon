@@ -25,14 +25,13 @@ body
     color: #FFFFFF
 
 .card
-    background-color: $color-dark
-    border: 1px solid #282828
+    background-color: #1e1f21
+    border: 1px solid #151516
     padding: 10px
     box-shadow: 0 0 4px #202020
 
     .avatar
         padding: 4px 4px 0 4px
-        //padding: 4px 4px 0 4px
         background: linear-gradient(to bottom, #706C6B 5%, #4E4D4D 95%) repeat scroll 0 0 rgba(0, 0, 0, 0)
         border-radius: 4px
         display: inline-block
@@ -52,19 +51,58 @@ body
         margin-left: 10px
         display: inline-block
 
+        a:hover
+            text-shadow: 0 0 9px #FFFFFF
+
         p.name
-            color: $font-family-arial-color
-            font-size: $font-family-arial-size
-            font-family: $font-family-arial
+            color: $light
+            font-family: $family-sans-serif
 
         p.desc
             color: #4a4a4a
 
 .hero-minecraft
-    background-image: url('https://aprilon.org/minecraft/assets/img/cover-hd.jpg')
+    background-image: url('/img/minecraft-background-1920x1080.jpg')
     background-position: center
+    background-size: auto
     color: #FFFFFF
     box-shadow: 0 8px 6px #202020, 0 -8px 6px #202020
+
+.hero-intro
+    background-image: url('/img/hl2dm-event-puzzle.jpg')
+    background-position: center
+    background-size: auto
+    box-shadow: 0 8px 6px #202020
+
+    .dark-layer
+        background-image: url('/img/t.png')
+
+    .button-discord, .button-steam
+        p.heading
+            margin-top: 4px
+            margin-left: 10px
+
+    .button-steam
+        margin-left: 10px
+
+.simple-footer
+    background-color: #202123
+    background-image: url('/img/octocat.png')
+    background-repeat: no-repeat
+    background-size: 150px auto
+    background-position-x: 25%
+    background-position-y: 10px
+    font-family: $family-sans-serif
+    color: $light
+    padding: 25px
+
+    a
+        text-decoration: underline
+        color: $light
+
+    a:hover
+        text-decoration: none
+        color: $light
 
 .error
     background-color: $white

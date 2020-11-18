@@ -1,41 +1,29 @@
 @charset "utf-8"
 @import "node_modules/bulma/bulma"
 
-$color-base: #525252
-$color-accent: #414141
-$color-dark: #313131
-$color-red: #CA3E47
-$color-dark-grey: #27282C
-
-
+$aprilon-background-color: #27282C
 $font-family-arial: Arial, Helvetica, sans-serif
-$font-family-arial-size: 12px
-$font-family-arial-color: #F3F5F7
+$box-shadow-color: #202020
 
 html
-    background: $color-dark-grey
+    background: $aprilon-background-color
 
 body
-    background: $color-dark-grey
-    color: #FFFFFF
-
-.aprilon-fullheight-bg
-    background-color: $color-dark-grey
-    background-image: url('https://aprilon.org/minecraft/assets/img/cover-hd.jpg')
+    background: $aprilon-background-color
     color: #FFFFFF
 
 .card
-    background-color: #1e1f21
+    background-color: #1E1F21
     border: 1px solid #151516
     padding: 10px
-    box-shadow: 0 0 4px #202020
+    box-shadow: 0 0 4px $box-shadow-color
 
     .avatar
         padding: 4px 4px 0 4px
         background: linear-gradient(to bottom, #706C6B 5%, #4E4D4D 95%) repeat scroll 0 0 rgba(0, 0, 0, 0)
         border-radius: 4px
         display: inline-block
-        color: #FFFFFF
+        color: $white
 
         img
             border-radius: 4px
@@ -52,7 +40,7 @@ body
         display: inline-block
 
         a:hover
-            text-shadow: 0 0 9px #FFFFFF
+            text-shadow: 0 0 9px $white
 
         p.name
             color: $light
@@ -65,14 +53,14 @@ body
     background-image: url('/img/minecraft-background-1920x1080.jpg')
     background-position: center
     background-size: auto
-    color: #FFFFFF
-    box-shadow: 0 8px 6px #202020, 0 -8px 6px #202020
+    color: $white
+    box-shadow: 0 8px 6px $box-shadow-color, 0 -8px 6px $box-shadow-color
 
 .hero-intro
     background-image: url('/img/hl2dm-event-puzzle.jpg')
     background-position: center
     background-size: auto
-    box-shadow: 0 8px 6px #202020
+    box-shadow: 0 8px 6px $box-shadow-color
 
     .dark-layer
         background-image: url('/img/t.png')

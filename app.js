@@ -1,17 +1,16 @@
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
-var sassMiddleware = require('node-sass-middleware');
-var cron = require('node-cron');
+const createError = require('http-errors');
+const express = require('express');
+const path = require('path');
+const cookieParser = require('cookie-parser');
+const logger = require('morgan');
+const sassMiddleware = require('node-sass-middleware');
+const cron = require('node-cron');
 const cards = require(path.join(__dirname, 'jobs', 'cards'));
 
-var indexRouter = require('./routes/index');
-var downloadRouter = require('./routes/download');
-var usersRouter = require('./routes/users');
+const indexRouter = require('./routes/index');
+const downloadRouter = require('./routes/download');
 
-var app = express();
+const app = express();
 
 // generate cards once and then run every 5 minutes
 cards.generate();
@@ -38,7 +37,6 @@ app.use(sassMiddleware({
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
-app.use('/users', usersRouter);
 app.use('/download', downloadRouter);
 
 // catch 404 and forward to error handler

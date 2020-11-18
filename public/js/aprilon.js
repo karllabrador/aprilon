@@ -13,6 +13,9 @@ cards.config = {
     selector: '.cards'
 }
 
+/**
+ * Fetches the generated cards json file and builds the card html, and appends it to the cards columns
+ */
 cards.fetchData = () => {
     $.getJSON(cards.config.url, data => {
        let items = [];
@@ -69,6 +72,9 @@ countUp.config = {
     selector: '.countup'
 }
 
+/**
+ * Reads the number within the elements inner html and runs the counting animation
+ */
 countUp.animate = e => {
     let size = e.html().split(".")[1] ? e.html().split(".")[1].length : 0;
     e.prop('Counter', 0).animate({
@@ -82,6 +88,9 @@ countUp.animate = e => {
     });
 }
 
+/**
+ * Adds animations to the configured selector
+ */
 countUp.run = () => {
     $(countUp.config.selector).each(function() {
         countUp.animate($(this));
@@ -95,7 +104,7 @@ $(function() {
     // Fetch cards data
     cards.fetchData();
 
-    // Loading animation for download buttons
+    // Simple loading animation for download buttons using Bulma classes
     $('.download-button').click(function() {
         const el = $(this);
         el.addClass("is-loading");

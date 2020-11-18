@@ -4,6 +4,7 @@
     "steamid": "STEAM_0:0:13377050",
     "desc": "Developer",
     "snapchat": "labrad0r",
+    "github": "karllabrador",
     "discord": "Labby#7981"
   },
   {
@@ -18,86 +19,107 @@
   },
   {
     "name": "Cypherous",
+    "desc": "Administrator",
     "steamid": "STEAM_0:1:7432939"
   },
   {
     "name": "ManIAc",
+    "desc": "Administrator",
     "steamid": "STEAM_0:1:1681970"
   },
   {
     "name": "Ultimate100",
+    "desc": "Administrator",
     "steamid": "STEAM_0:1:10970216"
   },
   {
     "name": "XNovaCore",
+    "desc": "Administrator",
     "steamid": "STEAM_0:0:3169912"
   },
   {
     "name": "Conor",
+    "desc": "Administrator",
     "steamid": "STEAM_0:1:22015892"
   },
   {
     "name": "Jamza",
+    "desc": "Administrator",
     "steamid": "STEAM_0:1:17612579"
   },
   {
     "name": "Puckey",
+    "desc": "Developer",
     "steamid": "STEAM_0:1:41695816"
   },
   {
     "name": "Prophecy",
+    "desc": "Administrator",
     "steamid": "STEAM_0:0:34706047"
   },
   {
     "name": "Fulsy",
+    "desc": "Administrator",
     "steamid": "STEAM_0:1:17766712"
   },
   {
     "name": "Chinichi",
+    "desc": "Administrator",
     "steamid": "STEAM_0:0:14884521"
   },
   {
     "name": "Inevitablel",
+    "desc": "Administrator",
     "steamid": "STEAM_0:1:33164493"
   },
   {
     "name": "theblackerbanana",
+    "desc": "Administrator",
     "steamid": "STEAM_0:0:23472"
   },
   {
     "name": "QB",
+    "desc": "Administrator",
     "steamid": "STEAM_0:0:3323273"
   },
   {
     "name": "RoY4lZ",
+    "desc": "Administrator",
     "steamid": "STEAM_0:1:21091986"
   },
   {
     "name": "Patchouli",
+    "desc": "Administrator",
     "steamid": "STEAM_0:1:35395190"
   },
   {
     "name": "Goose",
+    "desc": "Administrator",
     "steamid": "STEAM_0:0:20261624"
   },
   {
     "name": "Moglizorz",
+    "desc": "Administrator",
     "steamid": "STEAM_0:0:12322133"
   },
   {
     "name": "TensionToast",
+    "desc": "Administrator",
     "steamid": "STEAM_0:1:19517846"
   },
   {
     "name": "Ears.",
+    "desc": "Administrator",
     "steamid": "STEAM_0:0:10002037"
   },
   {
     "name": "Multilogic",
+    "desc": "Administrator",
     "steamid": "STEAM_0:1:22353109"
   },
   {
     "name": "Tech Magos",
+    "desc": "Administrator",
     "steamid": "STEAM_0:0:31666083"
   }
 ]

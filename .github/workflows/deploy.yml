@@ -1,0 +1,26 @@
+# Workflow to deploy the app to server
+
+name: Deploy app
+
+# Trigger on push to master
+on:
+  push:
+    branches: [ master ]
+
+# Jobs
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy NodeJS app
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username:: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVKEY }}
+          script: |
+            cd ~/apps/aprilon/
+            git pull
+            npm install
+            pm2 restart ./bin/www
+            

@@ -1,6 +1,6 @@
 {
   "name": "aprilon",
-  "description": "a Node.js project for the Aprilon homepage",
+  "description": "a small ode.js/Express project for aprilon.org",
   "author": {
     "name": "Karl Labrador",
     "email": "karl.labrad@gmail.com",
@@ -22,6 +22,7 @@
     "morgan": "~1.9.1",
     "node-cron": "^2.0.3",
     "node-sass-middleware": "0.11.0",
+    "nodegit": "^0.27.0",
     "pug": "^3.0.0",
     "sprintf-js": "^1.1.2",
     "steamid": "^1.1.3"

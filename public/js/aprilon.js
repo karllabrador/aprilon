@@ -1,5 +1,5 @@
 /**
- * Aprilon.js
+ * aprilon.js
  * Dependencies: jQuery >=3.5.1
  */
 
@@ -18,37 +18,45 @@ cards.config = {
  */
 cards.fetchData = () => {
     $.getJSON(cards.config.url, data => {
-       let items = [];
-
-       $.each(data, function(key, val) {
-           let friendid = val.friendid;
-           let desc = ((val.desc) ? val.desc : '');
-           let steam_name = val.steam_name;
-           let steam_avatar_url = val.steam_avatar_url;
-           let steam_state_class = cards.getStateClass(val.steam_state);
-
-           let html =
-               '<div class="column is-one-third">' +
-               '    <div class="card">'+
-               '        <div class="avatar is-pulled-left' + steam_state_class + '">' +
-               '            <img src="' + steam_avatar_url + '" />' +
-               '        </div>' +
-               '        <div class="details is-pulled-left">' +
-               '            <p class="name is-size-4"><a href="https://steamcommunity.com/profiles/' + friendid + '" class="has-text-light">' + steam_name + '</a></p>' +
-               '            <p class="heading">' + desc + '</p>' +
-               '        </div>' +
-               '        <div style="display:inline-block" class="is-pulled-right"><p></p></div>' +
-               '        <div class="is-clearfix"></div>' +
-               '    </div>' +
-               '</div>'
-
-           items.push(html);
-       });
-
-       items.forEach((item) => {
-          $(cards.config.selector).append(item);
-       });
+       $.each(data, (key, val) => $(cards.config.selector).append(cards.buildCard(val)));
     });
+}
+
+/**
+ * Builds the HTML for a card
+ * @param v fetched data values from Steam API call
+ * @returns {string|void}
+ */
+cards.buildCard = v => {
+    if (!v) return console.log('buildCard: invalid value');
+
+    let buttons = '';
+
+    if (v.github) buttons += `<a href="https://github.com/${v.github}"><img src="/img/github-mark-64px.png" width="28px" /></a>`
+
+    return `
+        <div class="column is-one-third">
+            <div class="card">
+                <div class="avatar is-pulled-left${cards.getStateClass(v.steam_state)}">
+                    <img src="${v.steam_avatar_url}" />
+                </div>
+                <div class="details is-pulled-left">
+                    <p class="name is-size-4">
+                        <a href="https://steamcommunity.com/profiles/${v.friendid}" class="has-text-light">
+                            ${v.steam_name}
+                        </a>
+                    </p>
+                    <p class="heading">
+                        ${v.desc}
+                    </p>
+                </div>
+                <div style="display:inline-block" class="is-pulled-right">
+                    ${buttons}
+                </div>
+                <div class="is-clearfix"></div>
+            </div>
+        </div>
+    `
 }
 
 /**
@@ -59,7 +67,7 @@ cards.fetchData = () => {
 cards.getStateClass = c => {
     if (c === 7) return ' is-ingame';
     if (c >= 1) return ' is-online';
-    else return ' ';
+    else return '';
 }
 
 /**
@@ -106,11 +114,11 @@ $(function() {
 
     // Simple loading animation for download buttons using Bulma classes
     $('.download-button').click(function() {
-        const el = $(this);
-        el.addClass("is-loading");
+        const button = $(this);
+        button.addClass("is-loading");
 
         setInterval(function() {
-            el.removeClass("is-loading");
+            button.removeClass("is-loading");
         }, 2000)
     })
 });

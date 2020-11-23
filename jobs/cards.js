@@ -23,6 +23,7 @@ function Card(name, steamid) {
     this.steamid = steamid;
     this.desc = undefined;
     this.discord = undefined;
+    this.github = undefined;
 
     // Steam
     this.steam_name = undefined;
@@ -91,6 +92,7 @@ function initCards() {
 
         card.desc = ((contributor['desc']) ? contributor['desc'] : '');
         card.discord = ((contributor['discord']) ? contributor['discord'] : '');
+        card.github = ((contributor['github']) ? contributor['github'] : '');
 
         cards.push(card);
     });

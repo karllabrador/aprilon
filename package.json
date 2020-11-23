@@ -1,6 +1,6 @@
 {
   "name": "aprilon",
-  "description": "a small ode.js/Express project for aprilon.org",
+  "description": "a small Node.js/Express project for aprilon.org",
   "author": {
     "name": "Karl Labrador",
     "email": "karl.labrad@gmail.com",

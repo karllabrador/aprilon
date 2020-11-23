@@ -9,7 +9,7 @@
 const cards = {};
 
 cards.config = {
-    url: '/cards.json',
+    url: '/data/cards.json',
     selector: '.cards'
 }
 

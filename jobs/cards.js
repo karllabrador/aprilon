@@ -9,6 +9,8 @@ const steam_api_query_url = 'http://api.steampowered.com/ISteamUser/GetPlayerSum
 const debug = config['cards']['debug'];
 const cards = [];
 
+const cards_output_path = path.join(__dirname, '..', 'public', 'data', 'cards.json');
+
 /**
  * Card object to store data
  * @param name their name
@@ -180,7 +182,7 @@ function generate() {
 function write() {
     let json = JSON.stringify(cards);
 
-    fs.writeFile(path.join(__dirname, '..', 'public', 'cards.json'), json, function(err) {
+    fs.writeFile(cards_output_path, json, function(err) {
        if (err) return console.log(err);
        console.log('Wrote cards to file');
     });

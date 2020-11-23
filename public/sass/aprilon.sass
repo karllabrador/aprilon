@@ -66,12 +66,14 @@ body
         background-image: url('/img/t.png')
 
     .button-discord, .button-steam
+        margin-top: 4px
+
         p.heading
             margin-top: 4px
             margin-left: 10px
 
-    .button-steam
-        margin-left: 10px
+    .button-discord
+        margin-right: 10px
 
 .simple-footer
     background-color: #202123
@@ -83,6 +85,12 @@ body
     font-family: $family-sans-serif
     color: $light
     padding: 25px
+
+    @include mobile
+        background-position: left -10px top 75px
+
+    @include tablet-only
+        background-position: left 55px top 55px
 
     a
         text-decoration: underline
@@ -105,3 +113,4 @@ body
     h1, h2
         color: #6B6B6B
         margin: 0 0 6px 10px
+

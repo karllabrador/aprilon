@@ -1,8 +1,8 @@
 # Aprilon
 
-This is the app running [on the aprilon.org website](https://aprilon.org), written with nodejs, sass and js.
+This is the app running [on the aprilon.org website](https://aprilon.org). Built with Node.js, Express.js, jQuery, Pug and Sass.
 
-![Preview](https://i.imgur.com/XkSpEzP.jpg)
+![Preview](https://i.imgur.com/DKgk7Kx.jpeg)
 
 ## Configuration
 
@@ -31,12 +31,12 @@ For the app to function properly, it requires a ```aprilon-config.json``` file. 
 
 ## Backstory
 
-Aprilon was once a gaming community that was founded in 2009, starting out with a simple Garry's Mod
+Aprilon was a gaming community that was founded in 2009, starting out with a simple Garry's Mod
 sandbox server.
 
-It further expanded into Team Fortress 2 and Minecraft in the later years, and the playerbase growth and community was strong.
+It further expanded into Team Fortress 2 and Minecraft in over the years, and the player base grew and community was strong.
 
-As personal interests in the management dwindled, community operations closed (for the second time hehe) in May 2015.
+As personal interests in the administration dwindled, community operations closed (for the second time hehe) in May 2015.
 
 The purpose of this app is act as a legacy to the community history, where I show my thanks to those who contributed to the project in development, management and moderation.
 

@@ -5,7 +5,7 @@ const SteamID = require('steamid');
 const config = require(path.join(__dirname, '..', 'config', 'config'));
 const http = require('http');
 
-const steam_api_query_url = 'http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0001/?key=%s&steamids=%s&format=json';
+const steam_api_query_url = 'http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=%s&steamids=%s&format=json';
 const debug = config['cards']['debug'];
 const cards = [];
 
@@ -28,14 +28,10 @@ function Card(name, steamid) {
     this.steam_name = undefined;
     this.steam_state = undefined;
     this.steam_avatar_url = undefined;
-    this.friendid = undefined;
 
-    Object.defineProperty(this, "friendid", {
-       get() {
-           let sid = new SteamID(this.steamid);
-           return ((sid.isValid()) ? sid.getSteamID64() : null);
-       }
-    });
+    // Set FriendId
+    let sid = new SteamID(this.steamid);
+    this.friendid = ((sid.isValid()) ? sid.getSteamID64() : null);
 }
 
 /**
@@ -154,7 +150,7 @@ function generate() {
              }
 
 
-             let players = parsed['response']['players']['player'];
+             let players = parsed['response']['players'];
 
              Array.from(players).forEach((player) => {
                  if (debug) console.log(`Player -> ${player['personaname']}`)

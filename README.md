@@ -1,6 +1,6 @@
 # Aprilon
 
-This is the app running [on the aprilon.org website](https://aprilon.org). Built with Node.js, Express.js, jQuery, Pug and Sass.
+This is the app running [on the aprilon.org website](https://aprilon.org). Built with Node.js, Express.js, jQuery, Pug, Sass and Bulma.
 
 ![Preview](https://i.imgur.com/DKgk7Kx.jpeg)
 

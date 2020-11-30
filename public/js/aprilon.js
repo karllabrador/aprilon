@@ -34,6 +34,12 @@ cards.buildCard = v => {
 
     if (v.github) buttons += `<a href="https://github.com/${v.github}"><img src="/img/github-mark-64px.png" width="28px" /></a>`
 
+    // Is previously known name different from current?
+    let nameblock = `<a href="https://steamcommunity.com/profiles/${v.friendid}" class="has-text-light has-tooltip-right has-tooltip-hidden-touch" data-tooltip="alias: ${v.name}">`
+    if (v.steam_name.includes(v.name)) {
+        nameblock = `<a href="https://steamcommunity.com/profiles/${v.friendid}" class="has-text-light">`
+    }
+
     return `
         <div class="column is-one-third">
             <div class="card">
@@ -42,7 +48,7 @@ cards.buildCard = v => {
                 </div>
                 <div class="details is-pulled-left">
                     <p class="name is-size-4">
-                        <a href="https://steamcommunity.com/profiles/${v.friendid}" class="has-text-light">
+                        ${nameblock}
                             ${v.steam_name}
                         </a>
                     </p>

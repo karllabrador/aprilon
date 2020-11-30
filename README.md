@@ -6,7 +6,7 @@ This is the app running [on the aprilon.org website](https://aprilon.org). Built
 
 ## Configuration
 
-For the app to function properly, it requires a ```aprilon-config.json``` file. Below is a config template.
+For the app to function properly, it requires an ```aprilon-config.json``` file. Below is a config template.
 
 ```
 {
@@ -42,8 +42,10 @@ The purpose of this app is act as a legacy to the community history, where I sho
 
 At the same time, I can't help myself but show how many individuals actually stepped into the community in some way or another, through data we've recorded throughout its time.
 
-The data I've gathered are based on analysis of our latest SQL data backups from sources such as HLStatsX:CE (for TF2), and our own in-house developed management tools for Garry's Mod and Minecraft.
+The data I've gathered are based on analysis of our latest SQL data copies from sources such as HLStatsX:CE (for TF2), and our own in-house developed management tools for Garry's Mod and Minecraft.
 
 ## Feedback
 
 I'm very newb with this stack and using this as an opportunity to get familiar. I'm very thankful for feedback!
+
+The contributors list: let me know if you're missing or want to get removed (alternatively, create a pull request).

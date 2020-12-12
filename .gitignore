@@ -9,6 +9,7 @@
 # Project-specific stuff
 aprilon-config.json
 public/data/cards.json
+public/css/*
 
 # User-specific stuff
 .idea/**/workspace.xml

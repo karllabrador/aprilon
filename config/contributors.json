@@ -2,19 +2,18 @@
   {
     "name": "Labby",
     "steamid": "STEAM_0:0:13377050",
-    "desc": "Developer",
-    "snapchat": "labrad0r",
+    "desc": ["Management", "Developer"],
     "github": "karllabrador",
     "discord": "Labby#7981"
   },
   {
     "name": "Blood",
-    "desc": "Developer",
+    "desc": ["Management", "Developer"],
     "steamid": "STEAM_0:0:10936707"
   },
   {
     "name": "AcidWeb",
-    "desc": "Developer",
+    "desc": ["Management", "Developer"],
     "steamid": "STEAM_0:1:15247214"
   },
   {

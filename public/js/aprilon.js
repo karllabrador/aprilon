@@ -30,14 +30,23 @@ cards.fetchData = () => {
 cards.buildCard = v => {
     if (!v) return console.log('buildCard: invalid value');
 
+    // Buttons
     let buttons = '';
-
     if (v.github) buttons += `<a href="https://github.com/${v.github}"><img src="/img/github-mark-64px.png" width="28px" /></a>`
 
     // Is previously known name different from current?
     let nameblock = `<a href="https://steamcommunity.com/profiles/${v.friendid}" class="has-text-light has-tooltip-right has-tooltip-hidden-touch" data-tooltip="alias: ${v.name}">`
     if (v.steam_name.includes(v.name)) {
         nameblock = `<a href="https://steamcommunity.com/profiles/${v.friendid}" class="has-text-light">`
+    }
+
+    // Resolve descriptions (a card can have multiple)
+    let desc = v.desc;
+    if (Array.isArray(v.desc)) {
+        desc = '';
+        $.each(v.desc, (key, val) => {
+            desc += (val + '<br />');
+        });
     }
 
     return `
@@ -53,7 +62,7 @@ cards.buildCard = v => {
                         </a>
                     </p>
                     <p class="heading">
-                        ${v.desc}
+                        ${desc}
                     </p>
                 </div>
                 <div style="display:inline-block" class="is-pulled-right">

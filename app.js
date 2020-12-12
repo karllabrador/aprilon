@@ -11,6 +11,7 @@ const git = require('nodegit');
 
 const indexRouter = require('./routes/index');
 const downloadRouter = require('./routes/download');
+const discordRouter = require('./routes/discord');
 
 const app = express();
 
@@ -50,6 +51,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/download', downloadRouter);
+app.use('/discord', discordRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

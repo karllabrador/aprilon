@@ -16,7 +16,8 @@ For the app to function properly, it requires an ```aprilon-config.json``` file.
       "steam_api_key": "<your Steam API key>",
       "reference_file": "config/contributors.json",
       "debug": false
-    }
+    },
+    "discord": "<your Discord invite URL>"
   },
   "development": {
     "config": "development",
@@ -24,7 +25,8 @@ For the app to function properly, it requires an ```aprilon-config.json``` file.
       "steam_api_key": "<your Steam API key>",
       "reference_file": "config/contributors.json",
       "debug": true
-    }
+    },
+    "discord": "<your Discord invite URL>"
   }
 }
 ```

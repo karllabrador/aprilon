@@ -48,4 +48,4 @@ The data I've gathered are based on analysis of our latest SQL data copies from 
 
 I'm very newb with this stack and using this as an opportunity to get familiar. I'm very thankful for feedback!
 
-The contributors list: let me know if you're missing or want to get removed (alternatively, create a pull request).
+The contributors list: let me know if you're missing or want to get removed (alternatively, create a pull request: check ```config/contributors.json```).

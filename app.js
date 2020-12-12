@@ -24,9 +24,9 @@ git.Repository.open(path.join(__dirname, '.')).then(repo => {
     console.log('Running on commit ' + config.latest_commit);
 })
 
-// Generate cards once and then run every 5 minutes
+// Generate cards once and then run every 4 minutes
 cards.generate();
-cron.schedule('*/5 * * * *', () => {
+cron.schedule('*/4 * * * *', () => {
     cards.generate();
 });
 

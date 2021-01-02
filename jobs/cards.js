@@ -65,7 +65,7 @@ function getSteamAPIKey() {
  * @returns {string|void}
  */
 function getQueryURL() {
-    if (cards.length < 1) return console.log('Cards is empty -> may not have been initialized?');
+    if (cards.length === 0) return console.log('Cards is empty -> may not have been initialized?');
 
     let steam_api_key = getSteamAPIKey();
     if (!steam_api_key) return console.log('Steam API key not present -> check your config');

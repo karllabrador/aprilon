@@ -3,7 +3,7 @@ const path = require('path');
 
 // Load config
 const config = require(path.join(__dirname, '..', '/aprilon-config.json'));
-const defaultConfig = config.development;
+const defaultConfig = config.production;
 const environment = process.env.NODE_ENV || 'production';
 const environmentConfig = config[environment];
 const finalConfig = merge(defaultConfig, environmentConfig);

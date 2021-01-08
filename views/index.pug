@@ -2,13 +2,13 @@ extends layout
 
 block content
     // Intro
-    section(class="hero hero-intro is-medium is-dark" style="background-color: #0C1010")
+    section(class="hero hero-intro is-medium is-dark")
         div(class="hero-body dark-layer")
             div(class="container")
                 div(class="columns")
                     div(class="column is-two-fifths")
                         img(src="/img/aprilon-small-compact.png" alt="Aprilon logo")
-                        p(style="white-space: pre;")
+                        p(class="history-text")
                         | Aprilon was a gaming community that hosted game servers for a multitude of games, including Garry's Mod, Team Fortress 2 and Minecraft.
                         br
                         br
@@ -71,7 +71,7 @@ block content
         a(href="https://aprilon.org/forum")="Here they are"
         |.
         br
-        p(style="margin-top: 3px")
+        p(class="bulma-badge")
             a(href="https://bulma.io")
                 img(src="https://bulma.io/images/made-with-bulma--dark.png" alt="Made with Bulma" width="128" height="24")
 

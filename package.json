@@ -24,7 +24,7 @@
     "node-cron": "^2.0.3",
     "node-sass-middleware": "0.11.0",
     "nodegit": "^0.27.0",
-    "pug": "^3.0.0",
+    "pug": "^3.0.1",
     "sprintf-js": "^1.1.2",
     "steamid": "^1.1.3"
   },

@@ -9,9 +9,7 @@ const cards = require(path.join(__dirname, 'jobs', 'cards'));
 const config = require(path.join(__dirname, 'config', 'config'));
 const git = require('nodegit');
 
-const indexRouter = require('./routes/index');
-const downloadRouter = require('./routes/download');
-const discordRouter = require('./routes/discord');
+const mainRouter = require('./routes/main');
 
 const app = express();
 
@@ -49,17 +47,15 @@ app.use(sassMiddleware({
 }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', indexRouter);
-app.use('/download', downloadRouter);
-app.use('/discord', discordRouter);
+app.use('/', mainRouter);
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
+app.use((req, res, next) => {
     next(createError(404));
 });
 
 // error handler
-app.use(function(err, req, res, next) {
+app.use((err, req, res, next) => {
     // set locals, only providing error in development
     res.locals.message = err.message;
     res.locals.error = req.app.get('env') === 'development' ? err : {};

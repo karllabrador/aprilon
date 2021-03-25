@@ -46,6 +46,7 @@ app.use(sassMiddleware({
     prefix: '/css'
 }));
 app.use(express.static(path.join(__dirname, 'public')));
+app.use('/js/jquery.min.js', express.static(path.join(__dirname, 'node_modules', 'jquery', 'dist', 'jquery.min.js')));
 
 app.use('/', mainRouter);
 

@@ -6,18 +6,22 @@ This is the app running [on the aprilon.org website](https://aprilon.org). Built
 
 ## Configuration
 
-For the app to function properly, it requires an ```aprilon-config.json``` file. Below is a config template.
+For the app to function properly, it requires an ```aprilon-config.json``` file. Below is a config template/example.
 
 ```
 {
   "production": {
     "config": "production",
     "cards": {
-      "steam_api_key": "<your Steam API key>",
       "reference_file": "config/contributors.json",
+      "steam_api_key": "<your Steam API key>",
       "debug": false
     },
-    "discord": "<your Discord invite URL>"
+    "discord": "https://discord.gg/sTBfWTG",
+    "minecraft_worlds": {
+      "1": "https://aprilon.org/gamefiles/a=mc/world_20120621.tar.gz",
+      "2": "https://aprilon.org/gamefiles/a=mc/world_20150218_1509.tar.gz"
+    }
   }
 }
 ```

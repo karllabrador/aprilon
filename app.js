@@ -5,9 +5,9 @@ const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const sassMiddleware = require('node-sass-middleware');
 const cron = require('node-cron');
-const cards = require(path.join(__dirname, 'jobs', 'cards'));
 const config = require(path.join(__dirname, 'config', 'config'));
 const git = require('nodegit');
+const Cards = require(path.join(__dirname, 'classes', 'cards'));
 
 const mainRouter = require('./routes/main');
 
@@ -24,9 +24,14 @@ git.Repository.open(path.join(__dirname, '.')).then(repo => {
 })
 
 // Generate cards once and then run every 4 minutes
-cards.generate();
+const cards = new Cards(
+    config['cards']['reference_file'],
+    path.join(__dirname, 'public', 'data', 'cards.json')
+);
+
+cards.run();
 cron.schedule('*/4 * * * *', () => {
-    cards.generate();
+    cards.run();
 });
 
 // view engine setup

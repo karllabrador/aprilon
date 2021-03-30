@@ -1,37 +1,37 @@
 {
-  "garrysmod": {
-    "players": 22.3,
-    "hours": 26.0,
-    "years": 1.5
-  },
-  "teamfortress": {
-    "players": 322.3,
-    "hours": 538.8,
-    "years": 61.4
-  },
-  "minecraft": {
-    "players": 6.6,
-    "hours": 30.8,
-    "years": 3.5,
-    "w1_size": 7.0,
-    "w2_size": 0.7
-  },
-  "community": {
-    "members": 1.2,
-    "posts": 27.1,
-    "threads": 2.1,
-    "pageviews": 5.1,
-    "steamgroup": 21.0
-  },
-  "units": {
-    "players": "K",
-    "hours": "K",
-    "w1_size": "GB",
-    "w2_size": "GB",
-    "members": "K",
-    "posts": "K",
-    "threads": "K",
-    "pageviews": "M",
-    "steamgroup": "K"
-  }
+    "garrysmod": {
+        "players": 22.3,
+        "hours": 26.0,
+        "years": 1.5
+    },
+    "teamfortress": {
+        "players": 322.3,
+        "hours": 538.8,
+        "years": 61.4
+    },
+    "minecraft": {
+        "players": 6.6,
+        "hours": 30.8,
+        "years": 3.5,
+        "w1_size": 7.0,
+        "w2_size": 0.7
+    },
+    "community": {
+        "members": 1.2,
+        "posts": 27.1,
+        "threads": 2.1,
+        "pageviews": 5.1,
+        "steamgroup": 21.0
+    },
+    "units": {
+        "players": "K",
+        "hours": "K",
+        "w1_size": "GB",
+        "w2_size": "GB",
+        "members": "K",
+        "posts": "K",
+        "threads": "K",
+        "pageviews": "M",
+        "steamgroup": "K"
+    }
 }

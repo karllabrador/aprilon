@@ -1,10 +1,17 @@
 language: node_js
+node_js: 14
 
-node_js:
-  - 14
+branches:
+  only:
+    - master
+    - dev
 
-install:
-  - npm install
+jobs:
+    include:
+        - stage: build
+          script: npm install
 
-# No tests yet
-script: 'true'
+        - stage: test
+          script:
+              - npm install --global prettier
+              - prettier --check .

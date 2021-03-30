@@ -2,9 +2,9 @@ language: node_js
 node_js: 14
 
 branches:
-  only:
-    - master
-    - dev
+    only:
+        - master
+        - dev
 
 jobs:
     include:

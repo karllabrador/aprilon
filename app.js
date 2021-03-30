@@ -23,7 +23,17 @@ git.Repository.open(path.join(__dirname, '.'))
     })
     .then(hash => {
         config.latest_commit = hash.substring(0, 7);
-        console.log('Running on commit ' + config.latest_commit);
+        console.log('Running on commit %s', config.latest_commit);
+    });
+
+// Set current branch in config
+git.Repository.open(path.join(__dirname, '.'))
+    .then(repo => {
+        return repo.getCurrentBranch();
+    })
+    .then(branch => {
+        config.branch = branch.shorthand();
+        console.log('Branch: %s', config.branch);
     });
 
 // Generate cards once and then run every 4 minutes

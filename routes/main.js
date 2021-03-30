@@ -7,6 +7,8 @@ const config = require(path.join(__dirname, '..', 'config', 'config'));
 router.get('/', (req, res, next) => {
     res.render('index', {
         title: 'Aprilon — gaming community (now defunct)',
+        latest_commit: config.latest_commit,
+        branch: config.branch,
     });
 });
 

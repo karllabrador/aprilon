@@ -7,4 +7,4 @@ install:
   - npm install
 
 # No tests yet
-script: 'true'
+script: "true"

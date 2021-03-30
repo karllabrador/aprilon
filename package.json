@@ -1,36 +1,36 @@
 {
-  "name": "aprilon",
-  "description": "a small Node.js/Express project for aprilon.org",
-  "author": {
-    "name": "Karl Labrador",
-    "email": "karl.labrad@gmail.com",
-    "url": "https://github.com/karllabrador"
-  },
-  "homepage": "https://aprilon.org",
-  "version": "1.0.1",
-  "private": true,
-  "scripts": {
-    "start": "node ./bin/www"
-  },
-  "dependencies": {
-    "bulma": "^0.9.1",
-    "bulma-tooltip": "^3.0.2",
-    "cookie-parser": "~1.4.4",
-    "debug": "~2.6.9",
-    "express": "~4.16.1",
-    "http-errors": "~1.6.3",
-    "jquery": "^3.6.0",
-    "lodash.merge": "^4.6.2",
-    "morgan": "~1.9.1",
-    "node-cron": "^2.0.3",
-    "node-sass-middleware": "0.11.0",
-    "nodegit": "^0.27.0",
-    "pug": "^3.0.1",
-    "sprintf-js": "^1.1.2",
-    "steamid": "^1.1.3"
-  },
-  "devDependencies": {
-    "eslint-config-prettier": "^8.1.0",
-    "prettier": "^2.2.1"
-  }
+    "name": "aprilon",
+    "description": "a small Node.js/Express project for aprilon.org",
+    "author": {
+        "name": "Karl Labrador",
+        "email": "karl.labrad@gmail.com",
+        "url": "https://github.com/karllabrador"
+    },
+    "homepage": "https://aprilon.org",
+    "version": "1.0.1",
+    "private": true,
+    "scripts": {
+        "start": "node ./bin/www"
+    },
+    "dependencies": {
+        "bulma": "^0.9.1",
+        "bulma-tooltip": "^3.0.2",
+        "cookie-parser": "~1.4.4",
+        "debug": "~2.6.9",
+        "express": "~4.16.1",
+        "http-errors": "~1.6.3",
+        "jquery": "^3.6.0",
+        "lodash.merge": "^4.6.2",
+        "morgan": "~1.9.1",
+        "node-cron": "^2.0.3",
+        "node-sass-middleware": "0.11.0",
+        "nodegit": "^0.27.0",
+        "pug": "^3.0.1",
+        "sprintf-js": "^1.1.2",
+        "steamid": "^1.1.3"
+    },
+    "devDependencies": {
+        "eslint-config-prettier": "^8.1.0",
+        "prettier": "^2.2.1"
+    }
 }

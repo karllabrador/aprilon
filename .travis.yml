@@ -1,10 +1,12 @@
 language: node_js
+node_js: 14
 
-node_js:
-  - 14
+jobs:
+    include:
+        - stage: build
+          script: npm install
 
-install:
-  - npm install
-
-# No tests yet
-script: "true"
+        - stage: test
+          script:
+              - npm install --global prettier
+              - prettier --check .

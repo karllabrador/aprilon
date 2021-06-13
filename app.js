@@ -3,15 +3,19 @@ const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
-const sassMiddleware = require('node-sass-middleware');
 const cron = require('node-cron');
 const config = require(path.join(__dirname, 'config', 'config'));
 const git = require('nodegit');
 const Cards = require(path.join(__dirname, 'classes', 'cards'));
+const sassRender = require('./classes/sassRender');
 
 const mainRouter = require('./routes/main');
 
+
 const app = express();
+
+// Render SASS files
+sassRender('public/sass/aprilon.sass', 'public/css/aprilon.css');
 
 // Set recent commit hash in config
 git.Repository.open(path.join(__dirname, '.'))
@@ -55,16 +59,6 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(
-    sassMiddleware({
-        src: path.join(__dirname, 'public', 'sass'),
-        dest: path.join(__dirname, 'public', 'css'),
-        indentedSyntax: true, // true = .sass and false = .scss
-        sourceMap: false,
-        outputStyle: 'compressed',
-        prefix: '/css',
-    }),
-);
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(
     '/js/jquery.min.js',

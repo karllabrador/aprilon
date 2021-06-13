@@ -11,6 +11,7 @@
     "private": true,
     "scripts": {
         "start": "node ./bin/www",
+        "dev": "nodemon ./bin/www --ignore public/*",
         "prettier-write": "prettier --write .",
         "prettier-check": "prettier --check ."
     },
@@ -25,14 +26,15 @@
         "lodash.merge": "^4.6.2",
         "morgan": "~1.9.1",
         "node-cron": "^2.0.3",
-        "node-sass-middleware": "0.11.0",
         "nodegit": "^0.27.0",
         "pug": "^3.0.1",
+        "sass": "^1.34.1",
         "sprintf-js": "^1.1.2",
         "steamid": "^1.1.3"
     },
     "devDependencies": {
         "eslint-config-prettier": "^8.1.0",
+        "nodemon": "^2.0.7",
         "prettier": "^2.2.1"
     }
 }

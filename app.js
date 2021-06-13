@@ -4,13 +4,12 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const cron = require('node-cron');
-const config = require(path.join(__dirname, 'config', 'config'));
+const config = require('./config');
 const git = require('nodegit');
-const Cards = require(path.join(__dirname, 'classes', 'cards'));
-const sassRender = require('./classes/sassRender');
+const Cards = require('./util/cards');
+const sassRender = require('./util/sassRender');
 
 const mainRouter = require('./routes/main');
-
 
 const app = express();
 

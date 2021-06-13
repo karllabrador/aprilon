@@ -1,7 +1,7 @@
 const path = require('path');
 const fs = require('fs');
 const sprintf = require('sprintf-js').sprintf;
-const config = require(path.join(__dirname, '..', 'config', 'config'));
+const config = require('../config');
 const http = require('http');
 const SteamID = require('steamid');
 const Card = require('./card');

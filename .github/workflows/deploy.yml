@@ -20,6 +20,7 @@ jobs:
                   key: ${{ secrets.SSH_PRIVKEY }}
                   script: |
                       cd ~/apps/aprilon/
+                      git reset --hard HEAD
                       git pull
                       npm install
                       pm2 restart ./bin/www

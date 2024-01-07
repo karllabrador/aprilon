@@ -5,7 +5,6 @@ const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const cron = require('node-cron');
 const config = require('./config');
-const git = require('nodegit');
 const Cards = require('./util/cards');
 const sassRender = require('./util/sassRender');
 
@@ -15,29 +14,6 @@ const app = express();
 
 // Render SASS files
 sassRender('public/sass/aprilon.sass', 'public/css/aprilon.css');
-
-// Set recent commit hash in config
-git.Repository.open(path.join(__dirname, '.'))
-    .then(repo => {
-        return repo.getHeadCommit();
-    })
-    .then(commit => {
-        return commit.sha();
-    })
-    .then(hash => {
-        config.latest_commit = hash.substring(0, 7);
-        console.log('Running on commit %s', config.latest_commit);
-    });
-
-// Set current branch in config
-git.Repository.open(path.join(__dirname, '.'))
-    .then(repo => {
-        return repo.getCurrentBranch();
-    })
-    .then(branch => {
-        config.branch = branch.shorthand();
-        console.log('Branch: %s', config.branch);
-    });
 
 // Generate cards once and then run every 4 minutes
 const cards = new Cards(

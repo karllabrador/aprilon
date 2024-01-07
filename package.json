@@ -26,7 +26,6 @@
         "lodash.merge": "^4.6.2",
         "morgan": "~1.9.1",
         "node-cron": "^2.0.3",
-        "nodegit": "^0.27.0",
         "pug": "^3.0.1",
         "sass": "^1.34.1",
         "sprintf-js": "^1.1.2",

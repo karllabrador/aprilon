@@ -115,6 +115,7 @@ class Cards {
                     playerdata = JSON.parse(data.toString());
                 } catch (err) {
                     console.error('Error fetching playerdata', err);
+                    return;
                 }
 
                 playerdata = playerdata.response.players;

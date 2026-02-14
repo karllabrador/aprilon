@@ -18,9 +18,9 @@
     "dependencies": {
         "bulma": "^0.9.2",
         "bulma-tooltip": "^3.0.2",
-        "cookie-parser": "~1.4.4",
+        "cookie-parser": "~1.4.7",
         "debug": "~2.6.9",
-        "express": "~4.19.2",
+        "express": "~4.22.1",
         "http-errors": "~1.6.3",
         "jquery": "^3.6.0",
         "lodash.merge": "^4.6.2",

@@ -1,0 +1,123 @@
+[
+  {
+    "name": "Karl",
+    "steamId": "STEAM_0:0:13377050",
+    "roles": ["Management", "Developer"],
+    "github": "karllabrador"
+  },
+  {
+    "name": "Blood",
+    "roles": ["Management", "Developer"],
+    "steamId": "STEAM_0:0:10936707"
+  },
+  {
+    "name": "AcidWeb",
+    "roles": ["Management", "Developer"],
+    "steamId": "STEAM_0:1:15247214"
+  },
+  {
+    "name": "Cypherous",
+    "roles": "Administrator",
+    "steamId": "STEAM_0:1:7432939"
+  },
+  {
+    "name": "ManIAc",
+    "roles": "Administrator",
+    "steamId": "STEAM_0:1:1681970"
+  },
+  {
+    "name": "Ultimate100",
+    "roles": "Administrator",
+    "steamId": "STEAM_0:1:10970216"
+  },
+  {
+    "name": "XNovaCore",
+    "roles": "Administrator",
+    "steamId": "STEAM_0:0:3169912"
+  },
+  {
+    "name": "Conor",
+    "roles": "Administrator",
+    "steamId": "STEAM_0:1:22015892"
+  },
+  {
+    "name": "Jamza",
+    "roles": "Administrator",
+    "steamId": "STEAM_0:1:17612579"
+  },
+  {
+    "name": "Puckey",
+    "roles": "Developer",
+    "steamId": "STEAM_0:1:41695816"
+  },
+  {
+    "name": "Prophecy",
+    "roles": "Administrator",
+    "steamId": "STEAM_0:0:34706047"
+  },
+  {
+    "name": "Fulsy",
+    "roles": "Administrator",
+    "steamId": "STEAM_0:1:17766712"
+  },
+  {
+    "name": "Chinichi",
+    "roles": "Administrator",
+    "steamId": "STEAM_0:0:14884521"
+  },
+  {
+    "name": "Inevitablel",
+    "roles": "Administrator",
+    "steamId": "STEAM_0:1:33164493"
+  },
+  {
+    "name": "theblackerbanana",
+    "roles": "Administrator",
+    "steamId": "STEAM_0:0:23472"
+  },
+  {
+    "name": "QB",
+    "roles": "Administrator",
+    "steamId": "STEAM_0:0:3323273"
+  },
+  {
+    "name": "RoY4lZ",
+    "roles": "Administrator",
+    "steamId": "STEAM_0:1:21091986"
+  },
+  {
+    "name": "Patchouli",
+    "roles": "Administrator",
+    "steamId": "STEAM_0:1:35395190"
+  },
+  {
+    "name": "Goose",
+    "roles": "Administrator",
+    "steamId": "STEAM_0:0:20261624"
+  },
+  {
+    "name": "Moglizorz",
+    "roles": "Administrator",
+    "steamId": "STEAM_0:0:12322133"
+  },
+  {
+    "name": "TensionToast",
+    "roles": "Administrator",
+    "steamId": "STEAM_0:1:19517846"
+  },
+  {
+    "name": "Ears.",
+    "roles": "Administrator",
+    "steamId": "STEAM_0:0:10002037"
+  },
+  {
+    "name": "Multilogic",
+    "roles": "Administrator",
+    "steamId": "STEAM_0:1:22353109"
+  },
+  {
+    "name": "Tech Magos",
+    "roles": "Administrator",
+    "steamId": "STEAM_0:0:31666083"
+  }
+]

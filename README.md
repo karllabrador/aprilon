@@ -1,36 +1,33 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Aprilon
 
-## Getting Started
+Source code for [the aprilon.org website](https://aprilon.org). Built with Next.js and Tailwind.
 
-First, run the development server:
+![Preview](https://i.imgur.com/DKgk7Kx.jpeg)
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## About
+
+Aprilon was a gaming community founded in 2009, starting with a simple Garry's Mod sandbox server. Over the years it expanded into Team Fortress 2 and Minecraft, growing a solid player base along the way — before eventually closing its doors in May 2015.
+
+This app serves as a legacy archive: a way to thank everyone who contributed through development, management, and moderation, and to show just how many people passed through the community over the years.
+
+The data comes from our SQL backups at the time of closing — sourced from HLStatsX:CE (TF2) and our own in-house tools for Garry's Mod and Minecraft.
+
+**_Contributors:_** _If you're missing from the contributors list or want to be removed, reach out to me or feel free to open a pull request with changes to `config/contributors.json`._
+
+## Running the project
+
+Prerequisites: Node.js
+
+1. Run `npm install`
+2. Run `npm run dev`
+3. Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+## Configuration
+
+Create a `.env` file in the root with the following:
+
+```
+STEAM_API_KEY=<your api key>
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+[Get your personal key from Steam here](https://steamcommunity.com/dev/apikey).

@@ -1,0 +1,18 @@
+[
+  {
+    "title": "First world",
+    "fromYear": 2010,
+    "toYear": 2012,
+    "size": "7GB",
+    "downloadSize": "3.8GB",
+    "url": "https://r2-public.aprilon.org/minecraft-worlds/world_20120621.tar.gz"
+  },
+  {
+    "title": "Second world",
+    "fromYear": 2014,
+    "toYear": 2015,
+    "size": "0.7GB",
+    "downloadSize": "467MB",
+    "url": "https://r2-public.aprilon.org/minecraft-worlds/world_20150218_1509.tar.gz"
+  }
+]

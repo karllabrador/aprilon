@@ -1,10 +1,4 @@
 import data from "@/config/contributors.json";
-
-export type Contributor = {
-  name: string;
-  steamId: string;
-  roles: string | string[];
-  github?: string;
-};
+import { Contributor } from "@/types";
 
 export const contributors: Contributor[] = data;

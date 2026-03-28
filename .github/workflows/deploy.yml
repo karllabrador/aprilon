@@ -1,0 +1,209 @@
+name: Deploy app
+
+on:
+  workflow_dispatch:
+    inputs:
+      build_id:
+        description: "Build ID to redeploy (leave empty to build fresh)"
+        required: false
+        type: string
+
+env:
+  REMOTE_BASE: /home/aprilon/builds
+  REMOTE_CURRENT: /home/aprilon/current
+  BUILD_ID: ""
+  APP_BUILD_COMMIT: ""
+  APP_BUILD_TIME: ""
+
+jobs:
+  deploy:
+    name: "Deploy app"
+    runs-on: ubuntu-latest
+    environment: Public
+
+    steps:
+      - name: Checkout code
+        if: inputs.build_id == ''
+        uses: actions/checkout@v4
+
+      - name: Set pre-build environment variables
+        run: |
+          if [ -n "${{ inputs.build_id }}" ]; then
+            echo "BUILD_ID=${{ inputs.build_id }}" >> $GITHUB_ENV
+          else
+            echo "BUILD_ID=aprilon-$(git rev-parse --short HEAD)-$(date -u +%Y%m%d%H%M%S)" >> $GITHUB_ENV
+            echo "APP_BUILD_COMMIT=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+            echo "APP_BUILD_TIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ")" >> $GITHUB_ENV
+          fi
+
+      - name: Log build ID
+        run: |
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          if [ -n "${{ inputs.build_id }}" ]; then
+            echo "♻️  REDEPLOYMENT"
+          else
+            echo "🏗️  FRESH BUILD"
+          fi
+          echo "🔖 Build ID:   ${{ env.BUILD_ID }}"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+      - name: Setup Node.js
+        if: inputs.build_id == ''
+        uses: actions/setup-node@v3
+        with:
+          node-version: 23
+
+      - name: Install dependencies & build
+        if: inputs.build_id == ''
+        run: |
+          npm ci
+          npm run build
+
+      - name: Package build artifacts
+        if: inputs.build_id == ''
+        run: |
+          zip -r build.zip .next/standalone .next/static public package.json package-lock.json
+
+      - name: Temporarily add agent IP to DO firewall
+        uses: earthpyy/setup-digitalocean-firewall@v1
+        with:
+          access-token: ${{ secrets.CANOPUS_FIREWALL_ACCESS_TOKEN }}
+          firewall-id: ${{ vars.CANOPUS_FIREWALL_ID }}
+          ports: "22"
+
+      - name: Copy files to server
+        if: inputs.build_id == ''
+        uses: appleboy/scp-action@v1
+        with:
+          host: ${{ vars.DEPLOY_TARGET_IP }}
+          username: ${{ vars.DEPLOY_TARGET_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22
+          source: "build.zip"
+          target: "${{ env.REMOTE_BASE }}/${{ env.BUILD_ID }}"
+
+      - name: Unpack & deploy
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ vars.DEPLOY_TARGET_IP }}
+          username: ${{ vars.DEPLOY_TARGET_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22
+          script: |
+            set -e
+            BUILD_DIR="${{ env.REMOTE_BASE }}/${{ env.BUILD_ID }}"
+
+            if [ ! -d "$BUILD_DIR" ]; then
+              echo "❌ Build directory not found: $BUILD_DIR"
+              echo "   Available builds:"
+              ls "${{ env.REMOTE_BASE }}" | grep aprilon- | sed 's/^/   - /'
+              exit 1
+            fi
+
+            if [ "${{ inputs.build_id }}" = "" ]; then
+              echo "📦 Unpacking build ${{ env.BUILD_ID }}..."
+              cd "$BUILD_DIR"
+              unzip -o build.zip
+              rm build.zip
+
+              cp -r .next/static .next/standalone/.next/static
+              cp -r public .next/standalone/public
+            else
+              echo "♻️  Reusing existing build ${{ env.BUILD_ID }}, skipping unpack..."
+            fi
+
+            # Always re-write .env (may have changed between deployments)
+            cat > "$BUILD_DIR/.next/standalone/.env" <<EOF
+            NEXT_PUBLIC_APP_URL=${{ vars.NEXT_PUBLIC_APP_URL }}
+            APP_BUILD_COMMIT=${{ env.APP_BUILD_COMMIT }}
+            APP_BUILD_TIME=${{ env.APP_BUILD_TIME }}
+            EOF
+
+            # Record previous symlink for rollback
+            if [ -L "${{ env.REMOTE_CURRENT }}" ]; then
+              readlink "${{ env.REMOTE_CURRENT }}" > "${{ env.REMOTE_BASE }}/previous_build"
+              echo "📌 Previous build: $(cat ${{ env.REMOTE_BASE }}/previous_build)"
+            else
+              echo "" > "${{ env.REMOTE_BASE }}/previous_build"
+              echo "ℹ️  No previous build found"
+            fi
+
+            ln -sfn "$BUILD_DIR/.next/standalone" "${{ env.REMOTE_CURRENT }}"
+            echo "🔗 Symlink updated to $BUILD_DIR"
+
+            if pm2 describe app > /dev/null 2>&1; then
+                echo "♻️  Restarting existing PM2 process..."
+                pm2 restart app
+            else
+                echo "🚀 Starting new PM2 process..."
+                pm2 start "${{ env.REMOTE_CURRENT }}/server.js" --name app
+            fi
+
+            pm2 save
+
+      - name: Verify PM2 status
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ vars.DEPLOY_TARGET_IP }}
+          username: ${{ vars.DEPLOY_TARGET_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22
+          script: |
+            sleep 5
+
+            if pm2 describe app > /dev/null 2>&1; then
+                STATUS=$(pm2 jlist | python3 -c "import sys,json; procs=json.load(sys.stdin); app=[p for p in procs if p['name']=='app']; print(app[0]['pm2_env']['status'] if app else 'not_found')")
+                if [ "$STATUS" != "online" ]; then
+                    echo "❌ PM2 process is not online (status: $STATUS) — initiating rollback..."
+
+                    PREVIOUS=$(cat ${{ env.REMOTE_BASE }}/previous_build)
+                    if [ -n "$PREVIOUS" ] && [ -d "$PREVIOUS" ]; then
+                        echo "⏪ Rolling back to $PREVIOUS..."
+                        ln -sfn "$PREVIOUS" "${{ env.REMOTE_CURRENT }}"
+                        pm2 restart app
+                        sleep 5
+
+                        ROLLBACK_STATUS=$(pm2 jlist | python3 -c "import sys,json; procs=json.load(sys.stdin); app=[p for p in procs if p['name']=='app']; print(app[0]['pm2_env']['status'] if app else 'not_found')")
+                        if [ "$ROLLBACK_STATUS" = "online" ]; then
+                            echo "✅ Rollback successful — previous build is running"
+                        else
+                            echo "❌ Rollback also failed (status: $ROLLBACK_STATUS)"
+                            pm2 logs app --lines 30 --nostream
+                        fi
+                    else
+                        echo "⚠️  No previous build to roll back to"
+                        pm2 logs app --lines 30 --nostream
+                    fi
+
+                    exit 1
+                else
+                    echo "✅ PM2 process is online"
+                    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+                    echo "🟢 Deployed build ID: ${{ env.BUILD_ID }}"
+                    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+                fi
+            else
+                echo "❌ PM2 process 'app' not found"
+                exit 1
+            fi
+
+      - name: Clean up old builds
+        if: success() && inputs.build_id == ''
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ vars.DEPLOY_TARGET_IP }}
+          username: ${{ vars.DEPLOY_TARGET_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22
+          script: |
+            CURRENT=$(readlink "${{ env.REMOTE_CURRENT }}" | xargs dirname | xargs dirname)
+            PREVIOUS=$(cat ${{ env.REMOTE_BASE }}/previous_build | xargs dirname 2>/dev/null || echo "")
+
+            ls -dt "${{ env.REMOTE_BASE }}"/aprilon-* 2>/dev/null \
+              | tail -n +4 \
+              | while read dir; do
+                  if [ "$dir" != "$CURRENT" ] && [ "$dir" != "$PREVIOUS" ]; then
+                    echo "🗑️  Removing old build: $dir"
+                    rm -rf "$dir"
+                  fi
+                done

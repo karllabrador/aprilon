@@ -9,8 +9,6 @@ on:
         type: string
 
 env:
-  REMOTE_BASE: /home/aprilon/builds
-  REMOTE_CURRENT: /home/aprilon/current
   BUILD_ID: ""
   APP_BUILD_COMMIT: ""
   APP_BUILD_TIME: ""
@@ -69,7 +67,7 @@ jobs:
         with:
           access-token: ${{ secrets.CANOPUS_FIREWALL_ACCESS_TOKEN }}
           firewall-id: ${{ vars.CANOPUS_FIREWALL_ID }}
-          ports: "22"
+          ports: "${{ vars.DEPLOY_TARGET_PORT }}"
 
       - name: Copy files to server
         if: inputs.build_id == ''
@@ -78,9 +76,20 @@ jobs:
           host: ${{ vars.DEPLOY_TARGET_IP }}
           username: ${{ vars.DEPLOY_TARGET_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: 22
+          port: ${{ vars.DEPLOY_TARGET_PORT }}
           source: "build.zip"
-          target: "${{ env.REMOTE_BASE }}/${{ env.BUILD_ID }}"
+          target: "${{ vars.REMOTE_BASE }}/${{ env.BUILD_ID }}"
+
+      - name: Ensure remote directories exist
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ vars.DEPLOY_TARGET_IP }}
+          username: ${{ vars.DEPLOY_TARGET_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ vars.DEPLOY_TARGET_PORT }}
+          script: |
+            mkdir -p "${{ vars.REMOTE_BASE }}"
+            mkdir -p "$(dirname "${{ vars.REMOTE_CURRENT }}")"
 
       - name: Unpack & deploy
         uses: appleboy/ssh-action@v1
@@ -88,15 +97,15 @@ jobs:
           host: ${{ vars.DEPLOY_TARGET_IP }}
           username: ${{ vars.DEPLOY_TARGET_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: 22
+          port: ${{ vars.DEPLOY_TARGET_PORT }}
           script: |
             set -e
-            BUILD_DIR="${{ env.REMOTE_BASE }}/${{ env.BUILD_ID }}"
+            BUILD_DIR="${{ vars.REMOTE_BASE }}/${{ env.BUILD_ID }}"
 
             if [ ! -d "$BUILD_DIR" ]; then
               echo "❌ Build directory not found: $BUILD_DIR"
               echo "   Available builds:"
-              ls "${{ env.REMOTE_BASE }}" | grep aprilon- | sed 's/^/   - /'
+              ls "${{ vars.REMOTE_BASE }}" | grep aprilon- | sed 's/^/   - /'
               exit 1
             fi
 
@@ -115,20 +124,21 @@ jobs:
             # Always re-write .env (may have changed between deployments)
             cat > "$BUILD_DIR/.next/standalone/.env" <<EOF
             NEXT_PUBLIC_APP_URL=${{ vars.NEXT_PUBLIC_APP_URL }}
+            STEAM_API_KEY=${{ secrets.STEAM_API_KEY}}
             APP_BUILD_COMMIT=${{ env.APP_BUILD_COMMIT }}
             APP_BUILD_TIME=${{ env.APP_BUILD_TIME }}
             EOF
 
             # Record previous symlink for rollback
-            if [ -L "${{ env.REMOTE_CURRENT }}" ]; then
-              readlink "${{ env.REMOTE_CURRENT }}" > "${{ env.REMOTE_BASE }}/previous_build"
-              echo "📌 Previous build: $(cat ${{ env.REMOTE_BASE }}/previous_build)"
+            if [ -L "${{ vars.REMOTE_CURRENT }}" ]; then
+              readlink "${{ vars.REMOTE_CURRENT }}" > "${{ vars.REMOTE_BASE }}/previous_build"
+              echo "📌 Previous build: $(cat ${{ vars.REMOTE_BASE }}/previous_build)"
             else
-              echo "" > "${{ env.REMOTE_BASE }}/previous_build"
+              echo "" > "${{ vars.REMOTE_BASE }}/previous_build"
               echo "ℹ️  No previous build found"
             fi
 
-            ln -sfn "$BUILD_DIR/.next/standalone" "${{ env.REMOTE_CURRENT }}"
+            ln -sfn "$BUILD_DIR/.next/standalone" "${{ vars.REMOTE_CURRENT }}"
             echo "🔗 Symlink updated to $BUILD_DIR"
 
             if pm2 describe app > /dev/null 2>&1; then
@@ -136,7 +146,7 @@ jobs:
                 pm2 restart app
             else
                 echo "🚀 Starting new PM2 process..."
-                pm2 start "${{ env.REMOTE_CURRENT }}/server.js" --name app
+                pm2 start "${{ vars.REMOTE_CURRENT }}/server.js" --name app
             fi
 
             pm2 save
@@ -147,7 +157,7 @@ jobs:
           host: ${{ vars.DEPLOY_TARGET_IP }}
           username: ${{ vars.DEPLOY_TARGET_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: 22
+          port: ${{ vars.DEPLOY_TARGET_PORT }}
           script: |
             sleep 5
 
@@ -156,10 +166,10 @@ jobs:
                 if [ "$STATUS" != "online" ]; then
                     echo "❌ PM2 process is not online (status: $STATUS) — initiating rollback..."
 
-                    PREVIOUS=$(cat ${{ env.REMOTE_BASE }}/previous_build)
+                    PREVIOUS=$(cat ${{ vars.REMOTE_BASE }}/previous_build)
                     if [ -n "$PREVIOUS" ] && [ -d "$PREVIOUS" ]; then
                         echo "⏪ Rolling back to $PREVIOUS..."
-                        ln -sfn "$PREVIOUS" "${{ env.REMOTE_CURRENT }}"
+                        ln -sfn "$PREVIOUS" "${{ vars.REMOTE_CURRENT }}"
                         pm2 restart app
                         sleep 5
 
@@ -194,12 +204,12 @@ jobs:
           host: ${{ vars.DEPLOY_TARGET_IP }}
           username: ${{ vars.DEPLOY_TARGET_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: 22
+          port: ${{ vars.DEPLOY_TARGET_PORT }}
           script: |
-            CURRENT=$(readlink "${{ env.REMOTE_CURRENT }}" | xargs dirname | xargs dirname)
-            PREVIOUS=$(cat ${{ env.REMOTE_BASE }}/previous_build | xargs dirname 2>/dev/null || echo "")
+            CURRENT=$(readlink "${{ vars.REMOTE_CURRENT }}" | xargs dirname | xargs dirname)
+            PREVIOUS=$(cat ${{ vars.REMOTE_BASE }}/previous_build | xargs dirname 2>/dev/null || echo "")
 
-            ls -dt "${{ env.REMOTE_BASE }}"/aprilon-* 2>/dev/null \
+            ls -dt "${{ vars.REMOTE_BASE }}"/aprilon-* 2>/dev/null \
               | tail -n +4 \
               | while read dir; do
                   if [ "$dir" != "$CURRENT" ] && [ "$dir" != "$PREVIOUS" ]; then

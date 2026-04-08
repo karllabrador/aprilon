@@ -19,28 +19,28 @@ importers:
         version: 19.2.4(react@19.2.4)
     devDependencies:
       '@tailwindcss/postcss':
-        specifier: ^4
+        specifier: 4.2.2
         version: 4.2.2
       '@types/node':
-        specifier: ^20
-        version: 20.19.37
+        specifier: 25.5.2
+        version: 25.5.2
       '@types/react':
-        specifier: ^19
+        specifier: 19.2.14
         version: 19.2.14
       '@types/react-dom':
-        specifier: ^19
+        specifier: 19.2.3
         version: 19.2.3(@types/react@19.2.14)
       eslint:
-        specifier: ^9
+        specifier: 9.39.4
         version: 9.39.4(jiti@2.6.1)
       eslint-config-next:
-        specifier: 16.2.1
-        version: 16.2.1(@typescript-eslint/parser@8.57.1(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3)
+        specifier: 16.2.3
+        version: 16.2.3(@typescript-eslint/parser@8.57.1(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3)
       tailwindcss:
-        specifier: ^4
+        specifier: 4.2.2
         version: 4.2.2
       typescript:
-        specifier: ^5
+        specifier: 5.9.3
         version: 5.9.3
 
 packages:
@@ -354,8 +354,8 @@ packages:
   '@next/env@16.2.1':
     resolution: {integrity: sha512-n8P/HCkIWW+gVal2Z8XqXJ6aB3J0tuM29OcHpCsobWlChH/SITBs1DFBk/HajgrwDkqqBXPbuUuzgDvUekREPg==}
 
-  '@next/eslint-plugin-next@16.2.1':
-    resolution: {integrity: sha512-r0epZGo24eT4g08jJlg2OEryBphXqO8aL18oajoTKLzHJ6jVr6P6FI58DLMug04MwD3j8Fj0YK0slyzneKVyzA==}
+  '@next/eslint-plugin-next@16.2.3':
+    resolution: {integrity: sha512-nE/b9mht28XJxjTwKs/yk7w4XTaU3t40UHVAky6cjiijdP/SEy3hGsnQMPxmXPTpC7W4/97okm6fngKnvCqVaA==}
 
   '@next/swc-darwin-arm64@16.2.1':
     resolution: {integrity: sha512-BwZ8w8YTaSEr2HIuXLMLxIdElNMPvY9fLqb20LX9A9OMGtJilhHLbCL3ggyd0TwjmMcTxi0XXt+ur1vWUoxj2Q==}
@@ -535,8 +535,8 @@ packages:
   '@types/json5@0.0.29':
     resolution: {integrity: sha512-dRLjCWHYg4oaA77cxO64oO+7JwCwnIzkZPdrrC71jQmQtlhM556pwKo5bUzqvZndkVbeFLIIi+9TC40JNF5hNQ==}
 
-  '@types/node@20.19.37':
-    resolution: {integrity: sha512-8kzdPJ3FsNsVIurqBs7oodNnCEVbni9yUEkaHbgptDACOPW04jimGagZ51E6+lXUwJjgnBw+hyko/lkFWCldqw==}
+  '@types/node@25.5.2':
+    resolution: {integrity: sha512-tO4ZIRKNC+MDWV4qKVZe3Ql/woTnmHDr5JD8UI5hn2pwBrHEwOEMZK7WlNb5RKB6EoJ02gwmQS9OrjuFnZYdpg==}
 
   '@types/react-dom@19.2.3':
     resolution: {integrity: sha512-jp2L/eY6fn+KgVVQAOqYItbF0VY/YApe5Mz2F0aykSO8gx31bYCZyvSeYxCHKvzHG5eZjc+zyaS5BrBWya2+kQ==}
@@ -962,8 +962,8 @@ packages:
     resolution: {integrity: sha512-TtpcNJ3XAzx3Gq8sWRzJaVajRs0uVxA2YAkdb1jm2YkPz4G6egUFAyA3n5vtEIZefPk5Wa4UXbKuS5fKkJWdgA==}
     engines: {node: '>=10'}
 
-  eslint-config-next@16.2.1:
-    resolution: {integrity: sha512-qhabwjQZ1Mk53XzXvmogf8KQ0tG0CQXF0CZ56+2/lVhmObgmaqj7x5A1DSrWdZd3kwI7GTPGUjFne+krRxYmFg==}
+  eslint-config-next@16.2.3:
+    resolution: {integrity: sha512-Dnkrylzjof/Az7iNoIQJqD18zTxQZcngir19KJaiRsMnnjpQSVoa6aEg/1Q4hQC+cW90uTlgQYadwL1CYNwFWA==}
     peerDependencies:
       eslint: '>=9.0.0'
       typescript: '>=3.3.1'
@@ -1899,8 +1899,8 @@ packages:
     resolution: {integrity: sha512-nWJ91DjeOkej/TA8pXQ3myruKpKEYgqvpw9lz4OPHj/NWFNluYrjbz9j01CJ8yKQd2g4jFoOkINCTW2I5LEEyw==}
     engines: {node: '>= 0.4'}
 
-  undici-types@6.21.0:
-    resolution: {integrity: sha512-iwDZqg0QAGrg9Rav5H4n0M64c3mkR59cJ6wQp+7C4nI0gsmExaedaYLNO44eT4AtBBwjbTiGPMlt2Md0T9H9JQ==}
+  undici-types@7.18.2:
+    resolution: {integrity: sha512-AsuCzffGHJybSaRrmr5eHr81mwJU3kjw6M+uprWvCXiNeN9SOGwQ3Jn8jb8m3Z6izVgknn1R0FTCEAP2QrLY/w==}
 
   unrs-resolver@1.11.1:
     resolution: {integrity: sha512-bSjt9pjaEBnNiGgc9rUiHGKv5l4/TGzDmYw3RhnkJGtLhbnnA/5qJj7x3dNDCRx/PJxu774LlH8lCOlB4hEfKg==}
@@ -2257,7 +2257,7 @@ snapshots:
 
   '@next/env@16.2.1': {}
 
-  '@next/eslint-plugin-next@16.2.1':
+  '@next/eslint-plugin-next@16.2.3':
     dependencies:
       fast-glob: 3.3.1
 
@@ -2385,9 +2385,9 @@ snapshots:
 
   '@types/json5@0.0.29': {}
 
-  '@types/node@20.19.37':
+  '@types/node@25.5.2':
     dependencies:
-      undici-types: 6.21.0
+      undici-types: 7.18.2
 
   '@types/react-dom@19.2.3(@types/react@19.2.14)':
     dependencies:
@@ -2889,9 +2889,9 @@ snapshots:
 
   escape-string-regexp@4.0.0: {}
 
-  eslint-config-next@16.2.1(@typescript-eslint/parser@8.57.1(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3):
+  eslint-config-next@16.2.3(@typescript-eslint/parser@8.57.1(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3):
     dependencies:
-      '@next/eslint-plugin-next': 16.2.1
+      '@next/eslint-plugin-next': 16.2.3
       eslint: 9.39.4(jiti@2.6.1)
       eslint-import-resolver-node: 0.3.9
       eslint-import-resolver-typescript: 3.10.1(eslint-plugin-import@2.32.0)(eslint@9.39.4(jiti@2.6.1))
@@ -3980,7 +3980,7 @@ snapshots:
       has-symbols: 1.1.0
       which-boxed-primitive: 1.1.1
 
-  undici-types@6.21.0: {}
+  undici-types@7.18.2: {}
 
   unrs-resolver@1.11.1:
     dependencies:

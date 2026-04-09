@@ -1,123 +1,146 @@
 [
   {
     "name": "Karl",
-    "steamId": "STEAM_0:0:13377050",
     "roles": ["Management", "Developer"],
-    "github": "karllabrador"
+    "steamId": "STEAM_0:0:13377050",
+    "steamId64": "76561197987019828"
   },
   {
     "name": "Blood",
     "roles": ["Management", "Developer"],
-    "steamId": "STEAM_0:0:10936707"
+    "steamId": "STEAM_0:0:10936707",
+    "steamId64": "76561197982139142"
   },
   {
     "name": "AcidWeb",
     "roles": ["Management", "Developer"],
-    "steamId": "STEAM_0:1:15247214"
+    "steamId": "STEAM_0:1:15247214",
+    "steamId64": "76561197990760157"
   },
   {
     "name": "Cypherous",
     "roles": "Administrator",
-    "steamId": "STEAM_0:1:7432939"
+    "steamId": "STEAM_0:1:7432939",
+    "steamId64": "76561197975131607"
   },
   {
     "name": "ManIAc",
     "roles": "Administrator",
-    "steamId": "STEAM_0:1:1681970"
+    "steamId": "STEAM_0:1:1681970",
+    "steamId64": "76561197963629669"
   },
   {
     "name": "Ultimate100",
     "roles": "Administrator",
-    "steamId": "STEAM_0:1:10970216"
+    "steamId": "STEAM_0:1:10970216",
+    "steamId64": "76561197982206161"
   },
   {
     "name": "XNovaCore",
     "roles": "Administrator",
-    "steamId": "STEAM_0:0:3169912"
+    "steamId": "STEAM_0:0:3169912",
+    "steamId64": "76561197966605552"
   },
   {
     "name": "Conor",
     "roles": "Administrator",
-    "steamId": "STEAM_0:1:22015892"
+    "steamId": "STEAM_0:1:22015892",
+    "steamId64": "76561198004297513"
   },
   {
     "name": "Jamza",
     "roles": "Administrator",
-    "steamId": "STEAM_0:1:17612579"
+    "steamId": "STEAM_0:1:17612579",
+    "steamId64": "76561197995490887"
   },
   {
     "name": "Puckey",
     "roles": "Developer",
-    "steamId": "STEAM_0:1:41695816"
+    "steamId": "STEAM_0:1:41695816",
+    "steamId64": "76561198043657361"
   },
   {
     "name": "Prophecy",
     "roles": "Administrator",
-    "steamId": "STEAM_0:0:34706047"
+    "steamId": "STEAM_0:0:34706047",
+    "steamId64": "76561198029677822"
   },
   {
     "name": "Fulsy",
     "roles": "Administrator",
-    "steamId": "STEAM_0:1:17766712"
+    "steamId": "STEAM_0:1:17766712",
+    "steamId64": "76561197995799153"
   },
   {
     "name": "Chinichi",
     "roles": "Administrator",
-    "steamId": "STEAM_0:0:14884521"
+    "steamId": "STEAM_0:0:14884521",
+    "steamId64": "76561197990034770"
   },
   {
     "name": "Inevitablel",
     "roles": "Administrator",
-    "steamId": "STEAM_0:1:33164493"
+    "steamId": "STEAM_0:1:33164493",
+    "steamId64": "76561198026594715"
   },
   {
     "name": "theblackerbanana",
     "roles": "Administrator",
-    "steamId": "STEAM_0:0:23472"
+    "steamId": "STEAM_0:0:23472",
+    "steamId64": "76561197960312672"
   },
   {
     "name": "QB",
     "roles": "Administrator",
-    "steamId": "STEAM_0:0:3323273"
+    "steamId": "STEAM_0:0:3323273",
+    "steamId64": "76561197966912274"
   },
   {
     "name": "RoY4lZ",
     "roles": "Administrator",
-    "steamId": "STEAM_0:1:21091986"
+    "steamId": "STEAM_0:1:21091986",
+    "steamId64": "76561198002449701"
   },
   {
     "name": "Patchouli",
     "roles": "Administrator",
-    "steamId": "STEAM_0:1:35395190"
+    "steamId": "STEAM_0:1:35395190",
+    "steamId64": "76561198031056109"
   },
   {
     "name": "Goose",
     "roles": "Administrator",
-    "steamId": "STEAM_0:0:20261624"
+    "steamId": "STEAM_0:0:20261624",
+    "steamId64": "76561198000788976"
   },
   {
     "name": "Moglizorz",
     "roles": "Administrator",
-    "steamId": "STEAM_0:0:12322133"
+    "steamId": "STEAM_0:0:12322133",
+    "steamId64": "76561197984909994"
   },
   {
     "name": "TensionToast",
     "roles": "Administrator",
-    "steamId": "STEAM_0:1:19517846"
+    "steamId": "STEAM_0:1:19517846",
+    "steamId64": "76561197999301421"
   },
   {
     "name": "Ears.",
     "roles": "Administrator",
-    "steamId": "STEAM_0:0:10002037"
+    "steamId": "STEAM_0:0:10002037",
+    "steamId64": "76561197980269802"
   },
   {
     "name": "Multilogic",
     "roles": "Administrator",
-    "steamId": "STEAM_0:1:22353109"
+    "steamId": "STEAM_0:1:22353109",
+    "steamId64": "76561198004971947"
   },
   {
     "name": "Tech Magos",
     "roles": "Administrator",
-    "steamId": "STEAM_0:0:31666083"
+    "steamId": "STEAM_0:0:31666083",
+    "steamId64": "76561198023597894"
   }
 ]

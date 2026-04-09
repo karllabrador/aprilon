@@ -5,6 +5,8 @@ export type SteamProfile = {
   personaname: string;
   avatarfull: string;
   profileUrl: string;
+  personastate?: number;
+  gameid?: string;
 };
 
 export type ContributorWithSteam = Contributor & {

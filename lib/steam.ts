@@ -31,8 +31,8 @@ export async function getContributorsWithSteam(
   }
 
   const steamIds = contributors
-    .filter((x) => x.steamId)
-    .map((x) => x.steamId)
+    .filter((x) => x.steamId64)
+    .map((x) => x.steamId64)
     .join(",");
 
   const url = `https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=${process.env.STEAM_API_KEY}&steamids=${steamIds}`;
@@ -43,11 +43,13 @@ export async function getContributorsWithSteam(
   const profileMap = new Map(json.response.players.map((x) => [x.steamid, x]));
   const merged: ContributorWithSteam[] = contributors.map((x) => ({
     ...x,
-    steam: profileMap.get(x.steamId),
+    steam: profileMap.get(x.steamId64),
   }));
 
   cache.data = merged;
   cache.fetchedAt = Date.now();
+
+  console.log(cache);
 
   return merged;
 }

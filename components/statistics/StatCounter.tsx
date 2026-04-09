@@ -1,0 +1,74 @@
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+
+function parseValue(str: string) {
+  const m = str.match(/^([\d.]+)([A-Za-z]*)$/);
+
+  if (!m) return { num: 0, suffix: str, decimals: 0 };
+
+  const num = parseFloat(m[1]);
+  const decimals = (m[1].split(".")[1] ?? "").length;
+
+  return {
+    num,
+    suffix: m[2],
+    decimals,
+  };
+}
+
+type StatCounterProps = {
+  value: string;
+  label: string;
+};
+
+export default function StatCounter({ value, label }: StatCounterProps) {
+  const { num, suffix, decimals } = parseValue(value);
+  const [display, setDisplay] = useState("0" + (decimals > 0 ? ".0" : ""));
+  const ref = useRef<HTMLDivElement>(null);
+  const hasAnimated = useRef(false);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !hasAnimated.current) {
+          hasAnimated.current = true;
+          observer.disconnect();
+
+          const duration = 2000;
+          const start = performance.now();
+
+          function tick(now: number) {
+            const elapsed = now - start;
+            const progress = Math.min(elapsed / duration, 1);
+            const eased = 1 - Math.pow(1 - progress, 3);
+            setDisplay((eased * num).toFixed(decimals));
+            if (progress < 1) requestAnimationFrame(tick);
+          }
+
+          requestAnimationFrame(tick);
+        }
+      },
+      { threshold: 0.1 },
+    );
+
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [num, decimals]);
+
+  return (
+    <div ref={ref} className="flex flex-col gap-1 min-w-24">
+      <span className="text-xs text-gray-400 uppercase tracking-wider">
+        {label}
+      </span>
+
+      <span className="text-2xl font-bold text-[#ededed] tabular-nums">
+        {display}
+        {suffix}
+      </span>
+    </div>
+  );
+}

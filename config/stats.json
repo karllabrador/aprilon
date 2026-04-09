@@ -1,0 +1,70 @@
+[
+  {
+    "title": "Garry's Mod",
+    "stats": [
+      {
+        "label": "Players",
+        "value": "21.3K"
+      },
+      {
+        "label": "Playtime in hours",
+        "value": "13.4K"
+      },
+      {
+        "label": "Years in total",
+        "value": "1.5"
+      }
+    ]
+  },
+  {
+    "title": "Team Fortress 2",
+    "stats": [
+      {
+        "label": "Players",
+        "value": "322.3K"
+      },
+      {
+        "label": "Playtime in hours",
+        "value": "538.8K"
+      },
+      {
+        "label": "Years in total",
+        "value": "61.4"
+      }
+    ]
+  },
+  {
+    "title": "Minecraft",
+    "stats": [
+      {
+        "label": "Players",
+        "value": "6.6K"
+      },
+      {
+        "label": "Playtime in hours",
+        "value": "30.8K"
+      },
+      {
+        "label": "Years in total",
+        "value": "3.5"
+      }
+    ]
+  },
+  {
+    "title": "Forums",
+    "stats": [
+      {
+        "label": "Members",
+        "value": "1.2K"
+      },
+      {
+        "label": "Posts",
+        "value": "27.1K"
+      },
+      {
+        "label": "Pageviews",
+        "value": "5.1M"
+      }
+    ]
+  }
+]

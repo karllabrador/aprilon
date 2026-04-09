@@ -1,48 +1,33 @@
 # Aprilon
 
-This is the app running [on the aprilon.org website](https://aprilon.org). Built with Node.js, Express.js, jQuery, Pug, Sass and Bulma.
+Source code for [the aprilon.org website](https://aprilon.org). Built with Next.js and Tailwind.
 
 ![Preview](https://i.imgur.com/DKgk7Kx.jpeg)
 
+## About
+
+Aprilon was a gaming community founded in 2009, starting with a simple Garry's Mod sandbox server. Over the years it expanded into Team Fortress 2 and Minecraft, growing a solid player base along the way — before eventually closing its doors in May 2015.
+
+This app serves as a legacy archive: a way to thank everyone who contributed through development, management, and moderation, and to show just how many people passed through the community over the years.
+
+The data comes from our archives at the time of closing — sourced from HLStatsX:CE (TF2) and our own in-house tools for Garry's Mod and Minecraft.
+
+**_Contributors:_** _If you're missing from the contributors list or want to be removed, reach out to me or feel free to open a pull request with changes to `config/contributors.json`._
+
+## Running the project
+
+Prerequisites: Node, NPM
+
+1. Run `npm install`
+2. Run `npm run dev`
+3. Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
 ## Configuration
 
-For the app to function properly, it requires an `aprilon-config.json` file. Below is a config template/example.
+Create a `.env` file in the root with the following content:
 
 ```
-{
-  "production": {
-    "config": "production",
-    "cards": {
-      "reference_file": "config/contributors.json",
-      "steam_api_key": "<your Steam API key>",
-      "debug": false
-    },
-    "discord": "https://discord.gg/sTBfWTG",
-    "minecraft_worlds": {
-      "1": "https://aprilon.org/gamefiles/a=mc/world_20120621.tar.gz",
-      "2": "https://aprilon.org/gamefiles/a=mc/world_20150218_1509.tar.gz"
-    }
-  }
-}
+STEAM_API_KEY=<your api key>
 ```
 
-## Backstory
-
-Aprilon was a gaming community that was founded in 2009, starting out with a simple Garry's Mod
-sandbox server.
-
-It further expanded into Team Fortress 2 and Minecraft in over the years, and the player base grew and community was strong.
-
-As personal interests in the administration dwindled, community operations closed (for the second time hehe) in May 2015.
-
-The purpose of this app is act as a legacy to the community history, where I show my thanks to those who contributed to the project in development, management and moderation.
-
-At the same time, I can't help myself but show how many individuals actually stepped into the community in some way or another, through data we've recorded throughout its time.
-
-The data I've gathered are based on analysis of our latest SQL data copies from sources such as HLStatsX:CE (for TF2), and our own in-house developed management tools for Garry's Mod and Minecraft.
-
-## Feedback
-
-I'm very newb with this stack and using this as an opportunity to get familiar. I'm very thankful for feedback!
-
-The contributors list: let me know if you're missing or want to get removed (alternatively, create a pull request: check `config/contributors.json`).
+[Get your personal key from Steam here](https://steamcommunity.com/dev/apikey). The app uses the Steam API to pull data from Steam Community profiles (name, online status and avatar).

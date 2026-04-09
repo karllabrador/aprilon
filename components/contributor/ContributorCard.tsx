@@ -1,15 +1,28 @@
-import Image from "next/image";
 import type { ContributorWithSteam } from "@/types";
+import Image from "next/image";
 
 type ContributorCardProps = {
   contributor: ContributorWithSteam;
 };
 
-function getStatusClass(steam: ContributorWithSteam["steam"]): string {
-  if (!steam) return "border-l-gray-700";
-  if (steam.gameid) return "border-l-blue-400";
-  if (steam.personastate && steam.personastate >= 1) return "border-l-green-500";
-  return "border-l-gray-700";
+function getStatusStyle(
+  steam: ContributorWithSteam["steam"],
+): React.CSSProperties {
+  const state = steam?.personastate ?? 0;
+
+  if (steam?.gameid) {
+    return {
+      background: "linear-gradient(to bottom, #9BC861 5%, #789E4C 95%)",
+    };
+  }
+
+  if (state >= 1) {
+    return {
+      background: "linear-gradient(to bottom, #7BAFD6 5%, #506D92 95%)",
+    };
+  }
+
+  return { background: "linear-gradient(to bottom, #706C6B 5%, #4E4D4D 95%)" };
 }
 
 export default function ContributorCard({ contributor }: ContributorCardProps) {
@@ -17,29 +30,82 @@ export default function ContributorCard({ contributor }: ContributorCardProps) {
     ? contributor.roles
     : [contributor.roles];
   const displayName = contributor.steam?.personaname ?? contributor.name;
-  const statusClass = getStatusClass(contributor.steam);
+  const avatarUrl = contributor.steam?.avatarfull;
+  const profileUrl =
+    contributor.steam?.profileurl ??
+    `https://steamcommunity.com/profiles/${contributor.steamId64}`;
 
   return (
     <div
-      className={`flex items-center gap-3 p-3 bg-[#1E1F21] shadow-lg shadow-black/40 border-l-4 ${statusClass}`}
+      className="relative border border-[#151516]"
+      style={{
+        height: "88px",
+        borderRadius: "0.25rem",
+        boxShadow: "0 0 4px #202020",
+      }}
     >
-      <div className="shrink-0">
-        {contributor.steam?.avatarfull ? (
-          <Image
-            src={contributor.steam.avatarfull}
-            width={48}
-            height={48}
-            alt={displayName}
+      {/* Status bar — absolutely positioned left edge */}
+      <div
+        className="absolute left-0 top-0 bottom-0 w-1 z-20"
+        style={{
+          ...getStatusStyle(contributor.steam),
+          borderRadius: "0.25rem 0 0 0.25rem",
+        }}
+      />
+
+      {/* Background layers — clipped to card bounds */}
+      <div
+        className="absolute inset-0 overflow-hidden"
+        style={{ borderRadius: "0.25rem" }}
+      >
+        {avatarUrl ? (
+          <div
+            className="absolute inset-0 scale-110"
+            style={{
+              backgroundImage: `url(${avatarUrl})`,
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+              filter: "blur(12px) brightness(0.4)",
+            }}
           />
         ) : (
-          <div className="w-12 h-12 bg-gray-700 flex items-center justify-center text-lg font-bold text-gray-300">
-            {contributor.name[0]}
-          </div>
+          <div className="absolute inset-0 bg-[#1E1F21]" />
         )}
+        <div className="absolute inset-0 bg-black/30 backdrop-blur-[2px]" />
       </div>
-      <div className="min-w-0">
-        <p className="text-sm font-semibold text-[#ededed] truncate">{displayName}</p>
-        <p className="text-xs text-gray-400 truncate">{roles.join(", ")}</p>
+
+      {/* Content — no overflow:hidden anywhere so text-shadow bleeds freely */}
+      <div className="relative z-10 flex items-center gap-3 pl-5 pr-3 h-full">
+        <div className="shrink-0">
+          {avatarUrl ? (
+            <Image
+              src={avatarUrl}
+              width={52}
+              height={52}
+              alt={displayName}
+              className="shadow-md shadow-black/60"
+            />
+          ) : (
+            <div className="w-13 h-13 bg-gray-700 flex items-center justify-center text-xl font-bold text-gray-300">
+              {contributor.name[0]}
+            </div>
+          )}
+        </div>
+
+        <div className="flex flex-col gap-0.5 min-w-0">
+          <a
+            href={profileUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="contributor-name text-xl font-bold text-white whitespace-nowrap"
+          >
+            {displayName}
+          </a>
+
+          <p className="text-xs text-gray-400 uppercase tracking-wide whitespace-nowrap">
+            {roles.join(" & ")}
+          </p>
+        </div>
       </div>
     </div>
   );

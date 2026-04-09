@@ -13,6 +13,7 @@ export default async function ContributorGrid() {
           Throughout its lifetime, these people have contributed to the Aprilon
           community in form of leadership, administration and development.
         </p>
+
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
           {data.map((contributor) => (
             <ContributorCard

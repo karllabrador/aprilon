@@ -4,7 +4,7 @@ export type SteamProfile = {
   steamid: string;
   personaname: string;
   avatarfull: string;
-  profileUrl: string;
+  profileurl: string;
   personastate?: number;
   gameid?: string;
 };

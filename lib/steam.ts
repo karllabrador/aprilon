@@ -49,7 +49,5 @@ export async function getContributorsWithSteam(
   cache.data = merged;
   cache.fetchedAt = Date.now();
 
-  console.log(cache);
-
   return merged;
 }

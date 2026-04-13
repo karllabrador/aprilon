@@ -10,6 +10,7 @@ on:
 
 env:
   BUILD_ID: ""
+  PM2_APP_NAME: "aprilon-next"
 
 jobs:
   deploy:
@@ -109,6 +110,9 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.REMOTE_HOST_PORT }}
           script: |
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+
             set -e
             BUILD_DIR="${{ vars.REMOTE_BASE }}/${{ env.BUILD_ID }}"
 
@@ -151,12 +155,12 @@ jobs:
             ln -sfn "$BUILD_DIR/.next/standalone" "${{ vars.REMOTE_CURRENT }}"
             echo "🔗 Symlink updated to $BUILD_DIR"
 
-            if pm2 describe app > /dev/null 2>&1; then
+            if pm2 describe ${{ env.PM2_APP_NAME }} > /dev/null 2>&1; then
                 echo "♻️  Restarting existing PM2 process..."
-                pm2 restart app
+                pm2 restart ${{ env.PM2_APP_NAME }}
             else
                 echo "🚀 Starting new PM2 process..."
-                pm2 start "${{ vars.REMOTE_CURRENT }}/server.js" --name app
+                pm2 start "${{ vars.REMOTE_CURRENT }}/server.js" --name ${{ env.PM2_APP_NAME }}
             fi
 
             pm2 save
@@ -169,10 +173,13 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.REMOTE_HOST_PORT }}
           script: |
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+
             sleep 5
 
-            if pm2 describe app > /dev/null 2>&1; then
-                STATUS=$(pm2 jlist | python3 -c "import sys,json; procs=json.load(sys.stdin); app=[p for p in procs if p['name']=='app']; print(app[0]['pm2_env']['status'] if app else 'not_found')")
+            if pm2 describe ${{ env.PM2_APP_NAME }} > /dev/null 2>&1; then
+                STATUS=$(pm2 jlist | python3 -c "import sys,json; procs=json.load(sys.stdin); app=[p for p in procs if p['name']=='${{ env.PM2_APP_NAME }}']; print(app[0]['pm2_env']['status'] if app else 'not_found')")
                 if [ "$STATUS" != "online" ]; then
                     echo "❌ PM2 process is not online (status: $STATUS) — initiating rollback..."
 
@@ -180,19 +187,19 @@ jobs:
                     if [ -n "$PREVIOUS" ] && [ -d "$PREVIOUS" ]; then
                         echo "⏪ Rolling back to $PREVIOUS..."
                         ln -sfn "$PREVIOUS" "${{ vars.REMOTE_CURRENT }}"
-                        pm2 restart app
+                        pm2 restart ${{ env.PM2_APP_NAME }}
                         sleep 5
 
-                        ROLLBACK_STATUS=$(pm2 jlist | python3 -c "import sys,json; procs=json.load(sys.stdin); app=[p for p in procs if p['name']=='app']; print(app[0]['pm2_env']['status'] if app else 'not_found')")
+                        ROLLBACK_STATUS=$(pm2 jlist | python3 -c "import sys,json; procs=json.load(sys.stdin); app=[p for p in procs if p['name']=='${{ env.PM2_APP_NAME }}']; print(app[0]['pm2_env']['status'] if app else 'not_found')")
                         if [ "$ROLLBACK_STATUS" = "online" ]; then
                             echo "✅ Rollback successful — previous build is running"
                         else
                             echo "❌ Rollback also failed (status: $ROLLBACK_STATUS)"
-                            pm2 logs app --lines 30 --nostream
+                            pm2 logs ${{ env.PM2_APP_NAME }} --lines 30 --nostream
                         fi
                     else
                         echo "⚠️  No previous build to roll back to"
-                        pm2 logs app --lines 30 --nostream
+                        pm2 logs ${{ env.PM2_APP_NAME }} --lines 30 --nostream
                     fi
 
                     exit 1
@@ -203,7 +210,7 @@ jobs:
                     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
                 fi
             else
-                echo "❌ PM2 process 'app' not found"
+                echo "❌ PM2 process '${{ env.PM2_APP_NAME }}' not found"
                 exit 1
             fi
 

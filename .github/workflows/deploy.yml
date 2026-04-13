@@ -10,8 +10,6 @@ on:
 
 env:
   BUILD_ID: ""
-  APP_BUILD_COMMIT: ""
-  APP_BUILD_TIME: ""
 
 jobs:
   deploy:
@@ -30,8 +28,6 @@ jobs:
             echo "BUILD_ID=${{ inputs.build_id }}" >> $GITHUB_ENV
           else
             echo "BUILD_ID=aprilon-$(git rev-parse --short HEAD)-$(date -u +%Y%m%d%H%M%S)" >> $GITHUB_ENV
-            echo "APP_BUILD_COMMIT=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
-            echo "APP_BUILD_TIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ")" >> $GITHUB_ENV
           fi
 
       - name: Log build ID
@@ -62,31 +58,40 @@ jobs:
         run: |
           zip -r build.zip .next/standalone .next/static public package.json package-lock.json
 
-      - name: Temporarily add agent IP to DO firewall
-        uses: earthpyy/setup-digitalocean-firewall@v1
+      - name: Get GitHub Actions agent IP
+        id: get_ip
+        run: echo "ip=$(curl -s https://api.ipify.org)" >> $GITHUB_OUTPUT"
+
+      - name: Whitelist GitHub Action IP in firewall
+        uses: adnanjaw/ip-whitelist-on-hetznerfw@v2.2
         with:
-          access-token: ${{ secrets.CANOPUS_FIREWALL_ACCESS_TOKEN }}
-          firewall-id: ${{ vars.CANOPUS_FIREWALL_ID }}
-          ports: "${{ vars.DEPLOY_TARGET_PORT }}"
+          hetzner_api_key: ${{ secrets.HETZNER_API_TOKEN }}
+          firewall_name: ${{ secrets.HETZNER_FIREWALL_NAME }}
+          ip_address: ${{ steps.get_ip.outputs.ip }}
+          description: "github-actions-rule-${{ github.run_id }}"
+          port: ${{ secrets.REMOTE_HOST_PORT }}
+          protocol: "tcp"
+          direction: "in"
+          cleanup: true
 
       - name: Copy files to server
         if: inputs.build_id == ''
         uses: appleboy/scp-action@v1
         with:
-          host: ${{ vars.DEPLOY_TARGET_IP }}
-          username: ${{ vars.DEPLOY_TARGET_USER }}
+          host: ${{ secrets.REMOTE_HOST_IP }}
+          username: ${{ secrets.REMOTE_HOST_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: ${{ vars.DEPLOY_TARGET_PORT }}
+          port: ${{ secrets.REMOTE_HOST_PORT }}
           source: "build.zip"
           target: "${{ vars.REMOTE_BASE }}/${{ env.BUILD_ID }}"
 
       - name: Ensure remote directories exist
         uses: appleboy/ssh-action@v1
         with:
-          host: ${{ vars.DEPLOY_TARGET_IP }}
-          username: ${{ vars.DEPLOY_TARGET_USER }}
+          host: ${{ secrets.REMOTE_HOST_IP }}
+          username: ${{ secrets.REMOTE_HOST_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: ${{ vars.DEPLOY_TARGET_PORT }}
+          port: ${{ secrets.REMOTE_HOST_PORT }}
           script: |
             mkdir -p "${{ vars.REMOTE_BASE }}"
             mkdir -p "$(dirname "${{ vars.REMOTE_CURRENT }}")"
@@ -94,10 +99,10 @@ jobs:
       - name: Unpack & deploy
         uses: appleboy/ssh-action@v1
         with:
-          host: ${{ vars.DEPLOY_TARGET_IP }}
-          username: ${{ vars.DEPLOY_TARGET_USER }}
+          host: ${{ secrets.REMOTE_HOST_IP }}
+          username: ${{ secrets.REMOTE_HOST_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: ${{ vars.DEPLOY_TARGET_PORT }}
+          port: ${{ secrets.REMOTE_HOST_PORT }}
           script: |
             set -e
             BUILD_DIR="${{ vars.REMOTE_BASE }}/${{ env.BUILD_ID }}"
@@ -154,10 +159,10 @@ jobs:
       - name: Verify PM2 status
         uses: appleboy/ssh-action@v1
         with:
-          host: ${{ vars.DEPLOY_TARGET_IP }}
-          username: ${{ vars.DEPLOY_TARGET_USER }}
+          host: ${{ secrets.REMOTE_HOST_IP }}
+          username: ${{ secrets.REMOTE_HOST_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: ${{ vars.DEPLOY_TARGET_PORT }}
+          port: ${{ secrets.REMOTE_HOST_PORT }}
           script: |
             sleep 5
 
@@ -201,10 +206,10 @@ jobs:
         if: success() && inputs.build_id == ''
         uses: appleboy/ssh-action@v1
         with:
-          host: ${{ vars.DEPLOY_TARGET_IP }}
-          username: ${{ vars.DEPLOY_TARGET_USER }}
+          host: ${{ secrets.REMOTE_HOST_IP }}
+          username: ${{ secrets.REMOTE_HOST_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: ${{ vars.DEPLOY_TARGET_PORT }}
+          port: ${{ secrets.REMOTE_HOST_PORT }}
           script: |
             CURRENT=$(readlink "${{ vars.REMOTE_CURRENT }}" | xargs dirname | xargs dirname)
             PREVIOUS=$(cat ${{ vars.REMOTE_BASE }}/previous_build | xargs dirname 2>/dev/null || echo "")

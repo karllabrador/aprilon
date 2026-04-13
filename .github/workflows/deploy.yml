@@ -62,7 +62,7 @@ jobs:
       - name: Package build artifacts
         if: inputs.build_id == ''
         run: |
-          zip -r build.zip .next/standalone .next/static public package.json package-lock.json
+          zip -r build.zip .next/standalone .next/static public
 
       - name: Get GitHub Actions agent IP
         id: get_ip

@@ -41,17 +41,22 @@ jobs:
           echo "🔖 Build ID:   ${{ env.BUILD_ID }}"
           echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
-      - name: Setup Node.js
-        if: inputs.build_id == ''
-        uses: actions/setup-node@v3
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
         with:
-          node-version: 23
+          version: latest
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: "pnpm"
 
       - name: Install dependencies & build
         if: inputs.build_id == ''
         run: |
-          npm ci
-          npm run build
+          pnpm install --frozen-lockfile
+          pnpm build
 
       - name: Package build artifacts
         if: inputs.build_id == ''

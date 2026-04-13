@@ -65,7 +65,7 @@ jobs:
 
       - name: Get GitHub Actions agent IP
         id: get_ip
-        run: echo "ip=$(curl -s https://api.ipify.org)" >> $GITHUB_OUTPUT"
+        run: echo "ip=$(curl -s https://api.ipify.org)" >> $GITHUB_OUTPUT
 
       - name: Whitelist GitHub Action IP in firewall
         uses: adnanjaw/ip-whitelist-on-hetznerfw@v2.2

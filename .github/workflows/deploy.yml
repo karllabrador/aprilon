@@ -138,9 +138,8 @@ jobs:
             # Always re-write .env (may have changed between deployments)
             cat > "$BUILD_DIR/.next/standalone/.env" <<EOF
             NEXT_PUBLIC_APP_URL=${{ vars.NEXT_PUBLIC_APP_URL }}
-            STEAM_API_KEY=${{ secrets.STEAM_API_KEY}}
-            APP_BUILD_COMMIT=${{ env.APP_BUILD_COMMIT }}
-            APP_BUILD_TIME=${{ env.APP_BUILD_TIME }}
+            STEAM_API_KEY=${{ secrets.STEAM_API_KEY }}
+            PORT=${{ vars.APP_PORT }}
             EOF
 
             # Record previous symlink for rollback

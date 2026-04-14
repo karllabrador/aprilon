@@ -127,7 +127,7 @@ jobs:
               echo "📦 Unpacking build ${{ env.BUILD_ID }}..."
               cd "$BUILD_DIR"
               unzip -o build.zip
-              rm build.zip
+              #rm build.zip
 
               cp -r .next/static .next/standalone/.next/static
               cp -r public .next/standalone/public

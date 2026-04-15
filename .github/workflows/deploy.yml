@@ -135,11 +135,20 @@ jobs:
               echo "♻️  Reusing existing build ${{ env.BUILD_ID }}, skipping unpack..."
             fi
 
-            # Always re-write .env (may have changed between deployments)
-            cat > "$BUILD_DIR/.next/standalone/.env" <<EOF
-            NEXT_PUBLIC_APP_URL=${{ vars.NEXT_PUBLIC_APP_URL }}
-            STEAM_API_KEY=${{ secrets.STEAM_API_KEY }}
-            PORT=${{ vars.APP_PORT }}
+            # Always re-write ecosystem config (env may have changed between deployments)
+            cat > "$BUILD_DIR/.next/standalone/ecosystem.config.js" <<EOF
+            module.exports = {
+              apps: [{
+                name: "${{ env.PM2_APP_NAME }}",
+                script: "./server.js",
+                cwd: "${{ vars.REMOTE_CURRENT }}",
+                env: {
+                  PORT: "${{ vars.APP_PORT }}",
+                  STEAM_API_KEY: "${{ secrets.STEAM_API_KEY }}",
+                  NEXT_PUBLIC_APP_URL: "${{ vars.NEXT_PUBLIC_APP_URL }}"
+                }
+              }]
+            }
             EOF
 
             # Record previous symlink for rollback
@@ -155,10 +164,7 @@ jobs:
             echo "🔗 Symlink updated to $BUILD_DIR"
 
             pm2 delete ${{ env.PM2_APP_NAME }} || true
-            pm2 start "${{ vars.REMOTE_CURRENT }}/server.js" \
-              --name ${{ env.PM2_APP_NAME }} \
-              --cwd "${{ vars.REMOTE_CURRENT }}"
-
+            pm2 start "${{ vars.REMOTE_CURRENT }}/ecosystem.config.js"
             pm2 save
 
       - name: Verify PM2 status
@@ -184,9 +190,7 @@ jobs:
                         echo "⏪ Rolling back to $PREVIOUS..."
                         ln -sfn "$PREVIOUS" "${{ vars.REMOTE_CURRENT }}"
                         pm2 delete ${{ env.PM2_APP_NAME }} || true
-                        pm2 start "${{ vars.REMOTE_CURRENT }}/server.js" \
-                          --name ${{ env.PM2_APP_NAME }} \
-                          --cwd "${{ vars.REMOTE_CURRENT }}"
+                        pm2 start "${{ vars.REMOTE_CURRENT }}/ecosystem.config.js"
                         sleep 5
 
                         ROLLBACK_STATUS=$(pm2 jlist | python3 -c "import sys,json; procs=json.load(sys.stdin); app=[p for p in procs if p['name']=='${{ env.PM2_APP_NAME }}']; print(app[0]['pm2_env']['status'] if app else 'not_found')")

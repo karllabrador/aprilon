@@ -139,7 +139,6 @@ jobs:
             cat > "$BUILD_DIR/.next/standalone/.env" <<EOF
             NEXT_PUBLIC_APP_URL=${{ vars.NEXT_PUBLIC_APP_URL }}
             STEAM_API_KEY=${{ secrets.STEAM_API_KEY }}
-            PORT=${{ vars.APP_PORT }}
             EOF
 
             # Record previous symlink for rollback
@@ -156,10 +155,10 @@ jobs:
 
             if pm2 describe ${{ env.PM2_APP_NAME }} > /dev/null 2>&1; then
                 echo "♻️  Restarting existing PM2 process..."
-                pm2 restart ${{ env.PM2_APP_NAME }}
+                PORT=${{ vars.APP_PORT }} pm2 restart ${{ env.PM2_APP_NAME }} --update-env
             else
                 echo "🚀 Starting new PM2 process..."
-                pm2 start "${{ vars.REMOTE_CURRENT }}/server.js" --name ${{ env.PM2_APP_NAME }}
+                PORT=${{ vars.APP_PORT }} pm2 start "${{ vars.REMOTE_CURRENT }}/server.js" --name ${{ env.PM2_APP_NAME }}
             fi
 
             pm2 save

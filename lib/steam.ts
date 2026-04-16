@@ -38,6 +38,13 @@ export async function getContributorsWithSteam(
   const url = `https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=${process.env.STEAM_API_KEY}&steamids=${steamIds}`;
 
   const res = await fetch(url);
+  if (!res.ok) {
+    console.error(
+      `Steam API request failed: ${res.status} ${res.statusText} with SteamIDs ${steamIds}`,
+    );
+    return contributors.map((x) => ({ ...x, steam: undefined }));
+  }
+
   const json: SteamApiResponse = await res.json();
 
   const profileMap = new Map(json.response.players.map((x) => [x.steamid, x]));
@@ -48,6 +55,10 @@ export async function getContributorsWithSteam(
 
   cache.data = merged;
   cache.fetchedAt = Date.now();
+
+  console.log(
+    `Fetched Steam profiles for ${merged.filter((x) => x.steam).length} contributors`,
+  );
 
   return merged;
 }

@@ -55,6 +55,8 @@ jobs:
 
       - name: Install dependencies & build
         if: inputs.build_id == ''
+        env:
+          STEAM_API_KEY: ${{ secrets.STEAM_API_KEY }}
         run: |
           pnpm install --frozen-lockfile
           pnpm build

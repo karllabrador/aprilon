@@ -5,6 +5,8 @@ import Hero from "@/components/hero/Hero";
 import StatisticsGrid from "@/components/statistics/StatisticsGrid";
 import Image from "next/image";
 
+export const revalidate = 300; // Revalidate this page every 5 minutes for Steam data
+
 export default function Home() {
   return (
     <>

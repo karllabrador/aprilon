@@ -61,7 +61,7 @@ export default function StatValue({ value, label }: StatValueProps) {
 
   return (
     <div ref={ref} className="flex flex-col items-center gap-1 min-w-24">
-      <span className="text-xs text-gray-400 uppercase tracking-wider text-center">
+      <span className="text-xs text-gray-400 uppercase tracking-wider text-center min-h-8 flex items-end justify-center">
         {label}
       </span>
 

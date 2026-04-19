@@ -13,7 +13,7 @@ export default function DownloadsSection() {
           <h2 className="text-3xl font-bold text-[#ededed] mb-2">
             Minecraft Worlds
           </h2>
-          <p className="text-sm text-gray-300 mt-1">
+          <p className="text-xl text-gray-300 mt-1">
             Previous worlds are available for download
           </p>
         </div>

@@ -8,7 +8,7 @@ const worlds = worldsData as MinecraftWorld[];
 export default function DownloadsSection() {
   return (
     <Hero backgroundImage="/images/minecraft-background-1920x1080.jpg" wide>
-      <div className="flex items-center justify-between w-full">
+      <div className="flex flex-col gap-8 w-full md:flex-row md:items-center md:justify-between">
         <div className="shrink-0">
           <h2 className="text-3xl font-bold text-[#ededed] mb-2">
             Minecraft Worlds
@@ -17,7 +17,8 @@ export default function DownloadsSection() {
             Previous worlds are available for download
           </p>
         </div>
-        <div className="flex gap-32">
+
+        <div className="flex justify-center gap-12 md:gap-32">
           {worlds.map((world) => (
             <div key={world.title} className="flex flex-col items-center gap-3">
               <div className="text-center">

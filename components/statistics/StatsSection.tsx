@@ -19,8 +19,8 @@ export default function StatsSection() {
         <p className="text-base text-gray-400 mb-8">
           Over its six years, Aprilon saw thousands of players across its game
           servers. These numbers are drawn from HLStatsX:CE for Team Fortress 2,
-          and our own in-house developed management tools for Garry's Mod and
-          Minecraft.
+          and our own in-house developed management tools for Garry&apos;s Mod
+          and Minecraft.
         </p>
 
         <div className="p-3">

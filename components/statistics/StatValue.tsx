@@ -17,12 +17,12 @@ function parseValue(str: string) {
   };
 }
 
-type StatCounterProps = {
+type StatValueProps = {
   value: string;
   label: string;
 };
 
-export default function StatCounter({ value, label }: StatCounterProps) {
+export default function StatValue({ value, label }: StatValueProps) {
   const { num, suffix, decimals } = parseValue(value);
   const [display, setDisplay] = useState("0" + (decimals > 0 ? ".0" : ""));
   const ref = useRef<HTMLDivElement>(null);
@@ -60,12 +60,12 @@ export default function StatCounter({ value, label }: StatCounterProps) {
   }, [num, decimals]);
 
   return (
-    <div ref={ref} className="flex flex-col gap-1 min-w-24">
-      <span className="text-xs text-gray-400 uppercase tracking-wider">
+    <div ref={ref} className="flex flex-col items-center gap-1 min-w-24">
+      <span className="text-xs text-gray-400 uppercase tracking-wider text-center">
         {label}
       </span>
 
-      <span className="text-2xl font-bold text-[#ededed] tabular-nums">
+      <span className="text-3xl text-[#ededed] tabular-nums">
         {display}
         {suffix}
       </span>

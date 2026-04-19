@@ -86,7 +86,7 @@ export default function ContributorCard({ contributor }: ContributorCardProps) {
               className="shadow-md shadow-black/60"
             />
           ) : (
-            <div className="w-13 h-13 bg-gray-700 flex items-center justify-center text-xl font-bold text-gray-300">
+            <div className="w-13 h-13 bg-gray-700 flex items-center justify-center text-xl text-gray-300">
               {contributor.name[0]}
             </div>
           )}
@@ -97,7 +97,7 @@ export default function ContributorCard({ contributor }: ContributorCardProps) {
             href={profileUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="contributor-name text-xl font-bold text-white whitespace-nowrap"
+            className="contributor-name text-xl text-white whitespace-nowrap"
           >
             {displayName}
           </a>

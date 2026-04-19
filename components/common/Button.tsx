@@ -5,8 +5,9 @@ type ButtonProps = {
   icon?: { src: string; width: number; height: number; alt: string };
   children: React.ReactNode;
   className?: string;
-  bg?: string;
-  hoverBg?: string;
+  bgColor?: string;
+  hoverBgColor?: string;
+  upperCase?: boolean;
 };
 
 export default function Button({
@@ -14,19 +15,17 @@ export default function Button({
   icon,
   children,
   className,
-  bg,
-  hoverBg,
+  bgColor,
+  hoverBgColor,
+  upperCase = false,
 }: ButtonProps) {
-  const bgClass = bg ?? "bg-[#363636]";
-  const hoverClass = hoverBg ?? "hover:bg-[#2f2f2f]";
-
-  //const bgClass = bg ?? "#2f2f2f"; // #2f2f2f
-  //const hoverClass = hoverBg ?? "hover:#363636"; // #363636
+  const bgClass = bgColor ?? "bg-[#363636]";
+  const hoverClass = hoverBgColor ?? "hover:bg-[#2f2f2f]";
 
   return (
     <a
       href={href}
-      className={`inline-flex items-center gap-2.5 px-4 py-[9px] rounded-full ${bgClass} ${hoverClass} text-white text-xs uppercase tracking-wide transition-colors${className ? ` ${className}` : ""}`}
+      className={`inline-flex items-center gap-2.5 px-4 py-2.25 rounded-full ${bgClass} ${hoverClass} text-white text-xs ${upperCase ? "uppercase" : ""} tracking-wide transition-colors${className ? ` ${className}` : ""}`}
     >
       {icon && (
         <Image

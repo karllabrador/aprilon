@@ -1,15 +1,19 @@
 import Button from "@/components/common/Button";
-import ContributorGrid from "@/components/contributor/ContributorGrid";
+import Footer from "@/components/common/Footer";
+import ContributorSection from "@/components/contributor/ContributorSection";
 import DownloadsSection from "@/components/downloads/DownloadsSection";
 import Hero from "@/components/hero/Hero";
-import StatisticsGrid from "@/components/statistics/StatisticsGrid";
+import StatsSection from "@/components/statistics/StatsSection";
 import Image from "next/image";
+
+export const revalidate = 300; // Revalidate this page every 5 minutes for Steam data
 
 export default function Home() {
   return (
     <>
       <Hero darkOverlay blur>
         <div className="mt-8 mb-6">
+          <h1 className="sr-only">Aprilon</h1>
           <Image
             src="/images/aprilon-small-compact.png"
             width={165}
@@ -36,6 +40,7 @@ export default function Home() {
         <div className="flex gap-2 mt-8 mb-8">
           <Button
             href="https://discord.gg/sTBfWTG"
+            upperCase={true}
             icon={{
               src: "/images/discord-128x144.png",
               width: 16,
@@ -47,6 +52,7 @@ export default function Home() {
           </Button>
           <Button
             href="https://steamcommunity.com/groups/aprilon"
+            upperCase={true}
             icon={{
               src: "/images/steam-128x128.png",
               width: 20,
@@ -59,35 +65,11 @@ export default function Home() {
         </div>
       </Hero>
 
-      <StatisticsGrid />
+      <StatsSection />
       <DownloadsSection />
-      <ContributorGrid />
+      <ContributorSection />
 
-      <footer className="mt-auto py-6 px-6 text-center text-sm text-gray-500">
-        <p>
-          Made by{" "}
-          <a
-            href="https://github.com/karllabrador"
-            className="hover:text-gray-300 transition-colors"
-          >
-            Karl Labrador
-          </a>
-          {" · "}
-          <a
-            href="https://github.com/karllabrador/aprilon"
-            className="hover:text-gray-300 transition-colors"
-          >
-            Source code
-          </a>
-          {" · "}
-          <a
-            href="https://discord.gg/sTBfWTG"
-            className="hover:text-gray-300 transition-colors"
-          >
-            Discord
-          </a>
-        </p>
-      </footer>
+      <Footer />
     </>
   );
 }

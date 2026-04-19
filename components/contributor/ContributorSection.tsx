@@ -2,16 +2,16 @@ import { contributors } from "@/lib/contributors";
 import { getContributorsWithSteam } from "@/lib/steam";
 import ContributorCard from "./ContributorCard";
 
-export default async function ContributorGrid() {
+export default async function ContributorSection() {
   const data = await getContributorsWithSteam(contributors);
 
   return (
     <section className="py-16 px-6">
       <div className="container max-w-336 mx-auto">
-        <h2 className="text-2xl font-bold mb-2 text-[#ededed]">Contributors</h2>
-        <p className="text-sm text-gray-400 mb-8 max-w-2xl">
-          Throughout its lifetime, these people have contributed to the Aprilon
-          community in form of leadership, administration and development.
+        <h2 className="text-3xl font-bold text-[#ededed] mb-2">Contributors</h2>
+        <p className="text-base text-gray-400 mb-8">
+          These are the people who kept Aprilon running — through leadership,
+          administration, and development — over the course of its lifetime.
         </p>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">

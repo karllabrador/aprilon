@@ -10,6 +10,7 @@ on:
 
 env:
   BUILD_ID: ""
+  PM2_APP_NAME: "aprilon-next"
 
 jobs:
   deploy:
@@ -41,26 +42,33 @@ jobs:
           echo "🔖 Build ID:   ${{ env.BUILD_ID }}"
           echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
-      - name: Setup Node.js
-        if: inputs.build_id == ''
-        uses: actions/setup-node@v3
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
         with:
-          node-version: 23
+          version: latest
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: "pnpm"
 
       - name: Install dependencies & build
         if: inputs.build_id == ''
+        env:
+          STEAM_API_KEY: ${{ secrets.STEAM_API_KEY }}
         run: |
-          npm ci
-          npm run build
+          pnpm install --frozen-lockfile
+          pnpm build
 
       - name: Package build artifacts
         if: inputs.build_id == ''
         run: |
-          zip -r build.zip .next/standalone .next/static public package.json package-lock.json
+          zip -r build.zip .next/standalone .next/static public
 
       - name: Get GitHub Actions agent IP
         id: get_ip
-        run: echo "ip=$(curl -s https://api.ipify.org)" >> $GITHUB_OUTPUT"
+        run: echo "ip=$(curl -s https://api.ipify.org)" >> $GITHUB_OUTPUT
 
       - name: Whitelist GitHub Action IP in firewall
         uses: adnanjaw/ip-whitelist-on-hetznerfw@v2.2
@@ -104,6 +112,9 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.REMOTE_HOST_PORT }}
           script: |
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+
             set -e
             BUILD_DIR="${{ vars.REMOTE_BASE }}/${{ env.BUILD_ID }}"
 
@@ -118,7 +129,7 @@ jobs:
               echo "📦 Unpacking build ${{ env.BUILD_ID }}..."
               cd "$BUILD_DIR"
               unzip -o build.zip
-              rm build.zip
+              #rm build.zip
 
               cp -r .next/static .next/standalone/.next/static
               cp -r public .next/standalone/public
@@ -126,12 +137,20 @@ jobs:
               echo "♻️  Reusing existing build ${{ env.BUILD_ID }}, skipping unpack..."
             fi
 
-            # Always re-write .env (may have changed between deployments)
-            cat > "$BUILD_DIR/.next/standalone/.env" <<EOF
-            NEXT_PUBLIC_APP_URL=${{ vars.NEXT_PUBLIC_APP_URL }}
-            STEAM_API_KEY=${{ secrets.STEAM_API_KEY}}
-            APP_BUILD_COMMIT=${{ env.APP_BUILD_COMMIT }}
-            APP_BUILD_TIME=${{ env.APP_BUILD_TIME }}
+            # Always re-write ecosystem config (env may have changed between deployments)
+            cat > "$BUILD_DIR/.next/standalone/ecosystem.config.js" <<EOF
+            module.exports = {
+              apps: [{
+                name: "${{ env.PM2_APP_NAME }}",
+                script: "./server.js",
+                cwd: "${{ vars.REMOTE_CURRENT }}",
+                env: {
+                  PORT: "${{ vars.APP_PORT }}",
+                  STEAM_API_KEY: "${{ secrets.STEAM_API_KEY }}",
+                  NEXT_PUBLIC_APP_URL: "${{ vars.NEXT_PUBLIC_APP_URL }}"
+                }
+              }]
+            }
             EOF
 
             # Record previous symlink for rollback
@@ -146,14 +165,8 @@ jobs:
             ln -sfn "$BUILD_DIR/.next/standalone" "${{ vars.REMOTE_CURRENT }}"
             echo "🔗 Symlink updated to $BUILD_DIR"
 
-            if pm2 describe app > /dev/null 2>&1; then
-                echo "♻️  Restarting existing PM2 process..."
-                pm2 restart app
-            else
-                echo "🚀 Starting new PM2 process..."
-                pm2 start "${{ vars.REMOTE_CURRENT }}/server.js" --name app
-            fi
-
+            pm2 delete ${{ env.PM2_APP_NAME }} || true
+            pm2 start "${{ vars.REMOTE_CURRENT }}/ecosystem.config.js"
             pm2 save
 
       - name: Verify PM2 status
@@ -164,10 +177,13 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.REMOTE_HOST_PORT }}
           script: |
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+
             sleep 5
 
-            if pm2 describe app > /dev/null 2>&1; then
-                STATUS=$(pm2 jlist | python3 -c "import sys,json; procs=json.load(sys.stdin); app=[p for p in procs if p['name']=='app']; print(app[0]['pm2_env']['status'] if app else 'not_found')")
+            if pm2 describe ${{ env.PM2_APP_NAME }} > /dev/null 2>&1; then
+                STATUS=$(pm2 jlist | python3 -c "import sys,json; procs=json.load(sys.stdin); app=[p for p in procs if p['name']=='${{ env.PM2_APP_NAME }}']; print(app[0]['pm2_env']['status'] if app else 'not_found')")
                 if [ "$STATUS" != "online" ]; then
                     echo "❌ PM2 process is not online (status: $STATUS) — initiating rollback..."
 
@@ -175,19 +191,20 @@ jobs:
                     if [ -n "$PREVIOUS" ] && [ -d "$PREVIOUS" ]; then
                         echo "⏪ Rolling back to $PREVIOUS..."
                         ln -sfn "$PREVIOUS" "${{ vars.REMOTE_CURRENT }}"
-                        pm2 restart app
+                        pm2 delete ${{ env.PM2_APP_NAME }} || true
+                        pm2 start "${{ vars.REMOTE_CURRENT }}/ecosystem.config.js"
                         sleep 5
 
-                        ROLLBACK_STATUS=$(pm2 jlist | python3 -c "import sys,json; procs=json.load(sys.stdin); app=[p for p in procs if p['name']=='app']; print(app[0]['pm2_env']['status'] if app else 'not_found')")
+                        ROLLBACK_STATUS=$(pm2 jlist | python3 -c "import sys,json; procs=json.load(sys.stdin); app=[p for p in procs if p['name']=='${{ env.PM2_APP_NAME }}']; print(app[0]['pm2_env']['status'] if app else 'not_found')")
                         if [ "$ROLLBACK_STATUS" = "online" ]; then
                             echo "✅ Rollback successful — previous build is running"
                         else
                             echo "❌ Rollback also failed (status: $ROLLBACK_STATUS)"
-                            pm2 logs app --lines 30 --nostream
+                            pm2 logs ${{ env.PM2_APP_NAME }} --lines 30 --nostream
                         fi
                     else
                         echo "⚠️  No previous build to roll back to"
-                        pm2 logs app --lines 30 --nostream
+                        pm2 logs ${{ env.PM2_APP_NAME }} --lines 30 --nostream
                     fi
 
                     exit 1
@@ -198,7 +215,7 @@ jobs:
                     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
                 fi
             else
-                echo "❌ PM2 process 'app' not found"
+                echo "❌ PM2 process '${{ env.PM2_APP_NAME }}' not found"
                 exit 1
             fi
 

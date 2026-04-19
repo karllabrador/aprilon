@@ -33,7 +33,7 @@ export default function Hero({
           ].join(" ")}
         />
       )}
-      <div className="relative z-10 container max-w-336 mx-auto py-24">
+      <div className="relative z-10 container max-w-336 mx-auto max-[1344px]:px-6 py-24">
         {wide ? children : <div className="max-w-xl">{children}</div>}
       </div>
     </section>

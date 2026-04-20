@@ -1,3 +1,4 @@
+import { DISCORD_INVITE_URL, GITHUB_URL, STEAM_GROUP_URL } from "@/lib/constants";
 import Image from "next/image";
 
 export default function Footer() {
@@ -15,19 +16,19 @@ export default function Footer() {
 
           <div className="flex gap-8">
             <a
-              href="https://discord.gg/sTBfWTG"
+              href={DISCORD_INVITE_URL}
               className="text-xs text-gray-400 hover:text-[#ededed] transition-colors uppercase"
             >
               Discord
             </a>
             <a
-              href="https://steamcommunity.com/groups/aprilon"
+              href={STEAM_GROUP_URL}
               className="text-xs text-gray-400 hover:text-[#ededed] transition-colors uppercase"
             >
               Steam Group
             </a>
             <a
-              href="https://github.com/karllabrador/aprilon"
+              href={GITHUB_URL}
               className="text-xs text-gray-400 hover:text-[#ededed] transition-colors uppercase"
             >
               Source Code

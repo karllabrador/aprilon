@@ -13,7 +13,7 @@ import {
 import DiscordIcon from "@/components/icons/DiscordIcon";
 import SteamIcon from "@/components/icons/SteamIcon";
 import { getDiscordStats } from "@/lib/discord";
-import Image from "next/image";
+import AprilonLogo from "@/components/common/AprilonLogo";
 
 export const revalidate = 300; // Revalidate this page every 5 minutes for Steam data
 
@@ -25,12 +25,7 @@ export default async function Home() {
       <Hero darkOverlay blur priority>
         <div className="mt-8 mb-6">
           <h1 className="sr-only">Aprilon</h1>
-          <Image
-            src="/images/aprilon-small-compact.png"
-            width={165}
-            height={55}
-            alt="Aprilon logo"
-          />
+          <AprilonLogo width={165} className="text-[#ededed]" />
         </div>
 
         <div className="text-gray-200 flex flex-col gap-5">

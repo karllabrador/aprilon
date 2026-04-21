@@ -1,18 +1,12 @@
+import AprilonLogo from "@/components/common/AprilonLogo";
 import { DISCORD_INVITE_URL, GITHUB_URL, STEAM_GROUP_URL } from "@/lib/constants";
-import Image from "next/image";
 
 export default function Footer() {
   return (
     <footer className="bg-[#1c1d20] border-t border-[#2a2b2e] mt-auto">
       <div className="container max-w-336 mx-auto px-6 py-6">
         <div className="flex justify-between items-center">
-          <Image
-            src="/images/aprilon-small-compact.png"
-            width={80}
-            height={27}
-            alt="Aprilon"
-            className="opacity-50"
-          />
+          <AprilonLogo width={80} className="text-[#ededed] opacity-50" />
 
           <div className="flex gap-8">
             <a

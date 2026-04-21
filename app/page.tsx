@@ -1,4 +1,5 @@
 import Button from "@/components/common/Button";
+import DiscordSplitButton from "@/components/common/DiscordSplitButton";
 import Footer from "@/components/common/Footer";
 import ContributorSection from "@/components/contributor/ContributorSection";
 import DownloadsSection from "@/components/downloads/DownloadsSection";
@@ -45,8 +46,13 @@ export default async function Home() {
             community. This website represents the history of Aprilon.
           </p>
         </div>
-        <div className="flex flex-col gap-2 mt-8 mb-8">
-          <div className="flex gap-2">
+        <div className="flex gap-2 mt-8 mb-8">
+          {discordStats ? (
+            <DiscordSplitButton
+              href={DISCORD_INVITE_URL}
+              memberCount={discordStats.memberCount}
+            />
+          ) : (
             <Button
               href={DISCORD_INVITE_URL}
               upperCase={true}
@@ -59,30 +65,19 @@ export default async function Home() {
             >
               Discord
             </Button>
-            <Button
-              href={STEAM_GROUP_URL}
-              upperCase={true}
-              icon={{
-                src: "/images/steam-128x128.png",
-                width: 20,
-                height: 20,
-                alt: "Steam logo",
-              }}
-            >
-              Steam Group
-            </Button>
-          </div>
-          {discordStats && (
-            <div className="flex items-center gap-2 pl-4 pt-3">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500" />
-              </span>
-              <span className="text-xs text-gray-300">
-                {discordStats.memberCount.toLocaleString()} members in Discord
-              </span>
-            </div>
           )}
+          <Button
+            href={STEAM_GROUP_URL}
+            upperCase={true}
+            icon={{
+              src: "/images/steam-128x128.png",
+              width: 20,
+              height: 20,
+              alt: "Steam logo",
+            }}
+          >
+            Steam Group
+          </Button>
         </div>
       </Hero>
 

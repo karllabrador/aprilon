@@ -3,6 +3,11 @@ name: CI
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - "**.md"
+      - ".github/dependabot.yml"
+      - ".gitignore"
+      - "LICENSE"
   pull_request:
     branches: [main]
 

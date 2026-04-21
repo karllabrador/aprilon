@@ -21,6 +21,10 @@ export async function getContributorsWithSteam(
     .map((x) => x.steamId64)
     .join(",");
 
+  if (!steamIds) {
+    return contributors.map((x) => ({ ...x, steam: undefined }));
+  }
+
   const url = `https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=${process.env.STEAM_API_KEY}&steamids=${steamIds}`;
 
   const res = await fetch(url, { next: { revalidate: 300 } });

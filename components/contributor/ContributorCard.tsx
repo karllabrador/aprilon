@@ -5,12 +5,12 @@ type ContributorCardProps = {
   contributor: ContributorWithSteam;
 };
 
-function getStatusStyle(
+export function getStatusStyle(
   steam: ContributorWithSteam["steam"],
 ): React.CSSProperties {
   const state = steam?.personastate ?? 0;
 
-  if (steam?.gameid) {
+  if (steam?.gameid && steam.gameid !== "0") {
     return {
       background: "linear-gradient(to bottom, #9BC861 5%, #789E4C 95%)",
     };

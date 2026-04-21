@@ -2,7 +2,8 @@
 
 Source code for [the aprilon.org website](https://aprilon.org). Built with Next.js and Tailwind.
 
-![Preview](https://i.imgur.com/DKgk7Kx.jpeg)
+<img width="2166" height="2915" alt="image" src="https://github.com/user-attachments/assets/1d88dca6-8624-444e-b40c-068d18b40ec1" />
+
 
 ## About
 

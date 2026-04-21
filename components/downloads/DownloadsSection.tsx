@@ -1,4 +1,4 @@
-import Button from "@/components/common/Button";
+import DownloadSplitButton from "@/components/common/DownloadSplitButton";
 import Hero from "@/components/hero/Hero";
 import worldsData from "@/config/worlds.json";
 import type { MinecraftWorld } from "@/types";
@@ -30,14 +30,10 @@ export default function DownloadsSection() {
                 </p>
                 <p className="text-4xl text-white mt-1">{world.size}</p>
               </div>
-              <Button
+              <DownloadSplitButton
                 href={world.url}
-                bgColor="bg-[#276cda]"
-                hoverBgColor="hover:bg-[#1e4fa8]"
-                upperCase={false}
-              >
-                Download
-              </Button>
+                downloadSize={world.downloadSize}
+              />
             </div>
           ))}
         </div>

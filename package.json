@@ -13,6 +13,11 @@
     "react": "19.2.5",
     "react-dom": "19.2.5"
   },
+  "pnpm": {
+    "overrides": {
+      "eslint": "9.39.4"
+    }
+  },
   "devDependencies": {
     "@tailwindcss/postcss": "4.2.4",
     "@types/node": "25.6.0",

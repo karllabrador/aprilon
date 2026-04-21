@@ -10,6 +10,8 @@ import {
   DISCORD_INVITE_URL,
   STEAM_GROUP_URL,
 } from "@/lib/constants";
+import DiscordIcon from "@/components/icons/DiscordIcon";
+import SteamIcon from "@/components/icons/SteamIcon";
 import { getDiscordStats } from "@/lib/discord";
 import Image from "next/image";
 
@@ -55,26 +57,18 @@ export default async function Home() {
           ) : (
             <Button
               href={DISCORD_INVITE_URL}
+              variant="bordered"
               upperCase={true}
-              icon={{
-                src: "/images/discord-128x144.png",
-                width: 16,
-                height: 16,
-                alt: "Discord logo",
-              }}
+              iconNode={<DiscordIcon />}
             >
               Discord
             </Button>
           )}
           <Button
             href={STEAM_GROUP_URL}
+            variant="bordered"
             upperCase={true}
-            icon={{
-              src: "/images/steam-128x128.png",
-              width: 20,
-              height: 20,
-              alt: "Steam logo",
-            }}
+            iconNode={<SteamIcon />}
           >
             Steam Group
           </Button>

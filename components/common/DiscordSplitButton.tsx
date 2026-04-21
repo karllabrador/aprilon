@@ -1,4 +1,4 @@
-import Image from "next/image";
+import DiscordIcon from "@/components/icons/DiscordIcon";
 
 type DiscordSplitButtonProps = {
   href: string;
@@ -12,20 +12,15 @@ export default function DiscordSplitButton({
   return (
     <a
       href={href}
-      className="inline-flex overflow-hidden rounded-full bg-[#363636] hover:bg-[#2f2f2f] text-white text-xs uppercase tracking-wide transition-colors"
+      className="inline-flex overflow-hidden rounded-md bg-[#363636] hover:bg-[#2f2f2f] border border-[#4d4d4d] text-white text-xs font-medium uppercase tracking-wide transition-colors"
     >
-      <span className="inline-flex items-center gap-2.5 px-4 py-2.25 border-r border-[#4a4a4a]">
-        <Image
-          src="/images/discord-128x144.png"
-          width={16}
-          height={16}
-          alt="Discord logo"
-        />
+      <span className="inline-flex items-center gap-2.5 px-4.5 py-2.5 border-r border-[#4d4d4d]">
+        <DiscordIcon />
         Discord
       </span>
-      <span className="inline-flex items-center gap-2 px-3 py-2.25">
+      <span className="inline-flex items-center gap-2 px-3 py-2.5 normal-case tracking-normal">
         <span className="inline-block w-2 h-2 rounded-full bg-[#3ba55c]" />
-        <span className="text-white/65 normal-case tracking-normal">
+        <span className="text-white/65">
           {memberCount.toLocaleString()}
         </span>
       </span>

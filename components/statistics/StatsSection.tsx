@@ -1,12 +1,16 @@
 import statsData from "@/config/stats.json";
+import ForumIcon from "@/components/icons/ForumIcon";
+import GarrysModIcon from "@/components/icons/GarrysModIcon";
+import MinecraftIcon from "@/components/icons/MinecraftIcon";
+import TeamFortress2Icon from "@/components/icons/TeamFortress2Icon";
 import type { Statistics } from "@/types";
 import StatsRow from "./StatsRow";
 
-const iconMap: Record<string, string> = {
-  "Garry's Mod": "/images/garrysmod-128x128.png",
-  "Team Fortress 2": "/images/teamfortress-128x128.png",
-  Minecraft: "/images/minecraft-128x128.png",
-  Forums: "/images/forum-128x128.png",
+const iconMap: Record<string, React.ReactNode> = {
+  "Garry's Mod": <GarrysModIcon />,
+  "Team Fortress 2": <TeamFortress2Icon />,
+  Minecraft: <MinecraftIcon />,
+  Forums: <ForumIcon />,
 };
 
 const stats = statsData as Statistics;
@@ -29,7 +33,7 @@ export default function StatsSection() {
               key={section.title}
               title={section.title}
               stats={section.stats}
-              icon={iconMap[section.title] ?? ""}
+              icon={iconMap[section.title]}
             />
           ))}
         </div>

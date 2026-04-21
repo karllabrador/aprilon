@@ -22,7 +22,7 @@ export default async function Home() {
 
   return (
     <>
-      <Hero darkOverlay blur>
+      <Hero darkOverlay blur priority>
         <div className="mt-8 mb-6">
           <h1 className="sr-only">Aprilon</h1>
           <Image

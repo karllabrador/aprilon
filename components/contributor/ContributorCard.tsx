@@ -59,14 +59,13 @@ export default function ContributorCard({ contributor }: ContributorCardProps) {
         style={{ borderRadius: "0.25rem" }}
       >
         {avatarUrl ? (
-          <div
-            className="absolute inset-0 scale-110"
-            style={{
-              backgroundImage: `url(${avatarUrl})`,
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-              filter: "blur(12px) brightness(0.4)",
-            }}
+          <Image
+            src={avatarUrl}
+            alt=""
+            fill
+            sizes="(min-width: 768px) 33vw, (min-width: 640px) 50vw, 100vw"
+            className="object-cover object-center scale-110"
+            style={{ filter: "blur(12px) brightness(0.4)" }}
           />
         ) : (
           <div className="absolute inset-0 bg-[#1E1F21]" />

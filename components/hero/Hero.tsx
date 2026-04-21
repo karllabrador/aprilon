@@ -1,9 +1,12 @@
+import Image from "next/image";
+
 type HeroProps = {
   children: React.ReactNode;
   backgroundImage?: string;
   darkOverlay?: boolean;
   blur?: boolean;
   wide?: boolean;
+  priority?: boolean;
 };
 
 export default function Hero({
@@ -12,18 +15,23 @@ export default function Hero({
   darkOverlay = false,
   blur = false,
   wide = false,
+  priority = false,
 }: HeroProps) {
   return (
     <section
       className="relative min-h-112 flex items-center"
       style={{
-        backgroundImage: `url('${backgroundImage}')`,
-        backgroundPosition: "center",
-        backgroundSize: "cover",
         backgroundColor: "#0C1010",
         boxShadow: "0 8px 6px #202020, 0 -8px 6px #202020",
       }}
     >
+      <Image
+        src={backgroundImage}
+        alt=""
+        fill
+        priority={priority}
+        className="object-cover object-center"
+      />
       {(darkOverlay || blur) && (
         <div
           className={[

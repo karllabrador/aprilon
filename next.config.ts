@@ -6,6 +6,7 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       { protocol: "https", hostname: "avatars.steamstatic.com" },
     ],
+    minimumCacheTTL: 86400,
   },
   async headers() {
     return [

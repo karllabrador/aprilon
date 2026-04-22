@@ -7,6 +7,7 @@ type HeroProps = {
   blur?: boolean;
   wide?: boolean;
   priority?: boolean;
+  nativeBackground?: boolean;
 };
 
 export default function Hero({
@@ -16,6 +17,7 @@ export default function Hero({
   blur = false,
   wide = false,
   priority = false,
+  nativeBackground = false,
 }: HeroProps) {
   return (
     <section
@@ -23,15 +25,22 @@ export default function Hero({
       style={{
         backgroundColor: "#0C1010",
         boxShadow: "0 8px 6px #202020, 0 -8px 6px #202020",
+        ...(nativeBackground && {
+          backgroundImage: `url('${backgroundImage}')`,
+          backgroundPosition: "center",
+          backgroundSize: "cover",
+        }),
       }}
     >
-      <Image
-        src={backgroundImage}
-        alt=""
-        fill
-        priority={priority}
-        className="object-cover object-center"
-      />
+      {!nativeBackground && (
+        <Image
+          src={backgroundImage}
+          alt=""
+          fill
+          priority={priority}
+          className="object-cover object-center"
+        />
+      )}
       {(darkOverlay || blur) && (
         <div
           className={[

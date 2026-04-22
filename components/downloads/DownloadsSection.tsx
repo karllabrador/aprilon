@@ -7,7 +7,7 @@ const worlds = worldsData as MinecraftWorld[];
 
 export default function DownloadsSection() {
   return (
-    <Hero backgroundImage="/images/minecraft-background-1920x1080.jpg" wide>
+    <Hero backgroundImage="/images/minecraft-background-1920x1080.jpg" wide nativeBackground>
       <div className="flex flex-col gap-8 w-full md:flex-row md:items-center md:justify-between">
         <div className="shrink-0">
           <h2 className="text-3xl font-bold text-[#ededed] mb-2">

@@ -52,11 +52,13 @@ jobs:
           echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
       - name: Setup pnpm
+        if: inputs.build_id == ''
         uses: pnpm/action-setup@v6
         with:
           version: latest
 
       - name: Setup Node.js
+        if: inputs.build_id == ''
         uses: actions/setup-node@v6
         with:
           node-version: 24

@@ -1,8 +1,8 @@
-import Database from "better-sqlite3";
 import allowlist from "@/config/forum-allowlist.json";
 import redactionsConfig from "@/config/redactions.json";
-import type { Forum, Post, Topic } from "@/types";
 import { computeDisplayName } from "@/lib/pseudonyms";
+import type { Forum, Post, Topic } from "@/types";
+import Database from "better-sqlite3";
 
 type Redactions = {
   topics: number[];
@@ -33,16 +33,29 @@ export type UserSearchResult = {
 
 export const USER_SEARCH_LIMIT = 8;
 
-let _db: Database.Database | null = null;
+let _db: Database.Database | "unavailable" | null = null;
 
-function getDb(): Database.Database {
-  if (!_db) {
-    const dbPath = process.env.DATABASE_PATH ?? "data/forum.db";
-    _db = new Database(dbPath, { readonly: true });
+function getDb(): Database.Database | null {
+  if (_db === "unavailable") return null;
+  if (_db !== null) return _db;
+
+  const dbPath = process.env.ARCHIVE_DB_PATH;
+  if (!dbPath) {
+    console.warn("[archive] ARCHIVE_DB_PATH is not set — archive disabled");
+    _db = "unavailable";
+    return null;
   }
-  return _db;
-}
 
+  try {
+    const db = new Database(dbPath, { readonly: true });
+    _db = db;
+    return db;
+  } catch {
+    console.warn(`[archive] Could not open database at "${dbPath}" — archive disabled`);
+    _db = "unavailable";
+    return null;
+  }
+}
 
 type ForumRow = {
   id: number;
@@ -120,12 +133,17 @@ function rowToPost(r: PostRow): Post {
 export function getAllowedForums(): Forum[] {
   if (allowedIds.length === 0) return [];
   const db = getDb();
+  if (!db) return [];
   const placeholders = allowedIds.map(() => "?").join(",");
   const hasDisplayOrder =
-    db.prepare("SELECT 1 FROM pragma_table_info('forums') WHERE name='display_order'").get() !== undefined;
+    db
+      .prepare(
+        "SELECT 1 FROM pragma_table_info('forums') WHERE name='display_order'",
+      )
+      .get() !== undefined;
   const rows = db
     .prepare(
-      `SELECT * FROM forums WHERE id IN (${placeholders})${hasDisplayOrder ? " ORDER BY display_order ASC" : ""}`
+      `SELECT * FROM forums WHERE id IN (${placeholders})${hasDisplayOrder ? " ORDER BY display_order ASC" : ""}`,
     )
     .all(...allowedIds) as ForumRow[];
   if (hasDisplayOrder) return rows.map(rowToForum);
@@ -140,16 +158,20 @@ export function getAllowedForums(): Forum[] {
 export function getForum(id: number): Forum | null {
   if (!allowedIds.includes(id)) return null;
   const db = getDb();
-  const row = db.prepare("SELECT * FROM forums WHERE id = ?").get(id) as ForumRow | undefined;
+  if (!db) return null;
+  const row = db.prepare("SELECT * FROM forums WHERE id = ?").get(id) as
+    | ForumRow
+    | undefined;
   return row ? rowToForum(row) : null;
 }
 
 export function getTopics(
   forumId: number,
-  opts: { page?: number; query?: string } = {}
+  opts: { page?: number; query?: string } = {},
 ): { topics: Topic[]; total: number } {
   if (!allowedIds.includes(forumId)) return { topics: [], total: 0 };
   const db = getDb();
+  if (!db) return { topics: [], total: 0 };
   const page = Math.max(1, opts.page ?? 1);
   const query = opts.query?.trim() ?? "";
 
@@ -171,16 +193,23 @@ export function getTopics(
 
   const rows = db
     .prepare(
-      `SELECT * FROM topics ${where} ORDER BY is_sticky DESC, last_post_at DESC LIMIT ? OFFSET ?`
+      `SELECT * FROM topics ${where} ORDER BY is_sticky DESC, last_post_at DESC LIMIT ? OFFSET ?`,
     )
-    .all(...params, TOPICS_PER_PAGE, (page - 1) * TOPICS_PER_PAGE) as TopicRow[];
+    .all(
+      ...params,
+      TOPICS_PER_PAGE,
+      (page - 1) * TOPICS_PER_PAGE,
+    ) as TopicRow[];
 
   return { topics: rows.map(rowToTopic), total: count };
 }
 
 export function getTopic(id: number): Topic | null {
   const db = getDb();
-  const row = db.prepare("SELECT * FROM topics WHERE id = ?").get(id) as TopicRow | undefined;
+  if (!db) return null;
+  const row = db.prepare("SELECT * FROM topics WHERE id = ?").get(id) as
+    | TopicRow
+    | undefined;
   if (!row) return null;
   if (!allowedIds.includes(row.forum_id)) return null;
   if (redactions.topics.includes(id)) return null;
@@ -189,17 +218,21 @@ export function getTopic(id: number): Topic | null {
 
 export function getFirstPost(topicId: number): Post | null {
   const db = getDb();
+  if (!db) return null;
   const row = db
-    .prepare("SELECT * FROM posts WHERE topic_id = ? ORDER BY created_at ASC LIMIT 1")
+    .prepare(
+      "SELECT * FROM posts WHERE topic_id = ? ORDER BY created_at ASC LIMIT 1",
+    )
     .get(topicId) as PostRow | undefined;
   return row ? rowToPost(row) : null;
 }
 
 export function getPosts(
   topicId: number,
-  opts: { page?: number; query?: string } = {}
+  opts: { page?: number; query?: string } = {},
 ): { posts: Post[]; total: number } {
   const db = getDb();
+  if (!db) return { posts: [], total: 0 };
   const page = Math.max(1, opts.page ?? 1);
   const query = opts.query?.trim() ?? "";
 
@@ -216,7 +249,9 @@ export function getPosts(
     .get(...params) as { count: number };
 
   const rows = db
-    .prepare(`SELECT * FROM posts ${where} ORDER BY created_at ASC LIMIT ? OFFSET ?`)
+    .prepare(
+      `SELECT * FROM posts ${where} ORDER BY created_at ASC LIMIT ? OFFSET ?`,
+    )
     .all(...params, POSTS_PER_PAGE, (page - 1) * POSTS_PER_PAGE) as PostRow[];
 
   return { posts: rows.map(rowToPost), total: count };
@@ -224,11 +259,12 @@ export function getPosts(
 
 export function searchTopics(
   query: string,
-  opts: { page?: number; userId?: number } = {}
+  opts: { page?: number; userId?: number } = {},
 ): { results: TopicSearchResult[]; total: number } {
   if (allowedIds.length === 0) return { results: [], total: 0 };
   if (!query.trim() && !opts.userId) return { results: [], total: 0 };
   const db = getDb();
+  if (!db) return { results: [], total: 0 };
   const page = Math.max(1, opts.page ?? 1);
   const q = query.trim();
 
@@ -258,9 +294,13 @@ export function searchTopics(
       `SELECT t.*, f.name AS forum_name
        FROM topics t JOIN forums f ON t.forum_id = f.id
        ${where}
-       ORDER BY t.last_post_at DESC LIMIT ? OFFSET ?`
+       ORDER BY t.last_post_at DESC LIMIT ? OFFSET ?`,
     )
-    .all(...params, SEARCH_TOPICS_PER_PAGE, (page - 1) * SEARCH_TOPICS_PER_PAGE) as TopicSearchRow[];
+    .all(
+      ...params,
+      SEARCH_TOPICS_PER_PAGE,
+      (page - 1) * SEARCH_TOPICS_PER_PAGE,
+    ) as TopicSearchRow[];
 
   return {
     results: rows.map((r) => ({ ...rowToTopic(r), forumName: r.forum_name })),
@@ -270,11 +310,12 @@ export function searchTopics(
 
 export function searchPosts(
   query: string,
-  opts: { page?: number; userId?: number } = {}
+  opts: { page?: number; userId?: number } = {},
 ): { results: PostSearchResult[]; total: number } {
   if (allowedIds.length === 0) return { results: [], total: 0 };
   if (!query.trim() && !opts.userId) return { results: [], total: 0 };
   const db = getDb();
+  if (!db) return { results: [], total: 0 };
   const page = Math.max(1, opts.page ?? 1);
   const q = query.trim();
 
@@ -303,7 +344,9 @@ export function searchPosts(
   }
 
   const { count } = db
-    .prepare(`SELECT COUNT(*) as count FROM posts p JOIN topics t ON p.topic_id = t.id ${where}`)
+    .prepare(
+      `SELECT COUNT(*) as count FROM posts p JOIN topics t ON p.topic_id = t.id ${where}`,
+    )
     .get(...params) as { count: number };
 
   const rows = db
@@ -314,9 +357,13 @@ export function searchPosts(
        JOIN topics t ON p.topic_id = t.id
        JOIN forums f ON t.forum_id = f.id
        ${where}
-       ORDER BY p.created_at DESC LIMIT ? OFFSET ?`
+       ORDER BY p.created_at DESC LIMIT ? OFFSET ?`,
     )
-    .all(...params, SEARCH_POSTS_PER_PAGE, (page - 1) * SEARCH_POSTS_PER_PAGE) as PostSearchRow[];
+    .all(
+      ...params,
+      SEARCH_POSTS_PER_PAGE,
+      (page - 1) * SEARCH_POSTS_PER_PAGE,
+    ) as PostSearchRow[];
 
   return {
     results: rows.map((r) => ({
@@ -333,6 +380,7 @@ export function searchPosts(
 export function searchUsers(query: string): UserSearchResult[] {
   if (!query.trim() || allowedIds.length === 0) return [];
   const db = getDb();
+  if (!db) return [];
   const ph = allowedIds.map(() => "?").join(",");
 
   type Row = { author_id: number; post_count: number; topic_count: number };
@@ -343,7 +391,7 @@ export function searchUsers(query: string): UserSearchResult[] {
               COUNT(DISTINCT t.id) AS topic_count
        FROM posts p JOIN topics t ON p.topic_id = t.id
        WHERE p.author_id IS NOT NULL AND p.author_id != 1 AND t.forum_id IN (${ph})
-       GROUP BY p.author_id`
+       GROUP BY p.author_id`,
     )
     .all(...allowedIds) as Row[];
 
@@ -355,7 +403,9 @@ export function searchUsers(query: string): UserSearchResult[] {
       postCount: r.post_count,
       topicCount: r.topic_count,
     }))
-    .filter((u) => u.displayName.toLowerCase().includes(q) || String(u.id) === q)
+    .filter(
+      (u) => u.displayName.toLowerCase().includes(q) || String(u.id) === q,
+    )
     .slice(0, USER_SEARCH_LIMIT);
 }
 
@@ -377,7 +427,7 @@ const ACTIVITY_END = "2016-12";
 
 function generateBuckets(
   topicRows: { period: string; count: number }[],
-  postRows: { period: string; count: number }[]
+  postRows: { period: string; count: number }[],
 ): ActivityBucket[] {
   const topicMap = new Map(topicRows.map((r) => [r.period, r.count]));
   const postMap = new Map(postRows.map((r) => [r.period, r.count]));
@@ -386,8 +436,15 @@ function generateBuckets(
   const [ey, em] = ACTIVITY_END.split("-").map(Number);
   while (y < ey || (y === ey && m <= em)) {
     const period = `${y}-${String(m).padStart(2, "0")}`;
-    buckets.push({ period, topicCount: topicMap.get(period) ?? 0, postCount: postMap.get(period) ?? 0 });
-    if (++m > 12) { m = 1; y++; }
+    buckets.push({
+      period,
+      topicCount: topicMap.get(period) ?? 0,
+      postCount: postMap.get(period) ?? 0,
+    });
+    if (++m > 12) {
+      m = 1;
+      y++;
+    }
   }
   return buckets;
 }
@@ -395,6 +452,7 @@ function generateBuckets(
 export function getTopTopics(forumId: number, limit = 3): Topic[] {
   if (!allowedIds.includes(forumId)) return [];
   const db = getDb();
+  if (!db) return [];
 
   const params: (string | number)[] = [forumId];
   let where = "WHERE forum_id = ?";
@@ -412,6 +470,7 @@ export function getTopTopics(forumId: number, limit = 3): Topic[] {
 export function getForumActivity(forumId: number): ActivityBucket[] {
   if (!allowedIds.includes(forumId)) return generateBuckets([], []);
   const db = getDb();
+  if (!db) return generateBuckets([], []);
 
   const tParams: (string | number)[] = [forumId];
   let tWhere = "WHERE forum_id = ?";
@@ -423,7 +482,7 @@ export function getForumActivity(forumId: number): ActivityBucket[] {
   const topicRows = db
     .prepare(
       `SELECT strftime('%Y-%m', datetime(created_at, 'unixepoch')) AS period, COUNT(*) AS count
-       FROM topics ${tWhere} GROUP BY period`
+       FROM topics ${tWhere} GROUP BY period`,
     )
     .all(...tParams) as { period: string; count: number }[];
 
@@ -431,28 +490,34 @@ export function getForumActivity(forumId: number): ActivityBucket[] {
     .prepare(
       `SELECT strftime('%Y-%m', datetime(p.created_at, 'unixepoch')) AS period, COUNT(*) AS count
        FROM posts p JOIN topics t ON p.topic_id = t.id
-       WHERE t.forum_id = ? GROUP BY period`
+       WHERE t.forum_id = ? GROUP BY period`,
     )
     .all(forumId) as { period: string; count: number }[];
 
   return generateBuckets(topicRows, postRows);
 }
 
-export function getUserStats(userId: number): { posts: number; topics: number } {
+export function getUserStats(userId: number): {
+  posts: number;
+  topics: number;
+} {
   if (allowedIds.length === 0) return { posts: 0, topics: 0 };
   const db = getDb();
+  if (!db) return { posts: 0, topics: 0 };
   const ph = allowedIds.map(() => "?").join(",");
 
   const { posts } = db
     .prepare(
       `SELECT COUNT(*) AS posts FROM posts p
        JOIN topics t ON p.topic_id = t.id
-       WHERE p.author_id = ? AND t.forum_id IN (${ph})`
+       WHERE p.author_id = ? AND t.forum_id IN (${ph})`,
     )
     .get(userId, ...allowedIds) as { posts: number };
 
   const { topics } = db
-    .prepare(`SELECT COUNT(*) AS topics FROM topics WHERE author_id = ? AND forum_id IN (${ph})`)
+    .prepare(
+      `SELECT COUNT(*) AS topics FROM topics WHERE author_id = ? AND forum_id IN (${ph})`,
+    )
     .get(userId, ...allowedIds) as { topics: number };
 
   return { posts, topics };
@@ -461,6 +526,7 @@ export function getUserStats(userId: number): { posts: number; topics: number } 
 export function getUserActivity(userId: number): ActivityBucket[] {
   if (allowedIds.length === 0) return generateBuckets([], []);
   const db = getDb();
+  if (!db) return generateBuckets([], []);
   const ph = allowedIds.map(() => "?").join(",");
 
   const tParams: (string | number)[] = [userId, ...allowedIds];
@@ -473,7 +539,7 @@ export function getUserActivity(userId: number): ActivityBucket[] {
   const topicRows = db
     .prepare(
       `SELECT strftime('%Y-%m', datetime(created_at, 'unixepoch')) AS period, COUNT(*) AS count
-       FROM topics ${tWhere} GROUP BY period`
+       FROM topics ${tWhere} GROUP BY period`,
     )
     .all(...tParams) as { period: string; count: number }[];
 
@@ -481,7 +547,7 @@ export function getUserActivity(userId: number): ActivityBucket[] {
     .prepare(
       `SELECT strftime('%Y-%m', datetime(p.created_at, 'unixepoch')) AS period, COUNT(*) AS count
        FROM posts p JOIN topics t ON p.topic_id = t.id
-       WHERE p.author_id = ? AND t.forum_id IN (${ph}) GROUP BY period`
+       WHERE p.author_id = ? AND t.forum_id IN (${ph}) GROUP BY period`,
     )
     .all(userId, ...allowedIds) as { period: string; count: number }[];
 
@@ -491,9 +557,15 @@ export function getUserActivity(userId: number): ActivityBucket[] {
 export function getUserForumActivity(userId: number): ForumActivitySlice[] {
   if (allowedIds.length === 0) return [];
   const db = getDb();
+  if (!db) return [];
   const ph = allowedIds.map(() => "?").join(",");
 
-  type Row = { forum_id: number; forum_name: string; post_count: number; topic_count: number };
+  type Row = {
+    forum_id: number;
+    forum_name: string;
+    post_count: number;
+    topic_count: number;
+  };
   const rows = db
     .prepare(
       `SELECT t.forum_id, f.name AS forum_name,
@@ -502,7 +574,7 @@ export function getUserForumActivity(userId: number): ForumActivitySlice[] {
        JOIN topics t ON p.topic_id = t.id
        JOIN forums f ON t.forum_id = f.id
        WHERE p.author_id = ? AND t.forum_id IN (${ph})
-       GROUP BY t.forum_id ORDER BY post_count DESC`
+       GROUP BY t.forum_id ORDER BY post_count DESC`,
     )
     .all(userId, ...allowedIds) as Row[];
 
@@ -514,23 +586,31 @@ export function getUserForumActivity(userId: number): ForumActivitySlice[] {
   }));
 }
 
-export function getUserDates(userId: number): { joinedAt: number | null; lastPostAt: number | null } {
+export function getUserDates(userId: number): {
+  joinedAt: number | null;
+  lastPostAt: number | null;
+} {
   if (allowedIds.length === 0) return { joinedAt: null, lastPostAt: null };
   const db = getDb();
+  if (!db) return { joinedAt: null, lastPostAt: null };
   const ph = allowedIds.map(() => "?").join(",");
   const row = db
     .prepare(
       `SELECT MIN(p.created_at) AS joined_at, MAX(p.created_at) AS last_post_at
        FROM posts p JOIN topics t ON p.topic_id = t.id
-       WHERE p.author_id = ? AND t.forum_id IN (${ph})`
+       WHERE p.author_id = ? AND t.forum_id IN (${ph})`,
     )
-    .get(userId, ...allowedIds) as { joined_at: number | null; last_post_at: number | null };
+    .get(userId, ...allowedIds) as {
+    joined_at: number | null;
+    last_post_at: number | null;
+  };
   return { joinedAt: row.joined_at, lastPostAt: row.last_post_at };
 }
 
 export function getArchiveActivity(): ActivityBucket[] {
   if (allowedIds.length === 0) return generateBuckets([], []);
   const db = getDb();
+  if (!db) return generateBuckets([], []);
   const ph = allowedIds.map(() => "?").join(",");
 
   const tParams: (string | number)[] = [...allowedIds];
@@ -543,7 +623,7 @@ export function getArchiveActivity(): ActivityBucket[] {
   const topicRows = db
     .prepare(
       `SELECT strftime('%Y-%m', datetime(created_at, 'unixepoch')) AS period, COUNT(*) AS count
-       FROM topics ${tWhere} GROUP BY period`
+       FROM topics ${tWhere} GROUP BY period`,
     )
     .all(...tParams) as { period: string; count: number }[];
 
@@ -551,7 +631,7 @@ export function getArchiveActivity(): ActivityBucket[] {
     .prepare(
       `SELECT strftime('%Y-%m', datetime(p.created_at, 'unixepoch')) AS period, COUNT(*) AS count
        FROM posts p JOIN topics t ON p.topic_id = t.id
-       WHERE t.forum_id IN (${ph}) GROUP BY period`
+       WHERE t.forum_id IN (${ph}) GROUP BY period`,
     )
     .all(...allowedIds) as { period: string; count: number }[];
 

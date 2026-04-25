@@ -19,6 +19,8 @@ concurrency:
 env:
   BUILD_ID: ""
   PM2_APP_NAME: "aprilon-next"
+  ARCHIVE_DUMP_PATH: ${{ vars.ARCHIVE_DUMP_PATH }}
+  ARCHIVE_DB_PATH: ${{ vars.ARCHIVE_DB_PATH }}
 
 jobs:
   deploy:
@@ -31,6 +33,20 @@ jobs:
       - name: Checkout code
         if: inputs.build_id == ''
         uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Check if migration script changed
+        id: migration_check
+        if: inputs.build_id == ''
+        run: |
+          BEFORE="${{ github.event.workflow_run.head_commit.id }}^"
+          if git diff --name-only "$BEFORE" HEAD \
+            | grep -qE '^(scripts/migrate-forum\.ts|lib/pseudonyms\.ts)$'; then
+            echo "changed=true" >> $GITHUB_OUTPUT
+          else
+            echo "changed=false" >> $GITHUB_OUTPUT
+          fi
 
       - name: Set pre-build environment variables
         run: |
@@ -158,7 +174,8 @@ jobs:
                 env: {
                   PORT: "${{ vars.APP_PORT }}",
                   STEAM_API_KEY: "${{ secrets.STEAM_API_KEY }}",
-                  NEXT_PUBLIC_APP_URL: "${{ vars.NEXT_PUBLIC_APP_URL }}"
+                  NEXT_PUBLIC_APP_URL: "${{ vars.NEXT_PUBLIC_APP_URL }}",
+                  ARCHIVE_DB_PATH: "${{ vars.ARCHIVE_DB_PATH }}"
                 }
               }]
             }
@@ -179,6 +196,43 @@ jobs:
             pm2 delete ${{ env.PM2_APP_NAME }} || true
             pm2 start "${{ vars.REMOTE_CURRENT }}/ecosystem.config.js"
             pm2 save
+
+      - name: Copy migration sources to server
+        if: inputs.build_id == '' && steps.migration_check.outputs.changed == 'true'
+        uses: appleboy/scp-action@v1
+        with:
+          host: ${{ secrets.REMOTE_HOST_IP }}
+          username: ${{ secrets.REMOTE_HOST_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.REMOTE_HOST_PORT }}
+          source: "scripts/migrate-forum.ts,lib/pseudonyms.ts"
+          target: "${{ vars.REMOTE_BASE }}/migration"
+
+      - name: Run forum migration
+        if: inputs.build_id == '' && steps.migration_check.outputs.changed == 'true'
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.REMOTE_HOST_IP }}
+          username: ${{ secrets.REMOTE_HOST_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.REMOTE_HOST_PORT }}
+          script: |
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+            set -e
+
+            echo "🗄️  Running forum migration..."
+            cd "${{ vars.REMOTE_BASE }}/migration"
+
+            # Resolve better-sqlite3 from the deployed app's traced node_modules
+            NODE_PATH="${{ vars.REMOTE_CURRENT }}/node_modules" \
+            npx --yes tsx scripts/migrate-forum.ts \
+              "${{ env.ARCHIVE_DUMP_PATH }}" "${{ env.ARCHIVE_DB_PATH }}"
+
+            echo "✅ Migration complete: ${{ env.ARCHIVE_DB_PATH }}"
+
+            # Reload app workers to open the new database file
+            pm2 reload ${{ env.PM2_APP_NAME }}
 
       - name: Verify PM2 status
         uses: appleboy/ssh-action@v1

@@ -27,3 +27,78 @@ body {
 .contributor-name:hover {
   text-shadow: 0 0 9px #fff;
 }
+
+/* ── Archive post content ─────────────────────────────────────────────────── */
+
+.prose-archive blockquote {
+  margin: 0.625rem 0;
+  padding: 0.5rem 0.75rem;
+  background-color: #18191b;
+  border: 1px solid #2a2b2e;
+  border-radius: 6px;
+  color: #9ca3af;
+  font-size: 0.8125rem;
+}
+
+.prose-archive blockquote::before {
+  content: "Quote";
+  display: block;
+  margin: -0.5rem -0.75rem 0.5rem;
+  padding: 0.3rem 0.625rem;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: #5aabab;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  background-color: #141516;
+  border-bottom: 1px solid #252628;
+  border-radius: 6px 6px 0 0;
+}
+
+.prose-archive blockquote[data-author]::before {
+  content: attr(data-author) " wrote:";
+}
+
+.prose-archive blockquote blockquote {
+  background-color: #141516;
+  border-color: #252628;
+}
+
+.prose-archive blockquote blockquote::before {
+  background-color: #111213;
+  border-bottom-color: #222326;
+}
+
+.prose-archive a {
+  color: #4a9090;
+  text-decoration: none;
+}
+
+.prose-archive a:hover {
+  color: #5aabab;
+  text-decoration: underline;
+}
+
+.prose-archive pre {
+  margin: 0.625rem 0;
+  padding: 0.75rem;
+  background-color: #18191b;
+  border: 1px solid #2a2b2e;
+  border-radius: 6px;
+  overflow-x: auto;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: #c8d8d8;
+}
+
+.prose-archive code {
+  font-size: 0.8125rem;
+  color: #c8d8d8;
+  font-family: ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, monospace;
+}
+
+.prose-archive img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 2px;
+}

@@ -215,8 +215,12 @@ jobs:
             echo "🗄️  Running forum migration..."
             cd "${{ vars.REMOTE_BASE }}/migration"
 
-            # Resolve better-sqlite3 from the deployed app's traced node_modules
-            NODE_PATH="${{ vars.REMOTE_CURRENT }}/node_modules" \
+            # Symlink better-sqlite3 from the deployed app so tsx can resolve it
+            # (NODE_PATH is not honoured by ESM/tsx; a local node_modules entry is)
+            mkdir -p node_modules
+            ln -sfn "$(readlink -f "${{ vars.REMOTE_CURRENT }}")/node_modules/better-sqlite3" \
+              node_modules/better-sqlite3
+
             npx --yes tsx scripts/migrate-forum.ts \
               "${{ env.ARCHIVE_DUMP_PATH }}" "${{ env.ARCHIVE_DB_PATH }}"
 

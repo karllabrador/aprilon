@@ -2,6 +2,11 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   output: "standalone",
+  // better-sqlite3 is already auto-opted-out by Next.js, but we include its
+  // native binding explicitly so the standalone build copies it.
+  outputFileTracingIncludes: {
+    "/*": ["./node_modules/better-sqlite3/build/**/*"],
+  },
   images: {
     remotePatterns: [
       { protocol: "https", hostname: "avatars.steamstatic.com" },

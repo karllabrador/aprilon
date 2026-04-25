@@ -11,11 +11,6 @@ on:
         description: "Build ID to redeploy (leave empty to build fresh)"
         required: false
         type: string
-      refresh_migration:
-        description: "Refresh archive database from dump"
-        required: false
-        type: boolean
-        default: false
 
 concurrency:
   group: deploy
@@ -24,8 +19,6 @@ concurrency:
 env:
   BUILD_ID: ""
   PM2_APP_NAME: "aprilon-next"
-  ARCHIVE_DUMP_PATH: ${{ vars.ARCHIVE_DUMP_PATH }}
-  ARCHIVE_DB_PATH: ${{ vars.ARCHIVE_DB_PATH }}
 
 jobs:
   deploy:
@@ -187,46 +180,6 @@ jobs:
             pm2 delete ${{ env.PM2_APP_NAME }} || true
             pm2 start "${{ vars.REMOTE_CURRENT }}/ecosystem.config.js"
             pm2 save
-
-      - name: Copy migration sources to server
-        if: inputs.build_id == '' && inputs.refresh_migration == true
-        uses: appleboy/scp-action@v1
-        with:
-          host: ${{ secrets.REMOTE_HOST_IP }}
-          username: ${{ secrets.REMOTE_HOST_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: ${{ secrets.REMOTE_HOST_PORT }}
-          source: "scripts/migrate-forum.ts,lib/pseudonyms.ts"
-          target: "${{ vars.REMOTE_BASE }}/migration"
-
-      - name: Run forum migration
-        if: inputs.refresh_migration == true
-        uses: appleboy/ssh-action@v1
-        with:
-          host: ${{ secrets.REMOTE_HOST_IP }}
-          username: ${{ secrets.REMOTE_HOST_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: ${{ secrets.REMOTE_HOST_PORT }}
-          script: |
-            export NVM_DIR="$HOME/.nvm"
-            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-            set -e
-
-            echo "🗄️  Running forum migration..."
-            cd "${{ vars.REMOTE_BASE }}/migration"
-
-            # Install better-sqlite3 locally if not already present
-            if [ ! -d "node_modules/better-sqlite3" ]; then
-              npm install --prefix . better-sqlite3
-            fi
-
-            npx --yes tsx scripts/migrate-forum.ts \
-              "${{ env.ARCHIVE_DUMP_PATH }}" "${{ env.ARCHIVE_DB_PATH }}"
-
-            echo "✅ Migration complete: ${{ env.ARCHIVE_DB_PATH }}"
-
-            # Reload app workers to open the new database file
-            pm2 reload ${{ env.PM2_APP_NAME }}
 
       - name: Verify PM2 status
         uses: appleboy/ssh-action@v1

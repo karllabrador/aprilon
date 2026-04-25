@@ -11,6 +11,11 @@ on:
         description: "Build ID to redeploy (leave empty to build fresh)"
         required: false
         type: string
+      refresh_migration:
+        description: "Refresh archive database from dump"
+        required: false
+        type: boolean
+        default: false
 
 concurrency:
   group: deploy
@@ -33,20 +38,6 @@ jobs:
       - name: Checkout code
         if: inputs.build_id == ''
         uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-
-      - name: Check if migration script changed
-        id: migration_check
-        if: inputs.build_id == ''
-        run: |
-          BEFORE="${{ github.event.workflow_run.head_commit.id }}^"
-          if git diff --name-only "$BEFORE" HEAD \
-            | grep -qE '^(scripts/migrate-forum\.ts|lib/pseudonyms\.ts)$'; then
-            echo "changed=true" >> $GITHUB_OUTPUT
-          else
-            echo "changed=false" >> $GITHUB_OUTPUT
-          fi
 
       - name: Set pre-build environment variables
         run: |
@@ -198,7 +189,7 @@ jobs:
             pm2 save
 
       - name: Copy migration sources to server
-        if: inputs.build_id == '' && steps.migration_check.outputs.changed == 'true'
+        if: inputs.build_id == '' && inputs.refresh_migration == true
         uses: appleboy/scp-action@v1
         with:
           host: ${{ secrets.REMOTE_HOST_IP }}
@@ -209,7 +200,7 @@ jobs:
           target: "${{ vars.REMOTE_BASE }}/migration"
 
       - name: Run forum migration
-        if: inputs.build_id == '' && steps.migration_check.outputs.changed == 'true'
+        if: inputs.refresh_migration == true
         uses: appleboy/ssh-action@v1
         with:
           host: ${{ secrets.REMOTE_HOST_IP }}

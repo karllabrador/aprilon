@@ -9,6 +9,7 @@
 import Database from "better-sqlite3";
 import * as fs from "fs";
 import * as path from "path";
+import { computeDisplayName } from "../lib/pseudonyms";
 
 const dumpPath = process.argv[2];
 const dbPath = process.argv[3] ?? process.env.DATABASE_PATH ?? "data/forum.db";
@@ -47,18 +48,34 @@ function bbcodeToHtml(raw: string, uid: string): string {
   // Strip phpBB3 uid suffix from tags: [b:uid] → [b]
   let s = uid ? raw.replace(new RegExp(`:(${uid})`, "g"), "") : raw;
 
+  // Handle nested quotes FIRST (before the catch-all strip that would eat [quote] tags).
+  // Innermost-first loop: content pattern (?:(?!\[quote)[\s\S])*? matches chars that
+  // don't start a new [quote, so we only match the innermost un-nested quote each pass.
+  let prev = "";
+  while (s !== prev) {
+    prev = s;
+    s = s
+      .replace(/\[quote=&quot;([^&]*)&quot;\]((?:(?!\[quote)[\s\S])*?)\[\/quote\]/gi, '<blockquote data-author="$1">$2</blockquote>')
+      .replace(/\[quote="([^"]*)"\]((?:(?!\[quote)[\s\S])*?)\[\/quote\]/gi, '<blockquote data-author="$1">$2</blockquote>')
+      .replace(/\[quote\]((?:(?!\[quote)[\s\S])*?)\[\/quote\]/gi, "<blockquote>$1</blockquote>");
+  }
+
   // Convert common tags
   s = s
     .replace(/\[b\]([\s\S]*?)\[\/b\]/gi, "<strong>$1</strong>")
     .replace(/\[i\]([\s\S]*?)\[\/i\]/gi, "<em>$1</em>")
     .replace(/\[u\]([\s\S]*?)\[\/u\]/gi, "<u>$1</u>")
     .replace(/\[s\]([\s\S]*?)\[\/s\]/gi, "<s>$1</s>")
-    .replace(/\[url=([^\]]+)\]([\s\S]*?)\[\/url\]/gi, '<a href="$1" rel="noopener noreferrer">$2</a>')
-    .replace(/\[url\]([\s\S]*?)\[\/url\]/gi, '<a href="$1" rel="noopener noreferrer">$1</a>')
+    .replace(/\[url=([^\]]+)\]([\s\S]*?)\[\/url\]/gi, (_, href: string, text: string) => {
+      if (/^(javascript|data|vbscript):/i.test(href.trim())) return text;
+      return `<a href="${href.trim()}" rel="noopener noreferrer">${text}</a>`;
+    })
+    .replace(/\[url\]([\s\S]*?)\[\/url\]/gi, (_, href: string) => {
+      if (/^(javascript|data|vbscript):/i.test(href.trim())) return href;
+      return `<a href="${href.trim()}" rel="noopener noreferrer">${href.trim()}</a>`;
+    })
     .replace(/\[img\]([\s\S]*?)\[\/img\]/gi, '<img src="$1" alt="" loading="lazy">')
     .replace(/\[code\]([\s\S]*?)\[\/code\]/gi, "<pre><code>$1</code></pre>")
-    .replace(/\[quote(?:=&quot;[^&]*&quot;)?\]([\s\S]*?)\[\/quote\]/gi, "<blockquote>$1</blockquote>")
-    .replace(/\[quote(?:="[^"]*")?\]([\s\S]*?)\[\/quote\]/gi, "<blockquote>$1</blockquote>")
     .replace(/\[color=[^\]]+\]([\s\S]*?)\[\/color\]/gi, "$1")
     .replace(/\[size=[^\]]+\]([\s\S]*?)\[\/size\]/gi, "$1")
     .replace(/\[list\]([\s\S]*?)\[\/list\]/gi, "<ul>$1</ul>")
@@ -69,6 +86,9 @@ function bbcodeToHtml(raw: string, uid: string): string {
 
   // phpBB3 stores newlines as \n — convert to <br>
   s = s.replace(/\r?\n/g, "<br>");
+
+  // Replace phpBB3 smilies path placeholder
+  s = s.replace(/\{SMILIES_PATH\}/g, "/images/archive/smilies");
 
   return s;
 }
@@ -298,6 +318,19 @@ async function main() {
   const forumsTable = `${tablePrefix}forums`;
   const topicsTable = `${tablePrefix}topics`;
   const postsTable = `${tablePrefix}posts`;
+  const usersTable = `${tablePrefix}users`;
+
+  // Build username → userId map for quote attribution anonymisation
+  const U = {
+    user_id: col(usersTable, "user_id", 0),
+    username: col(usersTable, "username", 7),
+  };
+  const usernameToId = new Map<string, number>();
+  for (const r of insertRows[usersTable] ?? []) {
+    const uid = Number(r[U.user_id]);
+    const uname = r[U.username];
+    if (uid > 1 && uname) usernameToId.set(uname.toLowerCase(), uid);
+  }
 
   // forums: forum_id(0), parent_id(1), left_id(2), right_id(3), ...
   // We'll use column detection; fallback indices are phpBB3.3.x defaults
@@ -441,7 +474,12 @@ async function main() {
     for (const r of rows) {
       const raw = r[P.post_text] ?? "";
       const uid = r[P.bbcode_uid] ?? "";
-      const html = bbcodeToHtml(raw, uid);
+      let html = bbcodeToHtml(raw, uid);
+      // Replace real usernames in quote attribution with pseudonyms
+      html = html.replace(/data-author="([^"]*)"/g, (_, name: string) => {
+        const authorId = usernameToId.get(name.toLowerCase());
+        return `data-author="${authorId ? computeDisplayName(authorId) : "a member"}"`;
+      });
       insertPost.run(
         Number(r[P.post_id]),
         Number(r[P.topic_id]),

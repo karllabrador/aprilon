@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 type PaginationProps = {
   currentPage: number;
@@ -11,24 +11,26 @@ type PaginationProps = {
   params?: Record<string, string>;
   // Discourse-style sidebar (all optional — sidebar hidden when omitted)
   totalItems?: number;
-  itemsPerPage?: number;
-  rangeStart?: number;      // 1-based index of first item on current page
-  rangeEnd?: number;        // 1-based index of last item on current page
-  firstDate?: number;       // unix ts of very first item (for scrub interpolation)
-  lastDate?: number;        // unix ts of very last item (for scrub interpolation)
+  rangeStart?: number; // 1-based index of first item on current page
+  rangeEnd?: number; // 1-based index of last item on current page
+  firstDate?: number; // unix ts of very first item (for scrub interpolation)
+  lastDate?: number; // unix ts of very last item (for scrub interpolation)
   currentStartDate?: number;
   currentEndDate?: number;
   itemLabel?: string;
 };
 
-function pageUrl(page: number, pageParam: string, extra?: Record<string, string>): string {
+function pageUrl(
+  page: number,
+  pageParam: string,
+  extra?: Record<string, string>,
+): string {
   const p = new URLSearchParams();
   if (extra) for (const [k, v] of Object.entries(extra)) if (v) p.set(k, v);
   if (page > 1) p.set(pageParam, String(page));
   const qs = p.toString();
   return qs ? `?${qs}` : "?";
 }
-
 
 function fmtShort(unixSeconds: number): string {
   return new Date(unixSeconds * 1000).toLocaleDateString("en-US", {
@@ -43,7 +45,6 @@ export default function Pagination({
   pageParam = "page",
   params,
   totalItems,
-  itemsPerPage,
   rangeStart,
   rangeEnd,
   firstDate,
@@ -62,21 +63,29 @@ export default function Pagination({
   // Vertical scrubber
   function handleVertClick(e: React.MouseEvent<HTMLDivElement>) {
     const rect = e.currentTarget.getBoundingClientRect();
-    const ratio = Math.max(0, Math.min(1, (e.clientY - rect.top) / rect.height));
-    const page = Math.max(1, Math.min(totalPages, Math.ceil(ratio * totalPages)));
+    const ratio = Math.max(
+      0,
+      Math.min(1, (e.clientY - rect.top) / rect.height),
+    );
+    const page = Math.max(
+      1,
+      Math.min(totalPages, Math.ceil(ratio * totalPages)),
+    );
     router.push(pageUrl(page, pageParam, params));
   }
 
-  const hoverPage = vertHover !== null
-    ? Math.max(1, Math.min(totalPages, Math.ceil(vertHover * totalPages)))
-    : null;
-  const hoverDate = vertHover !== null && firstDate != null && lastDate != null
-    ? Math.round(firstDate + (lastDate - firstDate) * vertHover)
-    : null;
-  const hoverItemNum = vertHover !== null && totalItems != null
-    ? Math.max(1, Math.min(totalItems, Math.round(vertHover * totalItems)))
-    : null;
-
+  const hoverPage =
+    vertHover !== null
+      ? Math.max(1, Math.min(totalPages, Math.ceil(vertHover * totalPages)))
+      : null;
+  const hoverDate =
+    vertHover !== null && firstDate != null && lastDate != null
+      ? Math.round(firstDate + (lastDate - firstDate) * vertHover)
+      : null;
+  const hoverItemNum =
+    vertHover !== null && totalItems != null
+      ? Math.max(1, Math.min(totalItems, Math.round(vertHover * totalItems)))
+      : null;
 
   return (
     <>
@@ -110,11 +119,17 @@ export default function Pagination({
           {/* Vertical track */}
           <div
             className="relative cursor-pointer rounded-full"
-            style={{ width: "6px", height: "220px", backgroundColor: "#1e2028" }}
+            style={{
+              width: "6px",
+              height: "220px",
+              backgroundColor: "#1e2028",
+            }}
             onClick={handleVertClick}
             onMouseMove={(e) => {
               const rect = e.currentTarget.getBoundingClientRect();
-              setVertHover(Math.max(0, Math.min(1, (e.clientY - rect.top) / rect.height)));
+              setVertHover(
+                Math.max(0, Math.min(1, (e.clientY - rect.top) / rect.height)),
+              );
             }}
             onMouseLeave={() => setVertHover(null)}
           >
@@ -138,16 +153,25 @@ export default function Pagination({
                 {/* Ghost dot on track */}
                 <div
                   className="absolute left-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 rounded-full pointer-events-none"
-                  style={{ top: `${vertHover * 100}%`, backgroundColor: "#4a6868" }}
+                  style={{
+                    top: `${vertHover * 100}%`,
+                    backgroundColor: "#4a6868",
+                  }}
                 />
                 {/* Tooltip pill to the left of the track */}
                 <div
                   className="absolute right-full mr-3 pointer-events-none"
-                  style={{ top: `${vertHover * 100}%`, transform: "translateY(-50%)" }}
+                  style={{
+                    top: `${vertHover * 100}%`,
+                    transform: "translateY(-50%)",
+                  }}
                 >
                   <div
                     className="px-2 py-1 rounded text-xs leading-snug whitespace-nowrap"
-                    style={{ backgroundColor: "#252630", border: "1px solid #3a3b44" }}
+                    style={{
+                      backgroundColor: "#252630",
+                      border: "1px solid #3a3b44",
+                    }}
                   >
                     {hoverItemNum != null && (
                       <div className="text-[#ededed] font-mono text-[11px]">
@@ -155,9 +179,13 @@ export default function Pagination({
                       </div>
                     )}
                     {hoverDate != null ? (
-                      <div className="text-gray-500 text-[10px]">{fmtShort(hoverDate)}</div>
+                      <div className="text-gray-500 text-[10px]">
+                        {fmtShort(hoverDate)}
+                      </div>
                     ) : (
-                      <div className="text-gray-500 text-[10px]">page {hoverPage}</div>
+                      <div className="text-gray-500 text-[10px]">
+                        page {hoverPage}
+                      </div>
                     )}
                   </div>
                 </div>
@@ -198,30 +226,51 @@ export default function Pagination({
       {/* ── Bottom page buttons (right-aligned) ── */}
       <div className="flex items-center justify-end gap-0.5 flex-wrap mt-4">
         {currentPage > 1 ? (
-          <Link href={pageUrl(currentPage - 1, pageParam, params)} className="px-2.5 py-1 rounded text-xs text-gray-500 hover:text-gray-300 transition-colors">← Prev</Link>
+          <Link
+            href={pageUrl(currentPage - 1, pageParam, params)}
+            className="px-2.5 py-1 rounded text-xs text-gray-500 hover:text-gray-300 transition-colors"
+          >
+            ← Prev
+          </Link>
         ) : (
-          <span className="px-2.5 py-1 rounded text-xs text-gray-700 cursor-default">← Prev</span>
+          <span className="px-2.5 py-1 rounded text-xs text-gray-700 cursor-default">
+            ← Prev
+          </span>
         )}
 
         {getPageRange(currentPage, totalPages).map((p, i) =>
           p === null ? (
-            <span key={`ellipsis-${i}`} className="px-1 text-gray-700 text-xs select-none">…</span>
+            <span
+              key={`ellipsis-${i}`}
+              className="px-1 text-gray-700 text-xs select-none"
+            >
+              …
+            </span>
           ) : (
             <Link
               key={p}
               href={pageUrl(p, pageParam, params)}
               className={`px-2.5 py-1 rounded text-xs transition-colors ${p === currentPage ? "text-[#ededed]" : "text-gray-500 hover:text-gray-300"}`}
-              style={p === currentPage ? { backgroundColor: "#353640" } : undefined}
+              style={
+                p === currentPage ? { backgroundColor: "#353640" } : undefined
+              }
             >
               {p}
             </Link>
-          )
+          ),
         )}
 
         {currentPage < totalPages ? (
-          <Link href={pageUrl(currentPage + 1, pageParam, params)} className="px-2.5 py-1 rounded text-xs text-gray-500 hover:text-gray-300 transition-colors">Next →</Link>
+          <Link
+            href={pageUrl(currentPage + 1, pageParam, params)}
+            className="px-2.5 py-1 rounded text-xs text-gray-500 hover:text-gray-300 transition-colors"
+          >
+            Next →
+          </Link>
         ) : (
-          <span className="px-2.5 py-1 rounded text-xs text-gray-700 cursor-default">Next →</span>
+          <span className="px-2.5 py-1 rounded text-xs text-gray-700 cursor-default">
+            Next →
+          </span>
         )}
       </div>
     </>
@@ -231,6 +280,7 @@ export default function Pagination({
 function getPageRange(current: number, total: number): (number | null)[] {
   if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
   if (current <= 4) return [1, 2, 3, 4, 5, null, total];
-  if (current >= total - 3) return [1, null, total - 4, total - 3, total - 2, total - 1, total];
+  if (current >= total - 3)
+    return [1, null, total - 4, total - 3, total - 2, total - 1, total];
   return [1, null, current - 1, current, current + 1, null, total];
 }

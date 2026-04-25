@@ -15,7 +15,9 @@ const dumpPath = process.argv[2];
 const dbPath = process.argv[3] ?? process.env.DATABASE_PATH ?? "data/forum.db";
 
 if (!dumpPath) {
-  console.error("Usage: npx tsx scripts/migrate-forum.ts <dump.sql> [output.db]");
+  console.error(
+    "Usage: npx tsx scripts/migrate-forum.ts <dump.sql> [output.db]",
+  );
   process.exit(1);
 }
 
@@ -37,7 +39,9 @@ function decodeHtmlEntities(s: string): string {
     .replace(/&#39;/g, "'")
     .replace(/&nbsp;/g, " ")
     .replace(/&#(\d+);/g, (_, n) => String.fromCharCode(Number(n)))
-    .replace(/&#x([0-9a-f]+);/gi, (_, h) => String.fromCharCode(parseInt(h, 16)));
+    .replace(/&#x([0-9a-f]+);/gi, (_, h) =>
+      String.fromCharCode(parseInt(h, 16)),
+    );
 }
 
 // ---------------------------------------------------------------------------
@@ -55,9 +59,18 @@ function bbcodeToHtml(raw: string, uid: string): string {
   while (s !== prev) {
     prev = s;
     s = s
-      .replace(/\[quote=&quot;([^&]*)&quot;\]((?:(?!\[quote)[\s\S])*?)\[\/quote\]/gi, '<blockquote data-author="$1">$2</blockquote>')
-      .replace(/\[quote="([^"]*)"\]((?:(?!\[quote)[\s\S])*?)\[\/quote\]/gi, '<blockquote data-author="$1">$2</blockquote>')
-      .replace(/\[quote\]((?:(?!\[quote)[\s\S])*?)\[\/quote\]/gi, "<blockquote>$1</blockquote>");
+      .replace(
+        /\[quote=&quot;([^&]*)&quot;\]((?:(?!\[quote)[\s\S])*?)\[\/quote\]/gi,
+        '<blockquote data-author="$1">$2</blockquote>',
+      )
+      .replace(
+        /\[quote="([^"]*)"\]((?:(?!\[quote)[\s\S])*?)\[\/quote\]/gi,
+        '<blockquote data-author="$1">$2</blockquote>',
+      )
+      .replace(
+        /\[quote\]((?:(?!\[quote)[\s\S])*?)\[\/quote\]/gi,
+        "<blockquote>$1</blockquote>",
+      );
   }
 
   // Convert common tags
@@ -66,15 +79,21 @@ function bbcodeToHtml(raw: string, uid: string): string {
     .replace(/\[i\]([\s\S]*?)\[\/i\]/gi, "<em>$1</em>")
     .replace(/\[u\]([\s\S]*?)\[\/u\]/gi, "<u>$1</u>")
     .replace(/\[s\]([\s\S]*?)\[\/s\]/gi, "<s>$1</s>")
-    .replace(/\[url=([^\]]+)\]([\s\S]*?)\[\/url\]/gi, (_, href: string, text: string) => {
-      if (/^(javascript|data|vbscript):/i.test(href.trim())) return text;
-      return `<a href="${href.trim()}" rel="noopener noreferrer">${text}</a>`;
-    })
+    .replace(
+      /\[url=([^\]]+)\]([\s\S]*?)\[\/url\]/gi,
+      (_, href: string, text: string) => {
+        if (/^(javascript|data|vbscript):/i.test(href.trim())) return text;
+        return `<a href="${href.trim()}" rel="noopener noreferrer">${text}</a>`;
+      },
+    )
     .replace(/\[url\]([\s\S]*?)\[\/url\]/gi, (_, href: string) => {
       if (/^(javascript|data|vbscript):/i.test(href.trim())) return href;
       return `<a href="${href.trim()}" rel="noopener noreferrer">${href.trim()}</a>`;
     })
-    .replace(/\[img\]([\s\S]*?)\[\/img\]/gi, '<img src="$1" alt="" loading="lazy">')
+    .replace(
+      /\[img\]([\s\S]*?)\[\/img\]/gi,
+      '<img src="$1" alt="" loading="lazy">',
+    )
     .replace(/\[code\]([\s\S]*?)\[\/code\]/gi, "<pre><code>$1</code></pre>")
     .replace(/\[color=[^\]]+\]([\s\S]*?)\[\/color\]/gi, "$1")
     .replace(/\[size=[^\]]+\]([\s\S]*?)\[\/size\]/gi, "$1")
@@ -156,9 +175,9 @@ function parseTuples(valueClause: string): (string | null)[][] {
     // find matching closing paren (handle nested parens not expected in phpBB data,
     // but be safe)
     let depth = 1;
-    let start = i;
+    const start = i;
     while (i < valueClause.length && depth > 0) {
-      if (valueClause[i] === "'" ) {
+      if (valueClause[i] === "'") {
         // skip string
         i++;
         while (i < valueClause.length) {
@@ -415,7 +434,7 @@ async function main() {
   // ---------------------------------------------------------------------------
 
   const insertForum = db.prepare(
-    "INSERT INTO forums (id, parent_id, name, description, topic_count, post_count, display_order) VALUES (?,?,?,?,?,?,?)"
+    "INSERT INTO forums (id, parent_id, name, description, topic_count, post_count, display_order) VALUES (?,?,?,?,?,?,?)",
   );
 
   const insertForums = db.transaction((rows: (string | null)[][]) => {
@@ -427,7 +446,7 @@ async function main() {
         r[F.forum_desc] != null ? decodeHtmlEntities(r[F.forum_desc]!) : null,
         0,
         0,
-        r[F.left_id] !== null ? Number(r[F.left_id]) : null
+        r[F.left_id] !== null ? Number(r[F.left_id]) : null,
       );
     }
   });
@@ -440,7 +459,7 @@ async function main() {
   // ---------------------------------------------------------------------------
 
   const insertTopic = db.prepare(
-    "INSERT INTO topics (id, forum_id, title, author_id, last_poster_id, post_count, created_at, last_post_at, is_sticky) VALUES (?,?,?,?,?,?,?,?,?)"
+    "INSERT INTO topics (id, forum_id, title, author_id, last_poster_id, post_count, created_at, last_post_at, is_sticky) VALUES (?,?,?,?,?,?,?,?,?)",
   );
 
   const insertTopics = db.transaction((rows: (string | null)[][]) => {
@@ -450,11 +469,13 @@ async function main() {
         Number(r[T.forum_id]),
         decodeHtmlEntities(r[T.topic_title] ?? "(untitled)"),
         r[T.topic_poster] !== null ? Number(r[T.topic_poster]) : null,
-        r[T.topic_last_poster_id] !== null ? Number(r[T.topic_last_poster_id]) : null,
+        r[T.topic_last_poster_id] !== null
+          ? Number(r[T.topic_last_poster_id])
+          : null,
         Number(r[T.topic_posts_approved] ?? 0),
         Number(r[T.topic_time] ?? 0),
         Number(r[T.topic_last_post_time] ?? 0),
-        Number(r[T.topic_type] ?? 0) >= 1 ? 1 : 0
+        Number(r[T.topic_type] ?? 0) >= 1 ? 1 : 0,
       );
     }
   });
@@ -467,7 +488,7 @@ async function main() {
   // ---------------------------------------------------------------------------
 
   const insertPost = db.prepare(
-    "INSERT INTO posts (id, topic_id, author_id, content_html, created_at) VALUES (?,?,?,?,?)"
+    "INSERT INTO posts (id, topic_id, author_id, content_html, created_at) VALUES (?,?,?,?,?)",
   );
 
   const insertPosts = db.transaction((rows: (string | null)[][]) => {
@@ -485,7 +506,7 @@ async function main() {
         Number(r[P.topic_id]),
         r[P.poster_id] !== null ? Number(r[P.poster_id]) : null,
         html,
-        Number(r[P.post_time] ?? 0)
+        Number(r[P.post_time] ?? 0),
       );
     }
   });
@@ -539,9 +560,11 @@ async function main() {
   // ---------------------------------------------------------------------------
 
   type ForumRow = { id: number; parent_id: number | null; name: string };
-  const allForums = db.prepare(
-    "SELECT id, parent_id, name FROM forums ORDER BY display_order ASC"
-  ).all() as ForumRow[];
+  const allForums = db
+    .prepare(
+      "SELECT id, parent_id, name FROM forums ORDER BY display_order ASC",
+    )
+    .all() as ForumRow[];
 
   const forumIds = new Set(allForums.map((f) => f.id));
   const childrenOf = new Map<number, ForumRow[]>();
@@ -560,7 +583,9 @@ async function main() {
     }
   }
 
-  console.log("\nForum IDs — add the ones you want to config/forum-allowlist.json:");
+  console.log(
+    "\nForum IDs — add the ones you want to config/forum-allowlist.json:",
+  );
   console.log("─".repeat(56));
   printTree(0, 0);
 

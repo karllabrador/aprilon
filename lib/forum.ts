@@ -2,6 +2,7 @@ import Database from "better-sqlite3";
 import allowlist from "@/config/forum-allowlist.json";
 import redactionsConfig from "@/config/redactions.json";
 import type { Forum, Post, Topic } from "@/types";
+import { computeDisplayName } from "@/lib/pseudonyms";
 
 type Redactions = {
   topics: number[];
@@ -23,6 +24,14 @@ export type PostSearchResult = Post & {
   forumName: string;
   postIndex: number;
 };
+export type UserSearchResult = {
+  id: number;
+  displayName: string;
+  postCount: number;
+  topicCount: number;
+};
+
+export const USER_SEARCH_LIMIT = 8;
 
 let _db: Database.Database | null = null;
 
@@ -34,17 +43,6 @@ function getDb(): Database.Database {
   return _db;
 }
 
-function decodeHtmlEntities(s: string): string {
-  return s
-    .replace(/&amp;/g, "&")
-    .replace(/&lt;/g, "<")
-    .replace(/&gt;/g, ">")
-    .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'")
-    .replace(/&nbsp;/g, " ")
-    .replace(/&#(\d+);/g, (_, n) => String.fromCharCode(Number(n)))
-    .replace(/&#x([0-9a-f]+);/gi, (_, h) => String.fromCharCode(parseInt(h, 16)));
-}
 
 type ForumRow = {
   id: number;
@@ -88,8 +86,8 @@ function rowToForum(r: ForumRow): Forum {
   return {
     id: r.id,
     parentId: r.parent_id,
-    name: decodeHtmlEntities(r.name),
-    description: r.description ? decodeHtmlEntities(r.description) : null,
+    name: r.name,
+    description: r.description ?? null,
     topicCount: r.topic_count ?? 0,
     postCount: r.post_count ?? 0,
   };
@@ -99,7 +97,7 @@ function rowToTopic(r: TopicRow): Topic {
   return {
     id: r.id,
     forumId: r.forum_id,
-    title: decodeHtmlEntities(r.title),
+    title: r.title,
     authorId: r.author_id,
     lastPosterId: r.last_poster_id ?? null,
     postCount: r.post_count ?? 0,
@@ -226,9 +224,10 @@ export function getPosts(
 
 export function searchTopics(
   query: string,
-  opts: { page?: number } = {}
+  opts: { page?: number; userId?: number } = {}
 ): { results: TopicSearchResult[]; total: number } {
-  if (allowedIds.length === 0 || !query.trim()) return { results: [], total: 0 };
+  if (allowedIds.length === 0) return { results: [], total: 0 };
+  if (!query.trim() && !opts.userId) return { results: [], total: 0 };
   const db = getDb();
   const page = Math.max(1, opts.page ?? 1);
   const q = query.trim();
@@ -241,8 +240,14 @@ export function searchTopics(
     where += ` AND t.id NOT IN (${redactions.topics.map(() => "?").join(",")})`;
     params.push(...redactions.topics);
   }
-  where += " AND t.title LIKE ?";
-  params.push(`%${q}%`);
+  if (q) {
+    where += " AND t.title LIKE ?";
+    params.push(`%${q}%`);
+  }
+  if (opts.userId) {
+    where += " AND t.author_id = ?";
+    params.push(opts.userId);
+  }
 
   const { count } = db
     .prepare(`SELECT COUNT(*) as count FROM topics t ${where}`)
@@ -265,9 +270,10 @@ export function searchTopics(
 
 export function searchPosts(
   query: string,
-  opts: { page?: number } = {}
+  opts: { page?: number; userId?: number } = {}
 ): { results: PostSearchResult[]; total: number } {
-  if (allowedIds.length === 0 || !query.trim()) return { results: [], total: 0 };
+  if (allowedIds.length === 0) return { results: [], total: 0 };
+  if (!query.trim() && !opts.userId) return { results: [], total: 0 };
   const db = getDb();
   const page = Math.max(1, opts.page ?? 1);
   const q = query.trim();
@@ -287,8 +293,14 @@ export function searchPosts(
     params.push(...redactedPostIds);
   }
 
-  where += " AND p.content_html LIKE ?";
-  params.push(`%${q}%`);
+  if (q) {
+    where += " AND p.content_html LIKE ?";
+    params.push(`%${q}%`);
+  }
+  if (opts.userId) {
+    where += " AND p.author_id = ?";
+    params.push(opts.userId);
+  }
 
   const { count } = db
     .prepare(`SELECT COUNT(*) as count FROM posts p JOIN topics t ON p.topic_id = t.id ${where}`)
@@ -316,6 +328,35 @@ export function searchPosts(
     })),
     total: count,
   };
+}
+
+export function searchUsers(query: string): UserSearchResult[] {
+  if (!query.trim() || allowedIds.length === 0) return [];
+  const db = getDb();
+  const ph = allowedIds.map(() => "?").join(",");
+
+  type Row = { author_id: number; post_count: number; topic_count: number };
+  const rows = db
+    .prepare(
+      `SELECT p.author_id,
+              COUNT(p.id) AS post_count,
+              COUNT(DISTINCT t.id) AS topic_count
+       FROM posts p JOIN topics t ON p.topic_id = t.id
+       WHERE p.author_id IS NOT NULL AND p.author_id != 1 AND t.forum_id IN (${ph})
+       GROUP BY p.author_id`
+    )
+    .all(...allowedIds) as Row[];
+
+  const q = query.trim().toLowerCase();
+  return rows
+    .map((r) => ({
+      id: r.author_id,
+      displayName: computeDisplayName(r.author_id),
+      postCount: r.post_count,
+      topicCount: r.topic_count,
+    }))
+    .filter((u) => u.displayName.toLowerCase().includes(q) || String(u.id) === q)
+    .slice(0, USER_SEARCH_LIMIT);
 }
 
 export type ActivityBucket = {
@@ -363,8 +404,8 @@ export function getTopTopics(forumId: number, limit = 3): Topic[] {
   }
 
   const rows = db
-    .prepare(`SELECT * FROM topics ${where} ORDER BY post_count DESC LIMIT ${limit}`)
-    .all(...params) as TopicRow[];
+    .prepare(`SELECT * FROM topics ${where} ORDER BY post_count DESC LIMIT ?`)
+    .all(...params, limit) as TopicRow[];
   return rows.map(rowToTopic);
 }
 
@@ -467,7 +508,7 @@ export function getUserForumActivity(userId: number): ForumActivitySlice[] {
 
   return rows.map((r) => ({
     forumId: r.forum_id,
-    forumName: decodeHtmlEntities(r.forum_name),
+    forumName: r.forum_name,
     postCount: r.post_count,
     topicCount: r.topic_count,
   }));

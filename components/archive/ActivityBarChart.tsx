@@ -29,8 +29,8 @@ function formatLabel(period: string) {
 }
 
 const tooltipStyle: React.CSSProperties = {
-  backgroundColor: "#0c1414",
-  border: "1px solid #1e2828",
+  backgroundColor: "#18191b",
+  border: "1px solid #2a2b2e",
   borderRadius: "6px",
   fontSize: "11px",
   padding: "6px 10px",
@@ -40,13 +40,13 @@ export default function ActivityBarChart({ data, height = 180 }: Props) {
   return (
     <ResponsiveContainer width="100%" height={height}>
       <ComposedChart data={data} margin={{ top: 4, right: 4, bottom: 0, left: -20 }}>
-        <CartesianGrid vertical={false} stroke="#111c1c" />
+        <CartesianGrid vertical={false} stroke="#252628" />
         <XAxis
           dataKey="period"
           ticks={YEAR_TICKS}
           tickFormatter={(v: string) => v.slice(0, 4)}
           tick={{ fontSize: 10, fill: "#4b5563" }}
-          axisLine={{ stroke: "#1e2424" }}
+          axisLine={{ stroke: "#2a2b2e" }}
           tickLine={false}
         />
         <YAxis
@@ -57,7 +57,7 @@ export default function ActivityBarChart({ data, height = 180 }: Props) {
           width={28}
         />
         <Tooltip
-          cursor={{ fill: "rgba(30, 56, 56, 0.25)" }}
+          cursor={{ fill: "rgba(90,160,160,0.06)" }}
           contentStyle={tooltipStyle}
           labelStyle={{ color: "#9ca3af", marginBottom: "4px" }}
           itemStyle={{ color: "#d1d5db" }}
@@ -71,15 +71,15 @@ export default function ActivityBarChart({ data, height = 180 }: Props) {
         <Bar
           dataKey="postCount"
           name="Posts"
-          fill="#1e3838"
-          radius={[1, 1, 0, 0]}
+          fill="#2e6060"
+          radius={[2, 2, 0, 0]}
           maxBarSize={10}
           isAnimationActive={false}
         />
         <Line
           dataKey="topicCount"
           name="Topics"
-          stroke="#3a7070"
+          stroke="#5aabab"
           strokeWidth={1.5}
           dot={false}
           type="monotone"

@@ -76,9 +76,9 @@ export default async function TopicPage({ params, searchParams }: Props) {
           <div className="mb-6">
             <PostCard post={pinnedFirst} index={0} isOP />
             <div className="flex items-center gap-3 mt-6">
-              <div className="flex-1 h-px" style={{ backgroundColor: "#1a2828" }} />
+              <div className="flex-1 h-px" style={{ backgroundColor: "#252628" }} />
               <span className="text-xs text-gray-600">Page {page}</span>
-              <div className="flex-1 h-px" style={{ backgroundColor: "#1a2828" }} />
+              <div className="flex-1 h-px" style={{ backgroundColor: "#252628" }} />
             </div>
           </div>
         )}

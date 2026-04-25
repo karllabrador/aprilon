@@ -15,14 +15,14 @@ export default function TopicRow({ topic }: TopicRowProps) {
 
   return (
     <div
-      className="flex items-center gap-6 px-4 py-3.5 border-b last:border-b-0"
-      style={{ borderColor: "#1a1f1f" }}
+      className="flex items-center gap-6 px-4 py-3.5 border-b last:border-b-0 transition-colors hover:bg-white/2.5"
+      style={{ borderColor: "#252628" }}
     >
       {/* Left: title + author/date below */}
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2 mb-1">
           {topic.isSticky && (
-            <span className="shrink-0 text-[10px] uppercase tracking-wider text-amber-600/70 border border-amber-600/30 rounded px-1 py-0.5">
+            <span className="shrink-0 text-[10px] uppercase tracking-wider text-amber-500/60 border border-amber-500/25 rounded px-1 py-0.5">
               Sticky
             </span>
           )}
@@ -46,22 +46,19 @@ export default function TopicRow({ topic }: TopicRowProps) {
         </p>
       </div>
 
-      {/* Right: last post info — fixed-width columns so every row aligns */}
-      <div className="shrink-0 flex items-stretch border-l" style={{ borderColor: "#1a2424" }}>
-        {/* Post count — fixed width */}
+      {/* Right: fixed-width columns */}
+      <div className="shrink-0 flex items-stretch border-l" style={{ borderColor: "#252628" }}>
         <div className="w-20 flex flex-col items-center justify-center px-3 leading-tight">
           <p className="text-base font-semibold text-gray-400 tabular-nums">
             {topic.postCount.toLocaleString()}
           </p>
-          <p className="text-[10px] text-gray-700 uppercase tracking-wide">
+          <p className="text-[10px] text-gray-600 uppercase tracking-wide">
             {topic.postCount === 1 ? "reply" : "replies"}
           </p>
         </div>
 
-        {/* Divider */}
-        <div className="w-px" style={{ backgroundColor: "#1a2424" }} />
+        <div className="w-px" style={{ backgroundColor: "#252628" }} />
 
-        {/* Last poster — fixed width */}
         <div className="w-52 flex items-center justify-end gap-2.5 px-3">
           <div className="text-right overflow-hidden">
             {lastPosterHref ? (
@@ -80,10 +77,7 @@ export default function TopicRow({ topic }: TopicRowProps) {
             width={28}
             height={28}
             className="rounded shrink-0"
-            style={{
-              border: "1px solid #2a4040",
-              boxShadow: "0 0 0 1px #1a2e2e",
-            }}
+            style={{ border: "1px solid #2e3030", boxShadow: "0 0 0 1px #1a1f1f" }}
           />
         </div>
       </div>

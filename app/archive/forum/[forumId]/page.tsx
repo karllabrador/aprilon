@@ -83,7 +83,7 @@ export default async function ForumPage({ params, searchParams }: Props) {
             {query ? `No topics found matching "${query}".` : "No topics in this forum."}
           </p>
         ) : (
-          <div className="border rounded overflow-hidden" style={{ borderColor: "#1e2424" }}>
+          <div className="border rounded-lg overflow-hidden" style={{ borderColor: "#2a2b2e", backgroundColor: "#1e1f21" }}>
             {topics.map((topic) => (
               <TopicRow key={topic.id} topic={topic} />
             ))}

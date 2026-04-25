@@ -15,14 +15,17 @@ export default function ForumStats({ topTopics, activity }: ForumStatsProps) {
 
   return (
     <div
-      className="mb-6 rounded-lg border overflow-hidden"
-      style={{ borderColor: "#1a2828", backgroundColor: "#0a1212" }}
+      className="mb-6 rounded-xl border overflow-hidden"
+      style={{
+        borderColor: "#2a2b2e",
+        backgroundColor: "#1e1f21",
+        boxShadow: "0 2px 12px rgba(0,0,0,0.2)",
+      }}
     >
       <div className="flex">
-        {/* ── Top Topics ── */}
         {topTopics.length > 0 && (
-          <div className="w-72 shrink-0 p-4 border-r" style={{ borderColor: "#1a2828" }}>
-            <p className="text-[10px] font-semibold uppercase tracking-widest text-gray-600 mb-3">
+          <div className="w-72 shrink-0 p-4 border-r" style={{ borderColor: "#252628" }}>
+            <p className="text-[10px] font-semibold uppercase tracking-widest text-gray-500 mb-3">
               Popular Topics
             </p>
             <ol className="space-y-2.5">
@@ -30,7 +33,7 @@ export default function ForumStats({ topTopics, activity }: ForumStatsProps) {
                 <li key={topic.id} className="flex items-baseline gap-2">
                   <span
                     className="shrink-0 text-[10px] font-bold tabular-nums w-4 text-right"
-                    style={{ color: ["#5a8080", "#3a6060", "#2a4848"][i] }}
+                    style={{ color: ["#5ac8c8", "#3a9090", "#2a6868"][i] }}
                   >
                     {i + 1}
                   </span>
@@ -49,9 +52,8 @@ export default function ForumStats({ topTopics, activity }: ForumStatsProps) {
           </div>
         )}
 
-        {/* ── Activity Graph ── */}
         <div className="flex-1 min-w-0 p-4">
-          <p className="text-[10px] font-semibold uppercase tracking-widest text-gray-600 mb-3">
+          <p className="text-[10px] font-semibold uppercase tracking-widest text-gray-500 mb-3">
             Activity (2009 – 2016)
           </p>
           <ActivityBarChart data={activity} height={120} />

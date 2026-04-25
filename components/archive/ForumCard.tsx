@@ -9,15 +9,17 @@ export default function ForumCard({ forum }: ForumCardProps) {
   return (
     <Link
       href={`/archive/forum/${forum.id}`}
-      className="block border rounded p-4 transition-colors"
+      className="group block border rounded-lg p-4 transition-colors hover:bg-[#232426]"
       style={{
-        borderColor: "#1e2424",
-        backgroundColor: "#0f1414",
+        borderColor: "#2a2b2e",
+        backgroundColor: "#1e1f21",
       }}
     >
       <div className="flex items-center justify-between gap-4">
         <div className="min-w-0">
-          <p className="text-[#ededed] font-medium truncate">{forum.name}</p>
+          <p className="text-[#ededed] font-medium truncate group-hover:text-white transition-colors">
+            {forum.name}
+          </p>
           {forum.description && (
             <p className="text-sm text-gray-500 mt-0.5 line-clamp-2">{forum.description}</p>
           )}

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import ArchiveHeader from "@/components/archive/ArchiveHeader";
 import ActivityBarChart from "@/components/archive/ActivityBarChart";
@@ -40,13 +41,22 @@ export default async function UserPage({ params }: Props) {
             height={96}
             className="rounded-xl shrink-0"
             style={{
-              border: "2px solid #2a4848",
-              boxShadow: "0 0 0 1px #1a2e2e, 0 4px 32px rgba(42,80,80,0.25)",
+              border: "2px solid #3a6060",
+              boxShadow: "0 0 0 1px #2a4848, 0 4px 32px rgba(60,100,100,0.3)",
               imageRendering: "pixelated",
             }}
           />
           <div>
-            <h1 className="text-2xl font-bold text-[#ededed]">{displayName}</h1>
+            <div className="flex items-center gap-3 flex-wrap">
+              <h1 className="text-2xl font-bold text-[#ededed]">{displayName}</h1>
+              <Link
+                href={`/archive?uid=${uid}`}
+                className="text-xs px-2 py-1 rounded transition-colors"
+                style={{ backgroundColor: "#252c2c", color: "#5aabab", border: "1px solid #2e5050" }}
+              >
+                See all activity →
+              </Link>
+            </div>
             <p className="text-sm text-gray-600 mt-0.5">User #{uid}</p>
             <div className="flex items-center gap-5 mt-4">
               <div>
@@ -55,7 +65,7 @@ export default async function UserPage({ params }: Props) {
                 </p>
                 <p className="text-[10px] text-gray-600 uppercase tracking-wide mt-0.5">Posts</p>
               </div>
-              <div className="w-px h-8" style={{ backgroundColor: "#1e2424" }} />
+              <div className="w-px h-8" style={{ backgroundColor: "#3d3e45" }} />
               <div>
                 <p className="text-xl font-semibold text-gray-300 tabular-nums leading-none">
                   {stats.topics.toLocaleString()}
@@ -64,7 +74,7 @@ export default async function UserPage({ params }: Props) {
               </div>
               {dates.joinedAt && (
                 <>
-                  <div className="w-px h-8" style={{ backgroundColor: "#1e2424" }} />
+                  <div className="w-px h-8" style={{ backgroundColor: "#3d3e45" }} />
                   <div>
                     <p className="text-sm font-medium text-gray-300 leading-none">
                       {formatDateTime(dates.joinedAt)}
@@ -75,7 +85,7 @@ export default async function UserPage({ params }: Props) {
               )}
               {dates.lastPostAt && (
                 <>
-                  <div className="w-px h-8" style={{ backgroundColor: "#1e2424" }} />
+                  <div className="w-px h-8" style={{ backgroundColor: "#3d3e45" }} />
                   <div>
                     <p className="text-sm font-medium text-gray-300 leading-none">
                       {formatDateTime(dates.lastPostAt)}
@@ -95,7 +105,7 @@ export default async function UserPage({ params }: Props) {
           </h2>
           <div
             className="rounded-lg border p-4"
-            style={{ borderColor: "#1a2828", backgroundColor: "#0a1212" }}
+            style={{ borderColor: "#2a2b2e", backgroundColor: "#1e1f21" }}
           >
             <ActivityBarChart data={activity} height={200} />
           </div>
@@ -109,7 +119,7 @@ export default async function UserPage({ params }: Props) {
             </h2>
             <div
               className="rounded-lg border p-4"
-              style={{ borderColor: "#1a2828", backgroundColor: "#0a1212" }}
+              style={{ borderColor: "#2a2b2e", backgroundColor: "#1e1f21" }}
             >
               <ForumDistributionChart data={forumActivity} />
             </div>

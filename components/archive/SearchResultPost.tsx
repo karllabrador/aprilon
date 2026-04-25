@@ -24,7 +24,7 @@ export default function SearchResultPost({ result, query }: { result: PostSearch
   const authorHref = getUserProfileHref(result.authorId);
 
   return (
-    <div className="px-4 py-3">
+    <div className="px-4 py-3 transition-colors hover:bg-white/2.5">
       <div className="text-xs text-gray-600 mb-1">
         {result.forumName}
         {" › "}

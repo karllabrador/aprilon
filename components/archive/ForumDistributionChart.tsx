@@ -12,13 +12,13 @@ import {
 import type { ForumActivitySlice } from "@/lib/forum";
 
 const FILLS = [
-  "#2a5858", "#265252", "#224c4c", "#1e4646",
-  "#1a4040", "#163a3a", "#123434", "#0e2e2e",
+  "#3a7878", "#357070", "#306868", "#2b6060",
+  "#265858", "#215050", "#1c4848", "#174040",
 ];
 
 const tooltipStyle: React.CSSProperties = {
-  backgroundColor: "#0c1414",
-  border: "1px solid #1e2828",
+  backgroundColor: "#18191b",
+  border: "1px solid #2a2b2e",
   borderRadius: "6px",
   fontSize: "11px",
   padding: "6px 10px",
@@ -53,7 +53,7 @@ export default function ForumDistributionChart({ data }: Props) {
           width={160}
         />
         <Tooltip
-          cursor={{ fill: "rgba(30, 56, 56, 0.2)" }}
+          cursor={{ fill: "rgba(90,160,160,0.06)" }}
           contentStyle={tooltipStyle}
           labelStyle={{ color: "#9ca3af", marginBottom: "4px" }}
           itemStyle={{ color: "#d1d5db" }}

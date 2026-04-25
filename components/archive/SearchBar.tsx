@@ -6,18 +6,26 @@ import { useRouter, usePathname } from "next/navigation";
 type SearchBarProps = {
   initialQuery?: string;
   placeholder?: string;
+  extraParams?: Record<string, string>;
 };
 
 export default function SearchBar({
   initialQuery = "",
   placeholder = "Search…",
+  extraParams,
 }: SearchBarProps) {
   const router = useRouter();
   const pathname = usePathname();
   const [value, setValue] = useState(initialQuery);
 
   function navigate(q: string) {
-    router.push(q ? `${pathname}?q=${encodeURIComponent(q)}` : pathname);
+    const params = new URLSearchParams();
+    if (extraParams) {
+      for (const [k, v] of Object.entries(extraParams)) params.set(k, v);
+    }
+    if (q) params.set("q", q);
+    const qs = params.toString();
+    router.push(qs ? `${pathname}?${qs}` : pathname);
   }
 
   function handleSubmit(e: React.FormEvent) {
@@ -33,8 +41,8 @@ export default function SearchBar({
   return (
     <form onSubmit={handleSubmit} className="flex items-center">
       <div
-        className="flex items-center gap-2 px-3 py-1.5 rounded border text-sm"
-        style={{ backgroundColor: "#0c1010", borderColor: "#1e2424" }}
+        className="flex items-center gap-2 px-3 py-1.5 rounded-lg border text-sm transition-colors focus-within:border-[#3a4a4a]"
+        style={{ backgroundColor: "#18191b", borderColor: "#2a2b2e" }}
       >
         <svg
           className="shrink-0 text-gray-600"

@@ -95,7 +95,6 @@ export default async function ForumPage({ params, searchParams }: Props) {
           totalPages={totalPages}
           params={query ? { q: query } : undefined}
           totalItems={query ? total : forum.topicCount}
-          itemsPerPage={TOPICS_PER_PAGE}
           rangeStart={topics.length > 0 ? (page - 1) * TOPICS_PER_PAGE + 1 : undefined}
           rangeEnd={topics.length > 0 ? (page - 1) * TOPICS_PER_PAGE + topics.length : undefined}
           itemLabel="topic"

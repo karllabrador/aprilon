@@ -100,7 +100,6 @@ export default async function TopicPage({ params, searchParams }: Props) {
           totalPages={totalPages}
           params={query ? { q: query } : undefined}
           totalItems={query ? total : topic.postCount}
-          itemsPerPage={POSTS_PER_PAGE}
           rangeStart={posts.length > 0 ? startIndex + 1 : undefined}
           rangeEnd={posts.length > 0 ? startIndex + posts.length : undefined}
           firstDate={topic.createdAt || undefined}

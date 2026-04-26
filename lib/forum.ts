@@ -179,10 +179,6 @@ export function getTopics(
   const params: (string | number)[] = [forumId];
   let where = "WHERE forum_id = ?";
 
-  if (redactions.topics.length > 0) {
-    where += ` AND id NOT IN (${redactions.topics.map(() => "?").join(",")})`;
-    params.push(...redactions.topics);
-  }
   if (query) {
     where += " AND title LIKE ?";
     params.push(`%${query}%`);
@@ -213,7 +209,6 @@ export function getTopic(id: number): Topic | null {
     | undefined;
   if (!row) return null;
   if (!allowedIds.includes(row.forum_id)) return null;
-  if (redactions.topics.includes(id)) return null;
   return rowToTopic(row);
 }
 
@@ -273,10 +268,6 @@ export function searchTopics(
   const params: (string | number)[] = [...allowedIds];
   let where = `WHERE t.forum_id IN (${placeholders})`;
 
-  if (redactions.topics.length > 0) {
-    where += ` AND t.id NOT IN (${redactions.topics.map(() => "?").join(",")})`;
-    params.push(...redactions.topics);
-  }
   if (q) {
     where += " AND t.title LIKE ?";
     params.push(`%${q}%`);
@@ -323,11 +314,6 @@ export function searchPosts(
   const placeholders = allowedIds.map(() => "?").join(",");
   const params: (string | number)[] = [...allowedIds];
   let where = `WHERE t.forum_id IN (${placeholders})`;
-
-  if (redactions.topics.length > 0) {
-    where += ` AND t.id NOT IN (${redactions.topics.map(() => "?").join(",")})`;
-    params.push(...redactions.topics);
-  }
 
   const redactedPostIds = redactions.posts;
   if (redactedPostIds.length > 0) {
@@ -455,16 +441,9 @@ export function getTopTopics(forumId: number, limit = 3): Topic[] {
   const db = getDb();
   if (!db) return [];
 
-  const params: (string | number)[] = [forumId];
-  let where = "WHERE forum_id = ?";
-  if (redactions.topics.length > 0) {
-    where += ` AND id NOT IN (${redactions.topics.map(() => "?").join(",")})`;
-    params.push(...redactions.topics);
-  }
-
   const rows = db
-    .prepare(`SELECT * FROM topics ${where} ORDER BY post_count DESC LIMIT ?`)
-    .all(...params, limit) as TopicRow[];
+    .prepare(`SELECT * FROM topics WHERE forum_id = ? ORDER BY post_count DESC LIMIT ?`)
+    .all(forumId, limit) as TopicRow[];
   return rows.map(rowToTopic);
 }
 
@@ -473,19 +452,12 @@ export function getForumActivity(forumId: number): ActivityBucket[] {
   const db = getDb();
   if (!db) return generateBuckets([], []);
 
-  const tParams: (string | number)[] = [forumId];
-  let tWhere = "WHERE forum_id = ?";
-  if (redactions.topics.length > 0) {
-    tWhere += ` AND id NOT IN (${redactions.topics.map(() => "?").join(",")})`;
-    tParams.push(...redactions.topics);
-  }
-
   const topicRows = db
     .prepare(
       `SELECT strftime('%Y-%m', datetime(created_at, 'unixepoch')) AS period, COUNT(*) AS count
-       FROM topics ${tWhere} GROUP BY period`,
+       FROM topics WHERE forum_id = ? GROUP BY period`,
     )
-    .all(...tParams) as { period: string; count: number }[];
+    .all(forumId) as { period: string; count: number }[];
 
   const postRows = db
     .prepare(
@@ -531,11 +503,7 @@ export function getUserActivity(userId: number): ActivityBucket[] {
   const ph = allowedIds.map(() => "?").join(",");
 
   const tParams: (string | number)[] = [userId, ...allowedIds];
-  let tWhere = `WHERE author_id = ? AND forum_id IN (${ph})`;
-  if (redactions.topics.length > 0) {
-    tWhere += ` AND id NOT IN (${redactions.topics.map(() => "?").join(",")})`;
-    tParams.push(...redactions.topics);
-  }
+  const tWhere = `WHERE author_id = ? AND forum_id IN (${ph})`;
 
   const topicRows = db
     .prepare(
@@ -615,11 +583,7 @@ export function getArchiveActivity(): ActivityBucket[] {
   const ph = allowedIds.map(() => "?").join(",");
 
   const tParams: (string | number)[] = [...allowedIds];
-  let tWhere = `WHERE forum_id IN (${ph})`;
-  if (redactions.topics.length > 0) {
-    tWhere += ` AND id NOT IN (${redactions.topics.map(() => "?").join(",")})`;
-    tParams.push(...redactions.topics);
-  }
+  const tWhere = `WHERE forum_id IN (${ph})`;
 
   const topicRows = db
     .prepare(

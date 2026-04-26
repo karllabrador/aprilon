@@ -25,6 +25,7 @@ export function getAvatarUrl(authorId: number | null): string {
 export function applyRedaction<T extends Post>(post: T, redactions: Redactions): T {
   const redacted =
     redactions.posts.includes(post.id) ||
+    redactions.topics.includes(post.topicId) ||
     (post.authorId !== null && redactions.users.includes(post.authorId));
   if (!redacted) return post;
   return { ...post, contentHtml: "<em>[This post has been redacted in the archive]</em>" };

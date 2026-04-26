@@ -585,17 +585,36 @@ export function getUserDates(userId: number): {
   const db = getDb();
   if (!db) return { joinedAt: null, lastPostAt: null };
   const ph = allowedIds.map(() => "?").join(",");
-  const row = db
+
+  const postRow = db
     .prepare(
-      `SELECT MIN(p.created_at) AS joined_at, MAX(p.created_at) AS last_post_at
+      `SELECT MAX(p.created_at) AS last_post_at
        FROM posts p JOIN topics t ON p.topic_id = t.id
        WHERE p.author_id = ? AND t.forum_id IN (${ph})`,
     )
-    .get(userId, ...allowedIds) as {
-    joined_at: number | null;
-    last_post_at: number | null;
-  };
-  return { joinedAt: row.joined_at, lastPostAt: row.last_post_at };
+    .get(userId, ...allowedIds) as { last_post_at: number | null };
+
+  const hasUsersTable =
+    db.prepare("SELECT 1 FROM pragma_table_info('users') LIMIT 1").get() !== undefined;
+
+  let joinedAt: number | null = null;
+  if (hasUsersTable) {
+    const userRow = db
+      .prepare("SELECT registered_at FROM users WHERE id = ?")
+      .get(userId) as { registered_at: number } | undefined;
+    joinedAt = userRow?.registered_at ?? null;
+  } else {
+    const fallback = db
+      .prepare(
+        `SELECT MIN(p.created_at) AS joined_at
+         FROM posts p JOIN topics t ON p.topic_id = t.id
+         WHERE p.author_id = ? AND t.forum_id IN (${ph})`,
+      )
+      .get(userId, ...allowedIds) as { joined_at: number | null };
+    joinedAt = fallback.joined_at;
+  }
+
+  return { joinedAt, lastPostAt: postRow.last_post_at };
 }
 
 export function getArchiveActivity(): ActivityBucket[] {

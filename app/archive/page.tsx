@@ -308,9 +308,22 @@ export default async function ArchivePage({ searchParams }: Props) {
               className="rounded-lg border p-4"
               style={{ borderColor: "#2a2b2e", backgroundColor: "#1e1f21" }}
             >
-              <p className="text-[10px] font-semibold uppercase tracking-widest text-gray-600 mb-3">
-                Archive Activity (2009 – 2016)
-              </p>
+              <div className="flex items-center justify-between mb-3">
+                <p className="text-[10px] font-semibold uppercase tracking-widest text-gray-600">
+                  Archive Activity (2009 – 2016)
+                </p>
+                <Link
+                  href="/archive/graph"
+                  className="inline-flex items-center gap-1.5 text-[10px] font-medium px-2.5 py-1 rounded-full transition-colors"
+                  style={{ color: "#5a8fd4", backgroundColor: "#1a1f2e", border: "1px solid #2a3550" }}
+                >
+                  <span
+                    className="inline-block w-1.5 h-1.5 rounded-full"
+                    style={{ backgroundColor: "#3a6ab0" }}
+                  />
+                  DM Graph
+                </Link>
+              </div>
               <ActivityBarChart data={activity} height={160} />
             </div>
 
@@ -335,6 +348,7 @@ export default async function ArchivePage({ searchParams }: Props) {
                 </div>
               );
             })}
+
           </div>
         )}
       </main>

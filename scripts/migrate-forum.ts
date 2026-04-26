@@ -290,7 +290,7 @@ async function main() {
   const createStmts: Record<string, string> = {};
   const insertRows: Record<string, (string | null)[][]> = {};
 
-  const targetSuffixes = ["forums", "topics", "posts", "users"];
+  const targetSuffixes = ["forums", "topics", "posts", "users", "privmsgs_to"];
 
   // We need to handle multi-line INSERT statements
   // mysqldump usually outputs extended inserts:
@@ -578,6 +578,48 @@ async function main() {
   });
   insertUsersStmt();
   console.log(`Inserted ${userRegdates.size} users`);
+
+  // ---------------------------------------------------------------------------
+  // Build PM relationship graph from privmsgs_to
+  // ---------------------------------------------------------------------------
+
+  const privmsgsToTable = `${tablePrefix}privmsgs_to`;
+  const PMTo = {
+    user_id: col(privmsgsToTable, "user_id", 1),   // recipient (or sender for their sent copy)
+    author_id: col(privmsgsToTable, "author_id", 2), // always the original sender
+  };
+
+  // Each row where user_id != author_id is the recipient's copy of a message
+  const pmCounts = new Map<string, number>();
+  for (const r of insertRows[privmsgsToTable] ?? []) {
+    const toId = Number(r[PMTo.user_id]);
+    const fromId = Number(r[PMTo.author_id]);
+    if (!fromId || !toId || fromId <= 1 || toId <= 1 || fromId === toId) continue;
+    const key = `${fromId}:${toId}`;
+    pmCounts.set(key, (pmCounts.get(key) ?? 0) + 1);
+  }
+
+  db.exec(`
+    CREATE TABLE pm_relationships (
+      from_id INTEGER NOT NULL,
+      to_id   INTEGER NOT NULL,
+      count   INTEGER NOT NULL,
+      PRIMARY KEY (from_id, to_id)
+    );
+    CREATE INDEX idx_pm_from ON pm_relationships(from_id);
+    CREATE INDEX idx_pm_to   ON pm_relationships(to_id);
+  `);
+
+  const insertPmRel = db.prepare(
+    "INSERT INTO pm_relationships (from_id, to_id, count) VALUES (?,?,?)",
+  );
+  db.transaction(() => {
+    for (const [key, count] of pmCounts) {
+      const colon = key.indexOf(":");
+      insertPmRel.run(Number(key.slice(0, colon)), Number(key.slice(colon + 1)), count);
+    }
+  })();
+  console.log(`Inserted ${pmCounts.size} PM relationships`);
 
   // ---------------------------------------------------------------------------
   // Recompute counts from actual migrated data (subforums included)

@@ -2,13 +2,14 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 
 type PaginationProps = {
   currentPage: number;
   totalPages: number;
   pageParam?: string;
   params?: Record<string, string>;
+  scrollTargetId?: string;
   // Discourse-style sidebar (all optional — sidebar hidden when omitted)
   totalItems?: number;
   rangeStart?: number; // 1-based index of first item on current page
@@ -44,6 +45,7 @@ export default function Pagination({
   totalPages,
   pageParam = "page",
   params,
+  scrollTargetId,
   totalItems,
   rangeStart,
   rangeEnd,
@@ -55,6 +57,13 @@ export default function Pagination({
 }: PaginationProps) {
   const router = useRouter();
   const [vertHover, setVertHover] = useState<number | null>(null);
+  const mounted = useRef(false);
+
+  useEffect(() => {
+    if (!mounted.current) { mounted.current = true; return; }
+    if (!scrollTargetId) return;
+    document.getElementById(scrollTargetId)?.scrollIntoView({ behavior: "instant", block: "start" });
+  }, [currentPage, scrollTargetId]);
 
   if (totalPages <= 1) return null;
 
@@ -71,7 +80,7 @@ export default function Pagination({
       1,
       Math.min(totalPages, Math.ceil(ratio * totalPages)),
     );
-    router.push(pageUrl(page, pageParam, params));
+    router.push(pageUrl(page, pageParam, params), { scroll: false });
   }
 
   const hoverPage =
@@ -107,6 +116,7 @@ export default function Pagination({
           {currentPage > 1 ? (
             <Link
               href={pageUrl(currentPage - 1, pageParam, params)}
+              scroll={false}
               className="text-gray-600 hover:text-gray-300 transition-colors leading-none"
               title={`Previous page`}
             >
@@ -197,6 +207,7 @@ export default function Pagination({
           {currentPage < totalPages ? (
             <Link
               href={pageUrl(currentPage + 1, pageParam, params)}
+              scroll={false}
               className="text-gray-600 hover:text-gray-300 transition-colors leading-none"
               title={`Next page`}
             >
@@ -228,6 +239,7 @@ export default function Pagination({
         {currentPage > 1 ? (
           <Link
             href={pageUrl(currentPage - 1, pageParam, params)}
+            scroll={false}
             className="px-2.5 py-1 rounded text-xs text-gray-500 hover:text-gray-300 transition-colors"
           >
             ← Prev
@@ -250,6 +262,7 @@ export default function Pagination({
             <Link
               key={p}
               href={pageUrl(p, pageParam, params)}
+              scroll={false}
               className={`px-2.5 py-1 rounded text-xs transition-colors ${p === currentPage ? "text-[#ededed]" : "text-gray-500 hover:text-gray-300"}`}
               style={
                 p === currentPage ? { backgroundColor: "#353640" } : undefined
@@ -263,6 +276,7 @@ export default function Pagination({
         {currentPage < totalPages ? (
           <Link
             href={pageUrl(currentPage + 1, pageParam, params)}
+            scroll={false}
             className="px-2.5 py-1 rounded text-xs text-gray-500 hover:text-gray-300 transition-colors"
           >
             Next →

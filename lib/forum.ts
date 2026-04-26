@@ -400,6 +400,7 @@ export type ActivityBucket = {
   period: string;
   topicCount: number;
   postCount: number;
+  newUserCount: number;
 };
 
 export type ForumActivitySlice = {
@@ -415,9 +416,11 @@ const ACTIVITY_END = "2016-12";
 function generateBuckets(
   topicRows: { period: string; count: number }[],
   postRows: { period: string; count: number }[],
+  userRows: { period: string; count: number }[] = [],
 ): ActivityBucket[] {
   const topicMap = new Map(topicRows.map((r) => [r.period, r.count]));
   const postMap = new Map(postRows.map((r) => [r.period, r.count]));
+  const userMap = new Map(userRows.map((r) => [r.period, r.count]));
   const buckets: ActivityBucket[] = [];
   let [y, m] = ACTIVITY_START.split("-").map(Number);
   const [ey, em] = ACTIVITY_END.split("-").map(Number);
@@ -427,6 +430,7 @@ function generateBuckets(
       period,
       topicCount: topicMap.get(period) ?? 0,
       postCount: postMap.get(period) ?? 0,
+      newUserCount: userMap.get(period) ?? 0,
     });
     if (++m > 12) {
       m = 1;
@@ -600,7 +604,19 @@ export function getArchiveActivity(): ActivityBucket[] {
     )
     .all(...allowedIds) as { period: string; count: number }[];
 
-  return generateBuckets(topicRows, postRows);
+  const hasUsersTable =
+    db.prepare("SELECT 1 FROM pragma_table_info('users') LIMIT 1").get() !== undefined;
+
+  const userRows = hasUsersTable
+    ? (db
+        .prepare(
+          `SELECT strftime('%Y-%m', datetime(registered_at, 'unixepoch')) AS period, COUNT(*) AS count
+           FROM users WHERE registered_at > 0 GROUP BY period`,
+        )
+        .all() as { period: string; count: number }[])
+    : [];
+
+  return generateBuckets(topicRows, postRows, userRows);
 }
 
 export { redactions };

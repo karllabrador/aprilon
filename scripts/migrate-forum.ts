@@ -343,12 +343,18 @@ async function main() {
   const U = {
     user_id: col(usersTable, "user_id", 0),
     username: col(usersTable, "username", 7),
+    user_regdate: col(usersTable, "user_regdate", 5),
   };
   const usernameToId = new Map<string, number>();
+  const userRegdates = new Map<number, number>();
   for (const r of insertRows[usersTable] ?? []) {
     const uid = Number(r[U.user_id]);
     const uname = r[U.username];
-    if (uid > 1 && uname) usernameToId.set(uname.toLowerCase(), uid);
+    if (uid > 1 && uname) {
+      usernameToId.set(uname.toLowerCase(), uid);
+      const regdate = Number(r[U.user_regdate] ?? 0);
+      if (regdate > 0) userRegdates.set(uid, regdate);
+    }
   }
 
   // forums: forum_id(0), parent_id(1), left_id(2), right_id(3), ...
@@ -427,6 +433,12 @@ async function main() {
       created_at INTEGER NOT NULL
     );
     CREATE INDEX idx_posts_topic ON posts(topic_id, created_at ASC);
+
+    CREATE TABLE users (
+      id INTEGER PRIMARY KEY,
+      registered_at INTEGER NOT NULL
+    );
+    CREATE INDEX idx_users_registered ON users(registered_at ASC);
   `);
 
   // ---------------------------------------------------------------------------
@@ -513,6 +525,19 @@ async function main() {
 
   insertPosts(insertRows[postsTable]);
   console.log(`Inserted ${insertRows[postsTable].length} posts`);
+
+  // ---------------------------------------------------------------------------
+  // Insert users (registration dates only)
+  // ---------------------------------------------------------------------------
+
+  const insertUser = db.prepare("INSERT INTO users (id, registered_at) VALUES (?,?)");
+  const insertUsersStmt = db.transaction(() => {
+    for (const [uid, regdate] of userRegdates) {
+      insertUser.run(uid, regdate);
+    }
+  });
+  insertUsersStmt();
+  console.log(`Inserted ${userRegdates.size} users`);
 
   // ---------------------------------------------------------------------------
   // Recompute counts from actual migrated data (subforums included)

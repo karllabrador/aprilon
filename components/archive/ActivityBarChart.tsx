@@ -37,9 +37,11 @@ const tooltipStyle: React.CSSProperties = {
 };
 
 export default function ActivityBarChart({ data, height = 180 }: Props) {
+  const hasUserData = data.some((b) => b.newUserCount > 0);
+
   return (
     <ResponsiveContainer width="100%" height={height}>
-      <ComposedChart data={data} margin={{ top: 4, right: 4, bottom: 0, left: -20 }}>
+      <ComposedChart data={data} margin={{ top: 4, right: hasUserData ? 28 : 4, bottom: 0, left: -20 }}>
         <CartesianGrid vertical={false} stroke="#252628" />
         <XAxis
           dataKey="period"
@@ -50,12 +52,24 @@ export default function ActivityBarChart({ data, height = 180 }: Props) {
           tickLine={false}
         />
         <YAxis
+          yAxisId="activity"
           tick={{ fontSize: 9, fill: "#4b5563" }}
           axisLine={false}
           tickLine={false}
           allowDecimals={false}
           width={28}
         />
+        {hasUserData && (
+          <YAxis
+            yAxisId="users"
+            orientation="right"
+            tick={{ fontSize: 9, fill: "#4b5563" }}
+            axisLine={false}
+            tickLine={false}
+            allowDecimals={false}
+            width={28}
+          />
+        )}
         <Tooltip
           cursor={{ fill: "rgba(90,130,200,0.06)" }}
           contentStyle={tooltipStyle}
@@ -69,6 +83,7 @@ export default function ActivityBarChart({ data, height = 180 }: Props) {
           wrapperStyle={{ fontSize: "10px", paddingTop: "8px", color: "#6b7280" }}
         />
         <Bar
+          yAxisId="activity"
           dataKey="postCount"
           name="Posts"
           fill="#2e4a80"
@@ -77,6 +92,7 @@ export default function ActivityBarChart({ data, height = 180 }: Props) {
           isAnimationActive={false}
         />
         <Line
+          yAxisId="activity"
           dataKey="topicCount"
           name="Topics"
           stroke="#5a8fd4"
@@ -85,6 +101,18 @@ export default function ActivityBarChart({ data, height = 180 }: Props) {
           type="monotone"
           isAnimationActive={false}
         />
+        {hasUserData && (
+          <Line
+            yAxisId="users"
+            dataKey="newUserCount"
+            name="New Users"
+            stroke="#a78bfa"
+            strokeWidth={1.5}
+            dot={false}
+            type="monotone"
+            isAnimationActive={false}
+          />
+        )}
       </ComposedChart>
     </ResponsiveContainer>
   );

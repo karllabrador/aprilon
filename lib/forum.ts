@@ -6,7 +6,7 @@ import Database from "better-sqlite3";
 
 type Redactions = {
   topics: number[];
-  posts: Record<string, true | string>;
+  posts: number[];
 };
 
 const redactions = redactionsConfig as Redactions;
@@ -328,7 +328,7 @@ export function searchPosts(
     params.push(...redactions.topics);
   }
 
-  const redactedPostIds = Object.keys(redactions.posts).map(Number);
+  const redactedPostIds = redactions.posts;
   if (redactedPostIds.length > 0) {
     where += ` AND p.id NOT IN (${redactedPostIds.map(() => "?").join(",")})`;
     params.push(...redactedPostIds);

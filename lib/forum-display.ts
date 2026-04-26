@@ -23,11 +23,10 @@ export function getAvatarUrl(authorId: number | null): string {
 // ---------------------------------------------------------------------------
 
 export function applyRedaction(post: Post, redactions: Redactions): Post {
-  const r = redactions.posts[String(post.id)];
-  if (!r) return post;
+  if (!redactions.posts.includes(post.id)) return post;
   return {
     ...post,
-    contentHtml: r === true ? "<em>[Redacted]</em>" : `<p>${r}</p>`,
+    contentHtml: "<em>[This post has been redacted in the archive]</em>",
   };
 }
 

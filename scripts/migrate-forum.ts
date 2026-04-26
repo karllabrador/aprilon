@@ -45,6 +45,24 @@ function decodeHtmlEntities(s: string): string {
 }
 
 // ---------------------------------------------------------------------------
+// YouTube helpers
+// ---------------------------------------------------------------------------
+
+function extractYouTubeId(input: string): string | null {
+  const s = input.trim();
+  const m = s.match(
+    /(?:youtube\.com\/(?:watch[^#"]*?[?&]v=|embed\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/,
+  );
+  if (m) return m[1];
+  if (/^[a-zA-Z0-9_-]{11}$/.test(s)) return s;
+  return null;
+}
+
+function youTubeEmbed(id: string): string {
+  return `<div class="yt-embed"><iframe src="https://www.youtube.com/embed/${id}" allowfullscreen loading="lazy" title="YouTube video"></iframe></div>`;
+}
+
+// ---------------------------------------------------------------------------
 // BBCode → HTML conversion
 // ---------------------------------------------------------------------------
 
@@ -100,6 +118,10 @@ function bbcodeToHtml(raw: string, uid: string): string {
     .replace(/\[list\]([\s\S]*?)\[\/list\]/gi, "<ul>$1</ul>")
     .replace(/\[list=1\]([\s\S]*?)\[\/list\]/gi, "<ol>$1</ol>")
     .replace(/\[\*\](.*?)(?=\[\*\]|\[\/list\])/gi, "<li>$1</li>")
+    .replace(/\[youtube\]([\s\S]*?)\[\/youtube\]/gi, (_, inner) => {
+      const id = extractYouTubeId(inner);
+      return id ? youTubeEmbed(id) : inner;
+    })
     // Strip any remaining unknown BBCode tags
     .replace(/\[[^\]]+\]/g, "");
 
@@ -108,6 +130,24 @@ function bbcodeToHtml(raw: string, uid: string): string {
 
   // Replace phpBB3 smilies path placeholder
   s = s.replace(/\{SMILIES_PATH\}/g, "/images/archive/smilies");
+
+  // Auto-linked YouTube URLs: <a href="https://youtu.be/...">https://...</a>
+  s = s.replace(
+    /<a\b[^>]*\bhref="(https?:\/\/(?:www\.)?(?:youtube\.com\/watch[^"]*|youtu\.be\/[^"]*?))"[^>]*>https?:\/\/[^<]*<\/a>/gi,
+    (match, href) => {
+      const id = extractYouTubeId(href);
+      return id ? youTubeEmbed(id) : match;
+    },
+  );
+
+  // Plain-text YouTube URLs not inside an HTML attribute
+  s = s.replace(
+    /(?<!["'=])(https?:\/\/(?:www\.)?(?:youtube\.com\/watch[^\s<"]*?[?&]v=([a-zA-Z0-9_-]{11})[^\s<"]*|youtu\.be\/([a-zA-Z0-9_-]{11})(?:[?&][^\s<"]*)?))(?![^<]*?>)/g,
+    (match, _url, id1, id2) => {
+      const id = id1 ?? id2;
+      return id ? youTubeEmbed(id) : match;
+    },
+  );
 
   return s;
 }

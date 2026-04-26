@@ -13,10 +13,11 @@ import {
   searchPosts,
   searchUsers,
   getArchiveActivity,
+  redactions,
   SEARCH_TOPICS_PER_PAGE,
   SEARCH_POSTS_PER_PAGE,
 } from "@/lib/forum";
-import { getDisplayName, getAvatarUrl } from "@/lib/forum-display";
+import { getDisplayName, getAvatarUrl, applyRedaction } from "@/lib/forum-display";
 
 export const dynamic = "force-dynamic";
 
@@ -44,7 +45,8 @@ export default async function ArchivePage({ searchParams }: Props) {
     const avatarUrl = getAvatarUrl(userId);
 
     const topicResults = searchTopics(query, { page: topicPage, userId });
-    const postResults = searchPosts(query, { page: postPage, userId });
+    const rawPostResults = searchPosts(query, { page: postPage, userId });
+    const postResults = { ...rawPostResults, results: rawPostResults.results.map((p) => applyRedaction(p, redactions)) };
     const topicTotalPages = Math.ceil(topicResults.total / SEARCH_TOPICS_PER_PAGE);
     const postTotalPages = Math.ceil(postResults.total / SEARCH_POSTS_PER_PAGE);
 
@@ -156,7 +158,8 @@ export default async function ArchivePage({ searchParams }: Props) {
   // ── Text search mode ──────────────────────────────────────────────────────
   if (query) {
     const topicResults = searchTopics(query, { page: topicPage });
-    const postResults = searchPosts(query, { page: postPage });
+    const rawPostResults = searchPosts(query, { page: postPage });
+    const postResults = { ...rawPostResults, results: rawPostResults.results.map((p) => applyRedaction(p, redactions)) };
     const userResults = searchUsers(query);
     const topicTotalPages = Math.ceil(topicResults.total / SEARCH_TOPICS_PER_PAGE);
     const postTotalPages = Math.ceil(postResults.total / SEARCH_POSTS_PER_PAGE);
@@ -257,9 +260,44 @@ export default async function ArchivePage({ searchParams }: Props) {
     <>
       <ArchiveHeader />
       <main className="container max-w-336 mx-auto max-[1344px]:px-6 py-10">
-        <div className="flex items-center justify-between gap-4 mb-8">
+        <div className="flex items-center justify-between gap-4 mb-6">
           <h1 className="text-2xl font-bold text-[#ededed]">Forum Archive</h1>
           <SearchBar initialQuery="" placeholder="Search archive…" />
+        </div>
+
+        <div
+          className="rounded-lg mb-8 p-0.5"
+          style={{ background: "linear-gradient(135deg, #ff6b6b, #ffa94d, #ffe066, #69db7c, #4dabf7, #cc5de8)" }}
+        >
+          <div className="rounded-md overflow-hidden" style={{ backgroundColor: "#151618" }}>
+            <div className="flex items-start gap-4 px-5 py-4">
+              {/* Icon */}
+              <div
+                className="mt-0.5 shrink-0 w-8 h-8 rounded-md flex items-center justify-center text-base"
+                style={{ backgroundColor: "#1e1f24", border: "1px solid #2a2b32" }}
+              >
+                📜
+              </div>
+              {/* Text */}
+              <div>
+                <p className="text-sm font-semibold mb-1 text-[#c0c0c8]">
+                  Archive Notice
+                </p>
+                <p className="text-sm leading-relaxed text-gray-500">
+                  This is a read-only archive of the Aprilon forums. All usernames have been
+                  anonymised to protect member privacy. To request redaction of a post or topic,
+                  email{" "}
+                  <a
+                    href="mailto:admin@aprilon.org"
+                    className="underline underline-offset-2 hover:opacity-80 transition-opacity text-gray-400"
+                  >
+                    admin@aprilon.org
+                  </a>
+                  .
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
 
         {forums.length === 0 ? (

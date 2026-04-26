@@ -50,8 +50,8 @@ function getDb(): Database.Database | null {
     const db = new Database(dbPath, { readonly: true });
     _db = db;
     return db;
-  } catch {
-    console.warn(`[archive] Could not open database at "${dbPath}" — archive disabled`);
+  } catch (err) {
+    console.warn(`[archive] Could not open database at "${dbPath}" — archive disabled`, err);
     _db = "unavailable";
     return null;
   }

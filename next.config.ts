@@ -5,7 +5,7 @@ const nextConfig: NextConfig = {
   // better-sqlite3 is already auto-opted-out by Next.js, but we include its
   // native binding explicitly so the standalone build copies it.
   outputFileTracingIncludes: {
-    "/*": ["./node_modules/better-sqlite3/build/**/*"],
+    "/*": ["./node_modules/better-sqlite3/**/*"],
   },
   images: {
     remotePatterns: [

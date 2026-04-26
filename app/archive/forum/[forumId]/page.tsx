@@ -4,7 +4,7 @@ import ForumCard from "@/components/archive/ForumCard";
 import TopicRow from "@/components/archive/TopicRow";
 import SearchBar from "@/components/archive/SearchBar";
 import Pagination from "@/components/archive/Pagination";
-import { getAllowedForums, getForum, getForumActivity, getTopics, getTopTopics, TOPICS_PER_PAGE } from "@/lib/forum";
+import { getAllowedForums, getForum, getForumActivity, getForumPath, getTopics, getTopTopics, TOPICS_PER_PAGE } from "@/lib/forum";
 import ForumStats from "@/components/archive/ForumStats";
 
 export const dynamic = "force-dynamic";
@@ -27,6 +27,7 @@ export default async function ForumPage({ params, searchParams }: Props) {
   const page = Math.max(1, Number(pageParam) || 1);
   const query = q?.trim() ?? "";
 
+  const forumPath = getForumPath(id);
   const subforums = getAllowedForums().filter((f) => f.parentId === id);
   const topTopics = getTopTopics(id);
   const activity = getForumActivity(id);
@@ -36,7 +37,12 @@ export default async function ForumPage({ params, searchParams }: Props) {
 
   return (
     <>
-      <ArchiveHeader breadcrumbs={[{ label: forum.name }]} />
+      <ArchiveHeader
+        breadcrumbs={forumPath.map((f, i) => ({
+          label: f.name,
+          href: i < forumPath.length - 1 && f.linked ? `/archive/forum/${f.id}` : undefined,
+        }))}
+      />
       <main className="container max-w-336 mx-auto max-[1344px]:px-6 py-10">
         <div className="mb-6">
           <h1 className="text-2xl font-bold text-[#ededed]">{forum.name}</h1>

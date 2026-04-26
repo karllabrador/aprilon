@@ -3,7 +3,7 @@ import ArchiveHeader from "@/components/archive/ArchiveHeader";
 import PostCard from "@/components/archive/PostCard";
 import SearchBar from "@/components/archive/SearchBar";
 import Pagination from "@/components/archive/Pagination";
-import { getForum, getFirstPost, getPosts, getTopic, redactions, POSTS_PER_PAGE } from "@/lib/forum";
+import { getForum, getFirstPost, getForumPath, getPosts, getTopic, redactions, POSTS_PER_PAGE } from "@/lib/forum";
 import { applyRedaction, rewriteInternalLinks } from "@/lib/forum-display";
 
 export const dynamic = "force-dynamic";
@@ -25,6 +25,8 @@ export default async function TopicPage({ params, searchParams }: Props) {
 
   const forum = getForum(topic.forumId);
   if (!forum) notFound();
+
+  const forumPath = getForumPath(topic.forumId);
 
   const page = Math.max(1, Number(pageParam) || 1);
   const query = q?.trim() ?? "";
@@ -51,7 +53,10 @@ export default async function TopicPage({ params, searchParams }: Props) {
     <>
       <ArchiveHeader
         breadcrumbs={[
-          { label: forum.name, href: `/archive/forum/${forum.id}` },
+          ...forumPath.map((f) => ({
+            label: f.name,
+            href: f.linked ? `/archive/forum/${f.id}` : undefined,
+          })),
           { label: topic.title },
         ]}
       />

@@ -440,6 +440,24 @@ function generateBuckets(
   return buckets;
 }
 
+export type ForumCrumb = { id: number; name: string; linked: boolean };
+
+export function getForumPath(forumId: number): ForumCrumb[] {
+  const db = getDb();
+  if (!db) return [];
+  const path: ForumCrumb[] = [];
+  let id: number | null = forumId;
+  while (id !== null && id > 0) {
+    const row = db
+      .prepare("SELECT id, parent_id, name FROM forums WHERE id = ?")
+      .get(id) as { id: number; parent_id: number | null; name: string } | undefined;
+    if (!row) break;
+    path.unshift({ id: row.id, name: row.name, linked: allowedIds.includes(row.id) });
+    id = row.parent_id && row.parent_id > 0 ? row.parent_id : null;
+  }
+  return path;
+}
+
 export function getTopTopics(forumId: number, limit = 3): Topic[] {
   if (!allowedIds.includes(forumId)) return [];
   const db = getDb();

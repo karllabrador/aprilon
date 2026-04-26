@@ -177,14 +177,24 @@ jobs:
             ln -sfn "$BUILD_DIR/.next/standalone" "${{ vars.REMOTE_CURRENT }}"
             echo "🔗 Symlink updated to $BUILD_DIR"
 
-            # Recompile better-sqlite3 for this server's platform/glibc
+            # Use cached better-sqlite3 binary if available, otherwise recompile
             BSQ_DIR=$(find "$BUILD_DIR/.next/standalone/.next/node_modules" -maxdepth 1 -name "better-sqlite3*" -type d | head -1)
             if [ -n "$BSQ_DIR" ]; then
-              echo "🔨 Recompiling better-sqlite3 at $BSQ_DIR..."
-              cd "$BSQ_DIR"
-              rm -f build/Release/better_sqlite3.node
-              npx --yes node-gyp rebuild
-              cd "$BUILD_DIR"
+              BSQ_VERSION=$(node -e "process.stdout.write(require('$BSQ_DIR/package.json').version)")
+              BSQ_CACHE="${{ vars.REMOTE_BASE }}/cache/better-sqlite3-${BSQ_VERSION}.node"
+              mkdir -p "${{ vars.REMOTE_BASE }}/cache"
+              if [ -f "$BSQ_CACHE" ]; then
+                echo "♻️  Using cached better-sqlite3 binary (v${BSQ_VERSION})"
+                cp "$BSQ_CACHE" "$BSQ_DIR/build/Release/better_sqlite3.node"
+              else
+                echo "🔨 Recompiling better-sqlite3 v${BSQ_VERSION}..."
+                cd "$BSQ_DIR"
+                rm -f build/Release/better_sqlite3.node
+                npx --yes node-gyp rebuild
+                cp build/Release/better_sqlite3.node "$BSQ_CACHE"
+                echo "✅ Binary cached at $BSQ_CACHE"
+                cd "$BUILD_DIR"
+              fi
             fi
 
             pm2 delete ${{ env.PM2_APP_NAME }} || true

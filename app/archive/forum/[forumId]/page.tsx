@@ -60,9 +60,9 @@ export default async function ForumPage({ params, searchParams }: Props) {
               </>
             ) : (
               <>
-                <span className="text-gray-300">{forum.topicCount.toLocaleString()}</span> topics
+                <span className="text-gray-300">{forum.topicCount.toLocaleString()}</span>{" "}topics
                 &nbsp;·&nbsp;
-                <span className="text-gray-300">{forum.postCount.toLocaleString()}</span> posts
+                <span className="text-gray-300">{forum.postCount.toLocaleString()}</span>{" "}posts
               </>
             )}
           </p>

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getDisplayName, getAvatarUrl, formatDateTime, getUserProfileHref } from "@/lib/forum-display";
+import PostContent from "@/components/archive/PostContent";
 import type { Post } from "@/types";
 
 type PostCardProps = {
@@ -51,10 +52,10 @@ export default function PostCard({ post, index, isOP = false }: PostCardProps) {
               <a href={`#post-${post.id}`} className="text-gray-600 hover:text-gray-400 transition-colors">#1</a>
             </div>
           </div>
-          <div
+          <PostContent
+            html={post.contentHtml}
             className="px-4 py-4 text-sm text-gray-200 leading-relaxed prose-archive"
             style={{ backgroundColor: "#181e2e" }}
-            dangerouslySetInnerHTML={{ __html: post.contentHtml }}
           />
         </div>
       </div>
@@ -89,10 +90,10 @@ export default function PostCard({ post, index, isOP = false }: PostCardProps) {
           </a>
         </div>
       </div>
-      <div
+      <PostContent
+        html={post.contentHtml}
         className="px-4 py-4 text-sm text-gray-300 leading-relaxed prose-archive"
         style={{ backgroundColor: "#1e1f21" }}
-        dangerouslySetInnerHTML={{ __html: post.contentHtml }}
       />
     </div>
   );

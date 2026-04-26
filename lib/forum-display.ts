@@ -22,12 +22,12 @@ export function getAvatarUrl(authorId: number | null): string {
 // Redaction
 // ---------------------------------------------------------------------------
 
-export function applyRedaction(post: Post, redactions: Redactions): Post {
-  if (!redactions.posts.includes(post.id)) return post;
-  return {
-    ...post,
-    contentHtml: "<em>[This post has been redacted in the archive]</em>",
-  };
+export function applyRedaction<T extends Post>(post: T, redactions: Redactions): T {
+  const redacted =
+    redactions.posts.includes(post.id) ||
+    (post.authorId !== null && redactions.users.includes(post.authorId));
+  if (!redacted) return post;
+  return { ...post, contentHtml: "<em>[This post has been redacted in the archive]</em>" };
 }
 
 // ---------------------------------------------------------------------------

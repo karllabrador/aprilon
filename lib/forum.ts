@@ -7,6 +7,7 @@ import Database from "better-sqlite3";
 type Redactions = {
   topics: number[];
   posts: number[];
+  users: number[];
 };
 
 const redactions = redactionsConfig as Redactions;

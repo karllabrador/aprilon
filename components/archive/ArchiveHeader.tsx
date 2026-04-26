@@ -16,7 +16,7 @@ export default function ArchiveHeader({ breadcrumbs = [] }: ArchiveHeaderProps) 
       style={{
         background: "linear-gradient(to bottom, #18191d, #1e1f23)",
         borderColor: "#2e2f38",
-        boxShadow: "0 1px 0 rgba(90,160,160,0.06), 0 4px 16px rgba(0,0,0,0.25)",
+        boxShadow: "0 1px 0 rgba(90,130,200,0.06), 0 4px 16px rgba(0,0,0,0.25)",
       }}
     >
       <div className="container max-w-336 mx-auto max-[1344px]:px-6 py-3 flex items-center gap-6">

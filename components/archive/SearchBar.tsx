@@ -41,7 +41,7 @@ export default function SearchBar({
   return (
     <form onSubmit={handleSubmit} className="flex items-center">
       <div
-        className="flex items-center gap-2 px-3 py-1.5 rounded-lg border text-sm transition-colors focus-within:border-[#3a4a4a]"
+        className="flex items-center gap-2 px-3 py-1.5 rounded-lg border text-sm transition-colors focus-within:border-[#283880]"
         style={{ backgroundColor: "#18191b", borderColor: "#2a2b2e" }}
       >
         <svg

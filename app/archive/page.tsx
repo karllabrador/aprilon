@@ -67,8 +67,8 @@ export default async function ArchivePage({ searchParams }: Props) {
               height={52}
               className="rounded-xl shrink-0"
               style={{
-                border: "2px solid #2a4848",
-                boxShadow: "0 0 0 1px #1a2e2e",
+                border: "2px solid #1e3a78",
+                boxShadow: "0 0 0 1px #141c48",
                 imageRendering: "pixelated",
               }}
             />

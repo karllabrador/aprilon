@@ -136,15 +136,15 @@ export default function Pagination({
             {/* Filled */}
             <div
               className="absolute top-0 left-0 w-full rounded-full"
-              style={{ height: `${thumbPct}%`, backgroundColor: "#3a5858" }}
+              style={{ height: `${thumbPct}%`, backgroundColor: "#2e4a90" }}
             />
             {/* Thumb */}
             <div
               className="absolute left-1/2 -translate-x-1/2 -translate-y-1/2 w-3.5 h-3.5 rounded-full border-2"
               style={{
                 top: `${thumbPct}%`,
-                backgroundColor: "#5a8080",
-                borderColor: "#6a9898",
+                backgroundColor: "#4872c0",
+                borderColor: "#6090d0",
               }}
             />
             {/* Hover indicator + tooltip */}
@@ -155,7 +155,7 @@ export default function Pagination({
                   className="absolute left-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 rounded-full pointer-events-none"
                   style={{
                     top: `${vertHover * 100}%`,
-                    backgroundColor: "#4a6868",
+                    backgroundColor: "#3858a8",
                   }}
                 />
                 {/* Tooltip pill to the left of the track */}

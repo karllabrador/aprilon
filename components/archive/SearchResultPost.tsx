@@ -37,7 +37,7 @@ export default function SearchResultPost({ result, query }: { result: PostSearch
       </div>
       <p className="text-sm text-gray-400 leading-relaxed line-clamp-3">{excerpt}</p>
       <div className="flex items-center gap-3 mt-1.5 text-xs text-gray-600">
-        <Link href={href} className="text-[#4a8080] hover:text-[#5a9090] transition-colors">
+        <Link href={href} className="text-[#3a6ab0] hover:text-[#5082cc] transition-colors">
           View post
         </Link>
         {authorHref ? (

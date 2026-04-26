@@ -33,7 +33,7 @@ export default function SearchResultUser({ result }: { result: UserSearchResult 
       </div>
       <Link
         href={`/archive?uid=${result.id}`}
-        className="shrink-0 text-xs text-[#4a8080] hover:text-[#5a9090] transition-colors"
+        className="shrink-0 text-xs text-[#3a6ab0] hover:text-[#5082cc] transition-colors"
       >
         See activity →
       </Link>

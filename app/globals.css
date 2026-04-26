@@ -47,7 +47,7 @@ body {
   padding: 0.3rem 0.625rem;
   font-size: 0.6875rem;
   font-weight: 600;
-  color: #5aabab;
+  color: #5a8fd4;
   text-transform: uppercase;
   letter-spacing: 0.06em;
   background-color: #141516;
@@ -70,12 +70,12 @@ body {
 }
 
 .prose-archive a {
-  color: #4a9090;
+  color: #6a8fe8;
   text-decoration: none;
 }
 
 .prose-archive a:hover {
-  color: #5aabab;
+  color: #88aaff;
   text-decoration: underline;
 }
 

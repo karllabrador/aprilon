@@ -33,7 +33,7 @@ export default function ForumStats({ topTopics, activity }: ForumStatsProps) {
                 <li key={topic.id} className="flex items-baseline gap-2">
                   <span
                     className="shrink-0 text-[10px] font-bold tabular-nums w-4 text-right"
-                    style={{ color: ["#5ac8c8", "#3a9090", "#2a6868"][i] }}
+                    style={{ color: ["#58a8f0", "#3070c0", "#2060a8"][i] }}
                   >
                     {i + 1}
                   </span>

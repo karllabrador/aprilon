@@ -41,8 +41,8 @@ export default async function UserPage({ params }: Props) {
             height={96}
             className="rounded-xl shrink-0"
             style={{
-              border: "2px solid #3a6060",
-              boxShadow: "0 0 0 1px #2a4848, 0 4px 32px rgba(60,100,100,0.3)",
+              border: "2px solid #2e4a90",
+              boxShadow: "0 0 0 1px #1e3a78, 0 4px 32px rgba(40,70,170,0.3)",
               imageRendering: "pixelated",
             }}
           />
@@ -52,7 +52,7 @@ export default async function UserPage({ params }: Props) {
               <Link
                 href={`/archive?uid=${uid}`}
                 className="text-xs px-2 py-1 rounded transition-colors"
-                style={{ backgroundColor: "#252c2c", color: "#5aabab", border: "1px solid #2e5050" }}
+                style={{ backgroundColor: "#1e2028", color: "#5a8fd4", border: "1px solid #2e3248" }}
               >
                 See all activity →
               </Link>

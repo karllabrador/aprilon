@@ -57,7 +57,7 @@ export default function ActivityBarChart({ data, height = 180 }: Props) {
           width={28}
         />
         <Tooltip
-          cursor={{ fill: "rgba(90,160,160,0.06)" }}
+          cursor={{ fill: "rgba(90,130,200,0.06)" }}
           contentStyle={tooltipStyle}
           labelStyle={{ color: "#9ca3af", marginBottom: "4px" }}
           itemStyle={{ color: "#d1d5db" }}
@@ -71,7 +71,7 @@ export default function ActivityBarChart({ data, height = 180 }: Props) {
         <Bar
           dataKey="postCount"
           name="Posts"
-          fill="#2e6060"
+          fill="#2e4a80"
           radius={[2, 2, 0, 0]}
           maxBarSize={10}
           isAnimationActive={false}
@@ -79,7 +79,7 @@ export default function ActivityBarChart({ data, height = 180 }: Props) {
         <Line
           dataKey="topicCount"
           name="Topics"
-          stroke="#5aabab"
+          stroke="#5a8fd4"
           strokeWidth={1.5}
           dot={false}
           type="monotone"

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import Button from "@/components/common/Button";
 import DiscordSplitButton from "@/components/common/DiscordSplitButton";
 import Footer from "@/components/common/Footer";
@@ -43,7 +44,7 @@ export default async function Home() {
             community. This website represents the history of Aprilon.
           </p>
         </div>
-        <div className="flex gap-2 mt-8 mb-8">
+        <div className="flex gap-2 mt-8 mb-8 flex-wrap">
           {discordStats ? (
             <DiscordSplitButton
               href={DISCORD_INVITE_URL}
@@ -67,6 +68,21 @@ export default async function Home() {
           >
             Steam Group
           </Button>
+          <span
+            className="inline-flex rounded-md p-px"
+            style={{ background: "linear-gradient(to right, #7c3aed, #6d50f0, #4f8ef5, #38bdf8)" }}
+          >
+            <Link
+              href="/archive"
+              className="inline-flex items-center gap-2.5 px-4.5 py-2.5 rounded-[5px] text-white text-xs uppercase tracking-wide font-medium transition-opacity hover:opacity-90"
+              style={{ background: "linear-gradient(to right, #7c3aed, #6d50f0, #4f8ef5, #38bdf8)" }}
+            >
+              Forum Archive
+              <span className="text-[10px] font-bold px-1.5 py-0.5 rounded tracking-wide leading-none bg-white/20">
+                NEW
+              </span>
+            </Link>
+          </span>
         </div>
       </Hero>
 

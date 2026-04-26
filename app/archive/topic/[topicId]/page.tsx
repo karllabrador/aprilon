@@ -4,7 +4,7 @@ import PostCard from "@/components/archive/PostCard";
 import SearchBar from "@/components/archive/SearchBar";
 import Pagination from "@/components/archive/Pagination";
 import { getForum, getFirstPost, getPosts, getTopic, redactions, POSTS_PER_PAGE } from "@/lib/forum";
-import { applyRedaction } from "@/lib/forum-display";
+import { applyRedaction, rewriteInternalLinks } from "@/lib/forum-display";
 
 export const dynamic = "force-dynamic";
 
@@ -30,7 +30,10 @@ export default async function TopicPage({ params, searchParams }: Props) {
   const query = q?.trim() ?? "";
 
   const { posts: rawPosts, total } = getPosts(tid, { page, query });
-  const posts = rawPosts.map((p) => applyRedaction(p, redactions));
+  const posts = rawPosts.map((p) => {
+    const r = applyRedaction(p, redactions);
+    return { ...r, contentHtml: rewriteInternalLinks(r.contentHtml) };
+  });
   const totalPages = Math.ceil(total / POSTS_PER_PAGE);
   const startIndex = (page - 1) * POSTS_PER_PAGE;
 
@@ -38,7 +41,9 @@ export default async function TopicPage({ params, searchParams }: Props) {
     page > 1
       ? (() => {
           const raw = getFirstPost(tid);
-          return raw ? applyRedaction(raw, redactions) : null;
+          if (!raw) return null;
+          const r = applyRedaction(raw, redactions);
+          return { ...r, contentHtml: rewriteInternalLinks(r.contentHtml) };
         })()
       : null;
 

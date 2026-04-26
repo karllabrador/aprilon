@@ -1,5 +1,6 @@
 import type { Post } from "@/types";
 import type { Redactions } from "@/lib/forum";
+import { getTopic } from "@/lib/forum";
 import { computeDisplayName } from "@/lib/pseudonyms";
 
 export function getUserProfileHref(authorId: number | null): string | null {
@@ -29,6 +30,38 @@ export function applyRedaction<T extends Post>(post: T, redactions: Redactions):
     (post.authorId !== null && redactions.users.includes(post.authorId));
   if (!redacted) return post;
   return { ...post, contentHtml: "<em>[This post has been redacted in the archive]</em>" };
+}
+
+// ---------------------------------------------------------------------------
+// Internal link rewriting
+// ---------------------------------------------------------------------------
+
+const INTERNAL_LINK_RE =
+  /<a(\s[^>]*?)href="https?:\/\/(?:www\.)?aprilon\.(?:net|org)\/(?:forum\/)?viewtopic\.php([^"]*)"([^>]*)>([\s\S]*?)<\/a>/gi;
+
+export function rewriteInternalLinks(html: string): string {
+  return html.replace(INTERNAL_LINK_RE, (_match, pre, query, post, text) => {
+    const normalized = query.replace(/&amp;/g, "&");
+    const idMatch = normalized.match(/[?&]t=(\d+)/);
+    if (!idMatch) return _match;
+
+    const topicId = Number(idMatch[1]);
+    const newHref = `/archive/topic/${topicId}`;
+
+    const plainText = text.replace(/<[^>]+>/g, "").trim();
+    const isUrlLike =
+      plainText.includes("viewtopic") ||
+      plainText.includes("aprilon.net") ||
+      plainText.includes("aprilon.org");
+
+    let newText = text;
+    if (isUrlLike) {
+      const topic = getTopic(topicId);
+      newText = topic ? topic.title : `Topic #${topicId}`;
+    }
+
+    return `<a${pre}href="${newHref}"${post}>${newText}</a>`;
+  });
 }
 
 // ---------------------------------------------------------------------------

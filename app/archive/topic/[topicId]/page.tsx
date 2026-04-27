@@ -1,10 +1,25 @@
-import { notFound } from "next/navigation";
 import ArchiveHeader from "@/components/archive/ArchiveHeader";
+import Pagination from "@/components/archive/Pagination";
 import PostCard from "@/components/archive/PostCard";
 import SearchBar from "@/components/archive/SearchBar";
-import Pagination from "@/components/archive/Pagination";
-import { getForum, getFirstPost, getForumPath, getPosts, getTopic, redactions, POSTS_PER_PAGE } from "@/lib/forum";
-import { applyRedaction, rewriteInternalLinks } from "@/lib/forum-display";
+import {
+  getFirstPost,
+  getForum,
+  getForumPath,
+  getPosts,
+  getTopic,
+  POSTS_PER_PAGE,
+  redactions,
+} from "@/lib/forum";
+import {
+  applyRedaction,
+  formatDate,
+  getDisplayName,
+  getUserProfileHref,
+  rewriteInternalLinks,
+} from "@/lib/forum-display";
+import Link from "next/link";
+import { notFound } from "next/navigation";
 
 export const dynamic = "force-dynamic";
 
@@ -74,8 +89,53 @@ export default async function TopicPage({ params, searchParams }: Props) {
               </>
             ) : (
               <>
-                <span className="text-gray-300">{topic.postCount.toLocaleString()}</span>{" "}
+                <span className="text-gray-300">
+                  {topic.postCount.toLocaleString()}
+                </span>{" "}
                 {topic.postCount === 1 ? "reply" : "replies"}
+                {topic.participantCount > 0 && (
+                  <>
+                    {" "}
+                    &nbsp;·&nbsp;{" "}
+                    <span className="text-gray-300">
+                      {topic.participantCount}
+                    </span>{" "}
+                    {topic.participantCount === 1
+                      ? "participant"
+                      : "participants"}
+                  </>
+                )}
+                {topic.isLocked && (
+                  <>
+                    {" "}
+                    &nbsp;·&nbsp; 🔒{" "}
+                    {topic.lockedById ? (
+                      <>
+                        Locked by{" "}
+                        {(() => {
+                          const href = getUserProfileHref(topic.lockedById);
+                          const name = getDisplayName(topic.lockedById);
+                          return href ? (
+                            <Link
+                              href={href}
+                              className="hover:opacity-80"
+                              style={{ color: "#9ca3af" }}
+                            >
+                              {name}
+                            </Link>
+                          ) : (
+                            name
+                          );
+                        })()}
+                        {topic.lockedAt && (
+                          <> on {formatDate(topic.lockedAt)}</>
+                        )}
+                      </>
+                    ) : (
+                      "locked"
+                    )}
+                  </>
+                )}
               </>
             )}
           </p>
@@ -86,21 +146,34 @@ export default async function TopicPage({ params, searchParams }: Props) {
           <div className="mb-6">
             <PostCard post={pinnedFirst} index={0} isOP />
             <div id="posts-start" className="flex items-center gap-3 mt-6">
-              <div className="flex-1 h-px" style={{ backgroundColor: "#252628" }} />
+              <div
+                className="flex-1 h-px"
+                style={{ backgroundColor: "#252628" }}
+              />
               <span className="text-xs text-gray-600">Page {page}</span>
-              <div className="flex-1 h-px" style={{ backgroundColor: "#252628" }} />
+              <div
+                className="flex-1 h-px"
+                style={{ backgroundColor: "#252628" }}
+              />
             </div>
           </div>
         )}
 
         {posts.length === 0 ? (
           <p className="text-gray-500 py-8 text-center text-sm">
-            {query ? `No posts found matching "${query}".` : "No posts in this topic."}
+            {query
+              ? `No posts found matching "${query}".`
+              : "No posts in this topic."}
           </p>
         ) : (
           <div className="space-y-4">
             {posts.map((post, i) => (
-              <PostCard key={post.id} post={post} index={startIndex + i} isOP={startIndex + i === 0} />
+              <PostCard
+                key={post.id}
+                post={post}
+                index={startIndex + i}
+                isOP={startIndex + i === 0}
+              />
             ))}
           </div>
         )}

@@ -75,9 +75,13 @@ type TopicRow = {
   author_id: number | null;
   last_poster_id: number | null;
   post_count: number | null;
+  participant_count?: number | null;
   created_at: number | null;
   last_post_at: number | null;
   is_sticky: number;
+  is_locked?: number;
+  locked_by_id?: number | null;
+  locked_at?: number | null;
 };
 
 type PostRow = {
@@ -115,9 +119,13 @@ function rowToTopic(r: TopicRow): Topic {
     authorId: r.author_id,
     lastPosterId: r.last_poster_id ?? null,
     postCount: r.post_count ?? 0,
+    participantCount: r.participant_count ?? 0,
     createdAt: r.created_at ?? 0,
     lastPostAt: r.last_post_at ?? 0,
     isSticky: r.is_sticky === 1,
+    isLocked: (r.is_locked ?? 0) === 1,
+    lockedById: r.locked_by_id ?? null,
+    lockedAt: r.locked_at ?? null,
   };
 }
 

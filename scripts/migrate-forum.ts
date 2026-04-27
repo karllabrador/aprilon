@@ -290,7 +290,7 @@ async function main() {
   const createStmts: Record<string, string> = {};
   const insertRows: Record<string, (string | null)[][]> = {};
 
-  const targetSuffixes = ["forums", "topics", "posts", "users", "privmsgs_to"];
+  const targetSuffixes = ["forums", "topics", "posts", "users", "privmsgs_to", "log"];
 
   // We need to handle multi-line INSERT statements
   // mysqldump usually outputs extended inserts:
@@ -419,6 +419,7 @@ async function main() {
     topic_posts_approved: col(topicsTable, "topic_posts_approved", 17),
     topic_type: col(topicsTable, "topic_type", 25),
     topic_time: col(topicsTable, "topic_time", 4),
+    topic_status: col(topicsTable, "topic_status", 24),
   };
 
   const P = {
@@ -459,9 +460,13 @@ async function main() {
       author_id INTEGER,
       last_poster_id INTEGER,
       post_count INTEGER DEFAULT 0,
+      participant_count INTEGER DEFAULT 0,
       created_at INTEGER NOT NULL,
       last_post_at INTEGER NOT NULL,
-      is_sticky INTEGER DEFAULT 0
+      is_sticky INTEGER DEFAULT 0,
+      is_locked INTEGER DEFAULT 0,
+      locked_by_id INTEGER,
+      locked_at INTEGER
     );
     CREATE INDEX idx_topics_forum ON topics(forum_id, last_post_at DESC);
 
@@ -511,7 +516,7 @@ async function main() {
   // ---------------------------------------------------------------------------
 
   const insertTopic = db.prepare(
-    "INSERT INTO topics (id, forum_id, title, author_id, last_poster_id, post_count, created_at, last_post_at, is_sticky) VALUES (?,?,?,?,?,?,?,?,?)",
+    "INSERT INTO topics (id, forum_id, title, author_id, last_poster_id, post_count, created_at, last_post_at, is_sticky, is_locked) VALUES (?,?,?,?,?,?,?,?,?,?)",
   );
 
   const insertTopics = db.transaction((rows: (string | null)[][]) => {
@@ -528,6 +533,7 @@ async function main() {
         Number(r[T.topic_time] ?? 0),
         Number(r[T.topic_last_post_time] ?? 0),
         Number(r[T.topic_type] ?? 0) >= 1 ? 1 : 0,
+        Number(r[T.topic_status] ?? 0) === 1 ? 1 : 0,
       );
     }
   });
@@ -625,12 +631,50 @@ async function main() {
   // Recompute counts from actual migrated data (subforums included)
   // ---------------------------------------------------------------------------
 
-  // Post count per topic
+  // Post count and participant count per topic
   db.exec(`
     UPDATE topics SET post_count = (
       SELECT COUNT(*) FROM posts WHERE posts.topic_id = topics.id
     );
+    UPDATE topics SET participant_count = (
+      SELECT COUNT(DISTINCT author_id) FROM posts
+      WHERE posts.topic_id = topics.id AND author_id IS NOT NULL
+    );
   `);
+
+  // Lock details per topic from phpbb_log
+  const logTable = `${tablePrefix}log`;
+  const L = {
+    log_type: col(logTable, "log_type", 1),
+    user_id: col(logTable, "user_id", 2),
+    topic_id: col(logTable, "topic_id", 4),
+    log_time: col(logTable, "log_time", 6),
+    log_operation: col(logTable, "log_operation", 7),
+  };
+
+  const lockMap = new Map<number, { lockedById: number; lockedAt: number }>();
+  for (const r of insertRows[logTable] ?? []) {
+    if (Number(r[L.log_type]) !== 1) continue;
+    if (r[L.log_operation] !== "LOG_LOCK") continue;
+    const topicId = Number(r[L.topic_id]);
+    const userId = Number(r[L.user_id]);
+    const logTime = Number(r[L.log_time]);
+    if (!topicId || !userId) continue;
+    const existing = lockMap.get(topicId);
+    if (!existing || logTime > existing.lockedAt) {
+      lockMap.set(topicId, { lockedById: userId, lockedAt: logTime });
+    }
+  }
+
+  const updateLock = db.prepare(
+    "UPDATE topics SET locked_by_id = ?, locked_at = ? WHERE id = ?",
+  );
+  db.transaction(() => {
+    for (const [topicId, { lockedById, lockedAt }] of lockMap) {
+      updateLock.run(lockedById, lockedAt, topicId);
+    }
+  })();
+  console.log(`Updated ${lockMap.size} topics with lock info`);
 
   // Topic and post counts per forum — include all descendant subforums via
   // a recursive CTE so parent forums show their full depth of content.

@@ -14,9 +14,13 @@ export type Topic = {
   authorId: number | null;
   lastPosterId: number | null;
   postCount: number;
+  participantCount: number;
   createdAt: number;
   lastPostAt: number;
   isSticky: boolean;
+  isLocked: boolean;
+  lockedById: number | null;
+  lockedAt: number | null;
 };
 
 export type Post = {

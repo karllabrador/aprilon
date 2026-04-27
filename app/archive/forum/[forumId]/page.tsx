@@ -28,13 +28,14 @@ export async function generateMetadata({ params }: { params: Promise<{ forumId: 
   const { forumId } = await params;
   const forum = getForum(Number(forumId));
   if (!forum) return {};
+  const title = `Forum: ${forum.name} — Aprilon Forum Archive`;
   const description = forum.description
-    ? forum.description
-    : `Browse ${forum.topicCount.toLocaleString()} topics and ${forum.postCount.toLocaleString()} posts in ${forum.name}.`;
+    ? `${forum.description} Browse ${forum.topicCount.toLocaleString()} topics and ${forum.postCount.toLocaleString()} posts in this section of the Aprilon Forum Archive.`
+    : `Browse ${forum.topicCount.toLocaleString()} topics and ${forum.postCount.toLocaleString()} posts in ${forum.name}. Part of the Aprilon Forum Archive, covering the gaming community from 2009–2016.`;
   return {
-    title: `${forum.name} — Aprilon Archive`,
+    title,
     description,
-    openGraph: { title: `${forum.name} — Aprilon Archive`, description },
+    openGraph: { title, description },
   };
 }
 

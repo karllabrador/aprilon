@@ -18,11 +18,12 @@ export async function generateMetadata({ params }: { params: Promise<{ userId: s
   const stats = getUserStats(uid);
   if (stats.posts === 0 && stats.topics === 0) return {};
   const name = getDisplayName(uid);
-  const description = `${name} made ${stats.posts.toLocaleString()} ${stats.posts === 1 ? "post" : "posts"} across ${stats.topics.toLocaleString()} ${stats.topics === 1 ? "topic" : "topics"} on the Aprilon forums.`;
+  const title = `${name} (User #${uid}) — Aprilon Forum Archive`;
+  const description = `View ${name}'s full posting history in the Aprilon Forum Archive. ${stats.posts.toLocaleString()} ${stats.posts === 1 ? "post" : "posts"} across ${stats.topics.toLocaleString()} ${stats.topics === 1 ? "topic" : "topics"} in the Aprilon gaming community from 2009 to 2016.`;
   return {
-    title: `${name} — Aprilon Archive`,
+    title,
     description,
-    openGraph: { title: `${name} — Aprilon Archive`, description },
+    openGraph: { title, description },
   };
 }
 

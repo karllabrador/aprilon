@@ -33,11 +33,14 @@ export async function generateMetadata({ params }: { params: Promise<{ topicId: 
   const topic = getTopic(Number((await params).topicId));
   if (!topic) return {};
   const forum = getForum(topic.forumId);
-  const description = `${topic.postCount} ${topic.postCount === 1 ? "reply" : "replies"} · ${topic.participantCount} ${topic.participantCount === 1 ? "participant" : "participants"}${forum ? ` · ${forum.name}` : ""}`;
+  const title = `${topic.title} (Topic #${topic.id}) — Aprilon Forum Archive`;
+  const forumName = forum?.name ?? "the Aprilon community forums";
+  const year = new Date(topic.createdAt * 1000).getFullYear();
+  const description = `Read the full discussion in the Aprilon Forum Archive. ${topic.postCount.toLocaleString()} ${topic.postCount === 1 ? "reply" : "replies"} from ${topic.participantCount} ${topic.participantCount === 1 ? "participant" : "participants"} in ${forumName}. Originally posted in ${year}.`;
   return {
-    title: `${topic.title} — Aprilon Archive`,
+    title,
     description,
-    openGraph: { title: `${topic.title} — Aprilon Archive`, description },
+    openGraph: { title, description },
   };
 }
 

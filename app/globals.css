@@ -28,6 +28,21 @@ body {
   text-shadow: 0 0 9px #fff;
 }
 
+/* ── Post anchor highlight ────────────────────────────────────────────────── */
+
+[id^="post-"] {
+  scroll-margin-top: 64px;
+}
+
+.post-flash {
+  animation: post-flash 1s ease-out forwards;
+}
+
+@keyframes post-flash {
+  0%   { box-shadow: 0 0 0 2px rgba(201, 149, 10, 0.85); }
+  100% { box-shadow: 0 0 0 0px rgba(201, 149, 10, 0); }
+}
+
 /* ── Archive post content ─────────────────────────────────────────────────── */
 
 .prose-archive blockquote {

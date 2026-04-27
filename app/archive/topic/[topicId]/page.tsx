@@ -1,6 +1,7 @@
 import ArchiveHeader from "@/components/archive/ArchiveHeader";
 import Pagination from "@/components/archive/Pagination";
 import PostCard from "@/components/archive/PostCard";
+import PostHighlighter from "@/components/archive/PostHighlighter";
 import SearchBar from "@/components/archive/SearchBar";
 import {
   getFirstPost,
@@ -66,6 +67,7 @@ export default async function TopicPage({ params, searchParams }: Props) {
 
   return (
     <>
+      <PostHighlighter />
       <ArchiveHeader
         breadcrumbs={[
           ...forumPath.map((f) => ({

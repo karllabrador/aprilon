@@ -36,18 +36,34 @@ export function applyRedaction<T extends Post>(post: T, redactions: Redactions):
 // Internal link rewriting
 // ---------------------------------------------------------------------------
 
+// Matches <a href="..."> or <a href='...'> pointing to any aprilon viewtopic URL
 const INTERNAL_LINK_RE =
-  /<a(\s[^>]*?)href="https?:\/\/(?:www\.)?aprilon\.(?:net|org)\/(?:forum\/)?viewtopic\.php([^"]*)"([^>]*)>([\s\S]*?)<\/a>/gi;
+  /<a(\s[^>]*?)href=(["'])https?:\/\/(?:[\w-]+\.)*aprilon\.(?:net|org)\/[^"']*?viewtopic\.php([^"']*)\2([^>]*)>([\s\S]*?)<\/a>/gi;
+
+// Matches bare aprilon viewtopic URLs not inside an HTML attribute (not preceded by = " ')
+const BARE_URL_RE =
+  /(?<![="'])https?:\/\/(?:[\w-]+\.)*aprilon\.(?:net|org)\/[^\s"'<>]*?viewtopic\.php[^\s"'<>]*/gi;
+
+function resolveTopicUrl(rawQuery: string): string | null {
+  const normalized = rawQuery.replace(/&amp;/g, "&").replace(/%26/g, "&");
+  const m = normalized.match(/[?&]t=(\d+)/);
+  return m ? `/archive/topic/${m[1]}` : null;
+}
+
+function decodeHrefEntities(html: string): string {
+  return html.replace(/href=(["'])([^"']*)\1/gi, (_, quote, url) =>
+    `href=${quote}${url.replace(/&#(\d+);/g, (_: string, n: string) => String.fromCharCode(Number(n)))}${quote}`,
+  );
+}
 
 export function rewriteInternalLinks(html: string): string {
-  return html.replace(INTERNAL_LINK_RE, (_match, pre, query, post, text) => {
-    const normalized = query.replace(/&amp;/g, "&");
-    const idMatch = normalized.match(/[?&]t=(\d+)/);
-    if (!idMatch) return _match;
+  const decoded = decodeHrefEntities(html);
+  // Rewrite <a href> links
+  let result = decoded.replace(INTERNAL_LINK_RE, (_match, pre, _quote, query, post, text) => {
+    const newHref = resolveTopicUrl(query);
+    if (!newHref) return _match;
 
-    const topicId = Number(idMatch[1]);
-    const newHref = `/archive/topic/${topicId}`;
-
+    const topicId = Number(newHref.split("/").pop());
     const plainText = text.replace(/<[^>]+>/g, "").trim();
     const isUrlLike =
       plainText.includes("viewtopic") ||
@@ -62,6 +78,18 @@ export function rewriteInternalLinks(html: string): string {
 
     return `<a${pre}href="${newHref}"${post}>${newText}</a>`;
   });
+
+  // Rewrite any bare URLs not inside an attribute
+  result = result.replace(BARE_URL_RE, (match) => {
+    const newHref = resolveTopicUrl(match);
+    if (!newHref) return match;
+    const topicId = Number(newHref.split("/").pop());
+    const topic = getTopic(topicId);
+    const label = topic ? topic.title : `Topic #${topicId}`;
+    return `<a href="${newHref}">${label}</a>`;
+  });
+
+  return result;
 }
 
 // ---------------------------------------------------------------------------

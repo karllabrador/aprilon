@@ -18,7 +18,7 @@ function getExcerpt(text: string, query: string, contextLen = 120): string {
 
 export default function SearchResultPost({ result, query }: { result: PostSearchResult; query: string }) {
   const page = Math.ceil(result.postIndex / POSTS_PER_PAGE);
-  const href = `/archive/topic/${result.topicId}${page > 1 ? `?page=${page}` : ""}`;
+  const href = `/archive/topic/${result.topicId}${page > 1 ? `?page=${page}` : ""}#post-${result.id}`;
   const excerpt = getExcerpt(stripHtml(result.contentHtml), query);
   const authorName = getDisplayName(result.authorId);
   const authorHref = getUserProfileHref(result.authorId);

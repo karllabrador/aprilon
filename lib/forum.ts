@@ -458,6 +458,21 @@ export function getForumPath(forumId: number): ForumCrumb[] {
   return path;
 }
 
+export function getTrashcanCounterpart(forumName: string): Forum | null {
+  const db = getDb();
+  if (!db) return null;
+  const row = db
+    .prepare(
+      `SELECT f.id FROM forums f
+       JOIN forums p ON f.parent_id = p.id
+       WHERE LOWER(p.name) = 'trashcan' AND LOWER(f.name) = LOWER(?)
+       LIMIT 1`,
+    )
+    .get(forumName) as { id: number } | undefined;
+  if (!row) return null;
+  return getForum(row.id); // returns null if not in allowlist
+}
+
 export function getTopTopics(forumId: number, limit = 3): Topic[] {
   if (!allowedIds.includes(forumId)) return [];
   const db = getDb();

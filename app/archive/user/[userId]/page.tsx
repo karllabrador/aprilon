@@ -12,6 +12,20 @@ type Props = {
   params: Promise<{ userId: string }>;
 };
 
+export async function generateMetadata({ params }: { params: Promise<{ userId: string }> }) {
+  const uid = Number((await params).userId);
+  if (!uid) return {};
+  const stats = getUserStats(uid);
+  if (stats.posts === 0 && stats.topics === 0) return {};
+  const name = getDisplayName(uid);
+  const description = `${name} made ${stats.posts.toLocaleString()} ${stats.posts === 1 ? "post" : "posts"} across ${stats.topics.toLocaleString()} ${stats.topics === 1 ? "topic" : "topics"} on the Aprilon forums.`;
+  return {
+    title: `${name} — Aprilon Archive`,
+    description,
+    openGraph: { title: `${name} — Aprilon Archive`, description },
+  };
+}
+
 export default async function UserPage({ params }: Props) {
   const { userId } = await params;
   const uid = Number(userId);

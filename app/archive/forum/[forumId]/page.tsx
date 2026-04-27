@@ -24,6 +24,20 @@ type Props = {
   searchParams: Promise<{ page?: string; q?: string }>;
 };
 
+export async function generateMetadata({ params }: { params: Promise<{ forumId: string }> }) {
+  const { forumId } = await params;
+  const forum = getForum(Number(forumId));
+  if (!forum) return {};
+  const description = forum.description
+    ? forum.description
+    : `Browse ${forum.topicCount.toLocaleString()} topics and ${forum.postCount.toLocaleString()} posts in ${forum.name}.`;
+  return {
+    title: `${forum.name} — Aprilon Archive`,
+    description,
+    openGraph: { title: `${forum.name} — Aprilon Archive`, description },
+  };
+}
+
 export default async function ForumPage({ params, searchParams }: Props) {
   const { forumId } = await params;
   const { page: pageParam, q } = await searchParams;

@@ -21,6 +21,15 @@ import { getDisplayName, getAvatarUrl, applyRedaction } from "@/lib/forum-displa
 
 export const dynamic = "force-dynamic";
 
+export const metadata = {
+  title: "Forum Archive — Aprilon",
+  description: "Browse the archived Aprilon community forums. Read topics, posts, and member activity from 2009–2016.",
+  openGraph: {
+    title: "Forum Archive — Aprilon",
+    description: "Browse the archived Aprilon community forums. Read topics, posts, and member activity from 2009–2016.",
+  },
+};
+
 type Props = {
   searchParams: Promise<{ q?: string; uid?: string; tp?: string; pp?: string }>;
 };

@@ -5,6 +5,15 @@ import { getPmGraph } from "@/lib/forum";
 
 export const dynamic = "force-dynamic";
 
+export const metadata = {
+  title: "Direct Message Graph — Aprilon Archive",
+  description: "Visualise private message relationships between Aprilon community members.",
+  openGraph: {
+    title: "Direct Message Graph — Aprilon Archive",
+    description: "Visualise private message relationships between Aprilon community members.",
+  },
+};
+
 export default function GraphPage() {
   const data = getPmGraph();
   if (!data) notFound();

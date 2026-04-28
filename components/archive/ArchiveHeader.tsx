@@ -26,7 +26,30 @@ export default function ArchiveHeader({ breadcrumbs = [] }: ArchiveHeaderProps) 
 
         <div className="w-px h-5 shrink-0" style={{ backgroundColor: "#3a3b44" }} />
 
-        <nav className="flex items-center gap-2 text-sm min-w-0">
+        {/* Mobile: one-level-up back link */}
+        <nav className="sm:hidden flex items-center text-sm min-w-0 overflow-hidden">
+          {crumbs.length > 1 ? (
+            (() => {
+              const parent = crumbs[crumbs.length - 2];
+              return parent.href ? (
+                <Link
+                  href={parent.href}
+                  className="flex items-center gap-1.5 text-gray-400 hover:text-gray-200 transition-colors min-w-0"
+                >
+                  <span className="shrink-0">←</span>
+                  <span className="truncate">{parent.label}</span>
+                </Link>
+              ) : (
+                <span className="text-gray-300 truncate">{crumbs[crumbs.length - 1].label}</span>
+              );
+            })()
+          ) : (
+            <span className="text-gray-300 truncate">{crumbs[0].label}</span>
+          )}
+        </nav>
+
+        {/* Desktop: full breadcrumb */}
+        <nav className="hidden sm:flex items-center gap-2 text-sm min-w-0">
           {crumbs.map((crumb, i) => (
             <span key={i} className="flex items-center gap-2 min-w-0">
               {i > 0 && <span className="text-gray-600 shrink-0">/</span>}

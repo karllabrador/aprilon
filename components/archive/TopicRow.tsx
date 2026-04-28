@@ -43,11 +43,15 @@ export default function TopicRow({ topic }: TopicRowProps) {
           )}
           <span className="mx-1.5 text-gray-700">·</span>
           {formatDate(topic.createdAt)}
+          <span className="sm:hidden">
+            <span className="mx-1.5 text-gray-700">·</span>
+            {topic.postCount.toLocaleString()} {topic.postCount === 1 ? "reply" : "replies"}
+          </span>
         </p>
       </div>
 
-      {/* Right: fixed-width columns */}
-      <div className="shrink-0 flex items-stretch border-l" style={{ borderColor: "#252628" }}>
+      {/* Right: fixed-width columns — hidden on mobile */}
+      <div className="hidden sm:flex shrink-0 items-stretch border-l" style={{ borderColor: "#252628" }}>
         <div className="w-20 flex flex-col items-center justify-center px-3 leading-tight">
           <p className="text-base font-semibold text-gray-400 tabular-nums">
             {topic.postCount.toLocaleString()}

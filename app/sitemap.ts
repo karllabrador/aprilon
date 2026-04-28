@@ -7,6 +7,8 @@ import {
 import { forumHref, topicHref } from "@/lib/forum-display";
 import type { MetadataRoute } from "next";
 
+export const dynamic = "force-dynamic";
+
 const BASE = (process.env.NEXT_PUBLIC_APP_URL ?? "https://aprilon.org").replace(
   /\/$/,
   "",

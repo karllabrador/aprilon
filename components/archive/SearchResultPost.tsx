@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { PostSearchResult } from "@/lib/forum";
-import { getDisplayName, formatDate, getUserProfileHref } from "@/lib/forum-display";
+import { getDisplayName, formatDate, getUserProfileHref, slugify } from "@/lib/forum-display";
 import { POSTS_PER_PAGE } from "@/lib/forum";
 
 function stripHtml(html: string): string {
@@ -18,7 +18,8 @@ function getExcerpt(text: string, query: string, contextLen = 120): string {
 
 export default function SearchResultPost({ result, query }: { result: PostSearchResult; query: string }) {
   const page = Math.ceil(result.postIndex / POSTS_PER_PAGE);
-  const href = `/archive/topic/${result.topicId}${page > 1 ? `?page=${page}` : ""}#post-${result.id}`;
+  const topicSlug = `${result.topicId}-${slugify(result.topicTitle)}`;
+  const href = `/archive/topic/${topicSlug}${page > 1 ? `?page=${page}` : ""}#post-${result.id}`;
   const excerpt = getExcerpt(stripHtml(result.contentHtml), query);
   const authorName = getDisplayName(result.authorId);
   const authorHref = getUserProfileHref(result.authorId);
@@ -29,7 +30,7 @@ export default function SearchResultPost({ result, query }: { result: PostSearch
         {result.forumName}
         {" › "}
         <Link
-          href={`/archive/topic/${result.topicId}`}
+          href={`/archive/topic/${topicSlug}`}
           className="hover:text-gray-400 transition-colors"
         >
           {result.topicTitle}

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { Forum } from "@/types";
+import { forumHref } from "@/lib/forum-display";
 
 type ForumCardProps = {
   forum: Forum;
@@ -8,7 +9,7 @@ type ForumCardProps = {
 export default function ForumCard({ forum }: ForumCardProps) {
   return (
     <Link
-      href={`/archive/forum/${forum.id}`}
+      href={forumHref(forum)}
       className="group block border rounded-lg p-4 transition-colors hover:bg-[#232426]"
       style={{
         borderColor: "#2a2b2e",

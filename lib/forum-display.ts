@@ -3,6 +3,24 @@ import type { Redactions } from "@/lib/forum";
 import { getTopic } from "@/lib/forum";
 import { computeDisplayName } from "@/lib/pseudonyms";
 
+const COMBINING_MARKS = /\p{M}/gu;
+export function slugify(str: string): string {
+  return str
+    .toLowerCase()
+    .normalize("NFKD")
+    .replace(COMBINING_MARKS, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+export function topicHref(topic: { id: number; title: string }): string {
+  return `/archive/topic/${topic.id}-${slugify(topic.title)}`;
+}
+
+export function forumHref(forum: { id: number; name: string }): string {
+  return `/archive/forum/${forum.id}-${slugify(forum.name)}`;
+}
+
 export function getUserProfileHref(authorId: number | null): string | null {
   if (!authorId || authorId === 1) return null;
   return `/archive/user/${authorId}`;
@@ -36,18 +54,28 @@ export function applyRedaction<T extends Post>(post: T, redactions: Redactions):
 // Internal link rewriting
 // ---------------------------------------------------------------------------
 
-// Matches <a href="..."> or <a href='...'> pointing to any aprilon viewtopic URL
-const INTERNAL_LINK_RE =
-  /<a(\s[^>]*?)href=(["'])https?:\/\/(?:[\w-]+\.)*aprilon\.(?:net|org)\/[^"']*?viewtopic\.php([^"']*)\2([^>]*)>([\s\S]*?)<\/a>/gi;
+const KNOWN_DOMAINS = /(?:[\w-]+\.)*(?:aprilon\.(?:net|org)|facemeta\.com)/;
+const KNOWN_DOMAINS_SRC = KNOWN_DOMAINS.source;
 
-// Matches bare aprilon viewtopic URLs not inside an HTML attribute (not preceded by = " ')
-const BARE_URL_RE =
-  /(?<![="'])https?:\/\/(?:[\w-]+\.)*aprilon\.(?:net|org)\/[^\s"'<>]*?viewtopic\.php[^\s"'<>]*/gi;
+// Matches <a href="..."> or <a href='...'> pointing to any known-domain viewtopic URL
+const INTERNAL_LINK_RE = new RegExp(
+  `<a(\\s[^>]*?)href=(["'])https?:\\/\\/${KNOWN_DOMAINS_SRC}\\/[^"']*?viewtopic\\.php([^"']*)\\2([^>]*)>([\\s\\S]*?)<\\/a>`,
+  "gi",
+);
+
+// Matches bare known-domain viewtopic URLs not inside an HTML attribute (not preceded by = " ')
+const BARE_URL_RE = new RegExp(
+  `(?<![="'])https?:\\/\\/${KNOWN_DOMAINS_SRC}\\/[^\\s"'<>]*?viewtopic\\.php[^\\s"'<>]*`,
+  "gi",
+);
 
 function resolveTopicUrl(rawQuery: string): string | null {
   const normalized = rawQuery.replace(/&amp;/g, "&").replace(/%26/g, "&");
   const m = normalized.match(/[?&]t=(\d+)/);
-  return m ? `/archive/topic/${m[1]}` : null;
+  if (!m) return null;
+  const tid = Number(m[1]);
+  const topic = getTopic(tid);
+  return topic ? topicHref(topic) : `/archive/topic/${tid}`;
 }
 
 function decodeHrefEntities(html: string): string {
@@ -63,7 +91,7 @@ export function rewriteInternalLinks(html: string): string {
     const newHref = resolveTopicUrl(query);
     if (!newHref) return _match;
 
-    const topicId = Number(newHref.split("/").pop());
+    const topicId = parseInt(newHref.split("/").pop()!, 10);
     const plainText = text.replace(/<[^>]+>/g, "").trim();
     const isUrlLike =
       plainText.includes("viewtopic") ||
@@ -83,7 +111,7 @@ export function rewriteInternalLinks(html: string): string {
   result = result.replace(BARE_URL_RE, (match) => {
     const newHref = resolveTopicUrl(match);
     if (!newHref) return match;
-    const topicId = Number(newHref.split("/").pop());
+    const topicId = parseInt(newHref.split("/").pop()!, 10);
     const topic = getTopic(topicId);
     const label = topic ? topic.title : `Topic #${topicId}`;
     return `<a href="${newHref}">${label}</a>`;

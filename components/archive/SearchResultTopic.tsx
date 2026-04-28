@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { TopicSearchResult } from "@/lib/forum";
-import { getDisplayName, formatDate, getUserProfileHref } from "@/lib/forum-display";
+import { getDisplayName, formatDate, getUserProfileHref, topicHref } from "@/lib/forum-display";
 
 export default function SearchResultTopic({ result }: { result: TopicSearchResult }) {
   const authorName = getDisplayName(result.authorId);
@@ -10,7 +10,7 @@ export default function SearchResultTopic({ result }: { result: TopicSearchResul
     <div className="px-4 py-3 transition-colors hover:bg-white/2.5">
       <div className="text-xs text-gray-600 mb-1">{result.forumName}</div>
       <Link
-        href={`/archive/topic/${result.id}`}
+        href={topicHref(result)}
         className="text-sm font-medium text-[#ededed] hover:text-white transition-colors"
       >
         {result.title}

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getDisplayName, getAvatarUrl, formatDate, formatDateTime, getUserProfileHref } from "@/lib/forum-display";
+import { getDisplayName, getAvatarUrl, formatDate, formatDateTime, getUserProfileHref, topicHref } from "@/lib/forum-display";
 import type { Topic } from "@/types";
 
 type TopicRowProps = {
@@ -27,7 +27,7 @@ export default function TopicRow({ topic }: TopicRowProps) {
             </span>
           )}
           <Link
-            href={`/archive/topic/${topic.id}`}
+            href={topicHref(topic)}
             className="text-[#ededed] hover:text-white transition-colors truncate font-medium"
           >
             {topic.title}

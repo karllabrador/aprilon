@@ -14,8 +14,9 @@ import {
   getTrashcanCounterpart,
   TOPICS_PER_PAGE,
 } from "@/lib/forum";
+import { forumHref, slugify } from "@/lib/forum-display";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 
 export const dynamic = "force-dynamic";
 
@@ -26,7 +27,7 @@ type Props = {
 
 export async function generateMetadata({ params }: { params: Promise<{ forumId: string }> }) {
   const { forumId } = await params;
-  const forum = getForum(Number(forumId));
+  const forum = getForum(parseInt(forumId, 10));
   if (!forum) return {};
   const title = `Forum: ${forum.name} — Aprilon Forum Archive`;
   const description = forum.description
@@ -43,11 +44,20 @@ export default async function ForumPage({ params, searchParams }: Props) {
   const { forumId } = await params;
   const { page: pageParam, q } = await searchParams;
 
-  const id = Number(forumId);
+  const id = parseInt(forumId, 10);
   if (!id) notFound();
 
   const forum = getForum(id);
   if (!forum) notFound();
+
+  const expectedParam = `${id}-${slugify(forum.name)}`;
+  if (forumId !== expectedParam) {
+    const qs = new URLSearchParams();
+    if (pageParam) qs.set("page", pageParam);
+    if (q) qs.set("q", q);
+    const suffix = qs.size > 0 ? `?${qs}` : "";
+    permanentRedirect(`/archive/forum/${expectedParam}${suffix}`);
+  }
 
   const page = Math.max(1, Number(pageParam) || 1);
   const query = q?.trim() ?? "";
@@ -68,7 +78,7 @@ export default async function ForumPage({ params, searchParams }: Props) {
           label: f.name,
           href:
             i < forumPath.length - 1 && f.linked
-              ? `/archive/forum/${f.id}`
+              ? forumHref(f)
               : undefined,
         }))}
       />

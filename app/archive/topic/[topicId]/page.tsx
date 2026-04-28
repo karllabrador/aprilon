@@ -15,12 +15,14 @@ import {
 import {
   applyRedaction,
   formatDate,
+  forumHref,
   getDisplayName,
   getUserProfileHref,
   rewriteInternalLinks,
+  slugify,
 } from "@/lib/forum-display";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 
 export const dynamic = "force-dynamic";
 
@@ -30,7 +32,7 @@ type Props = {
 };
 
 export async function generateMetadata({ params }: { params: Promise<{ topicId: string }> }) {
-  const topic = getTopic(Number((await params).topicId));
+  const topic = getTopic(parseInt((await params).topicId, 10));
   if (!topic) return {};
   const forum = getForum(topic.forumId);
   const title = `${topic.title} (Topic #${topic.id}) — Aprilon Forum Archive`;
@@ -48,11 +50,20 @@ export default async function TopicPage({ params, searchParams }: Props) {
   const { topicId } = await params;
   const { page: pageParam, q } = await searchParams;
 
-  const tid = Number(topicId);
+  const tid = parseInt(topicId, 10);
   if (!tid) notFound();
 
   const topic = getTopic(tid);
   if (!topic) notFound();
+
+  const expectedParam = `${tid}-${slugify(topic.title)}`;
+  if (topicId !== expectedParam) {
+    const qs = new URLSearchParams();
+    if (pageParam) qs.set("page", pageParam);
+    if (q) qs.set("q", q);
+    const suffix = qs.size > 0 ? `?${qs}` : "";
+    permanentRedirect(`/archive/topic/${expectedParam}${suffix}`);
+  }
 
   const forum = getForum(topic.forumId);
   if (!forum) notFound();
@@ -87,7 +98,7 @@ export default async function TopicPage({ params, searchParams }: Props) {
         breadcrumbs={[
           ...forumPath.map((f) => ({
             label: f.name,
-            href: f.linked ? `/archive/forum/${f.id}` : undefined,
+            href: f.linked ? forumHref(f) : undefined,
           })),
           { label: topic.title },
         ]}

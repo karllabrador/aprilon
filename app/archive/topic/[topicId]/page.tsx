@@ -108,35 +108,28 @@ export default async function TopicPage({ params, searchParams }: Props) {
           <h1 className="text-xl font-bold text-[#ededed]">{topic.title}</h1>
         </div>
 
-        <div className="flex items-center justify-between gap-4 mb-4">
-          <p className="text-sm text-gray-500">
+        <div className="flex items-start justify-between gap-4 mb-4">
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-gray-500">
             {query ? (
-              <>
+              <span>
                 <span className="text-gray-300">{total.toLocaleString()}</span>{" "}
                 {total === 1 ? "result" : "results"} for &ldquo;{query}&rdquo;
-              </>
+              </span>
             ) : (
               <>
-                <span className="text-gray-300">
-                  {topic.postCount.toLocaleString()}
-                </span>{" "}
-                {topic.postCount === 1 ? "reply" : "replies"}
+                <span>
+                  <span className="text-gray-300">{topic.postCount.toLocaleString()}</span>{" "}
+                  {topic.postCount === 1 ? "reply" : "replies"}
+                </span>
                 {topic.participantCount > 0 && (
-                  <>
-                    {" "}
-                    &nbsp;·&nbsp;{" "}
-                    <span className="text-gray-300">
-                      {topic.participantCount}
-                    </span>{" "}
-                    {topic.participantCount === 1
-                      ? "participant"
-                      : "participants"}
-                  </>
+                  <span>
+                    <span className="text-gray-300">{topic.participantCount}</span>{" "}
+                    {topic.participantCount === 1 ? "participant" : "participants"}
+                  </span>
                 )}
                 {topic.isLocked && (
-                  <>
-                    {" "}
-                    &nbsp;·&nbsp; 🔒{" "}
+                  <span>
+                    🔒{" "}
                     {topic.lockedById ? (
                       <>
                         Locked by{" "}
@@ -144,29 +137,23 @@ export default async function TopicPage({ params, searchParams }: Props) {
                           const href = getUserProfileHref(topic.lockedById);
                           const name = getDisplayName(topic.lockedById);
                           return href ? (
-                            <Link
-                              href={href}
-                              className="hover:opacity-80"
-                              style={{ color: "#9ca3af" }}
-                            >
+                            <Link href={href} className="hover:opacity-80" style={{ color: "#9ca3af" }}>
                               {name}
                             </Link>
                           ) : (
                             name
                           );
                         })()}
-                        {topic.lockedAt && (
-                          <> on {formatDate(topic.lockedAt)}</>
-                        )}
+                        {topic.lockedAt && <> on {formatDate(topic.lockedAt)}</>}
                       </>
                     ) : (
                       "locked"
                     )}
-                  </>
+                  </span>
                 )}
               </>
             )}
-          </p>
+          </div>
           <SearchBar initialQuery={query} placeholder="Search posts…" />
         </div>
 

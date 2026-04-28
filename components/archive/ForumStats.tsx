@@ -22,9 +22,9 @@ export default function ForumStats({ topTopics, activity }: ForumStatsProps) {
         boxShadow: "0 2px 12px rgba(0,0,0,0.2)",
       }}
     >
-      <div className="flex">
+      <div className="flex flex-col sm:flex-row">
         {topTopics.length > 0 && (
-          <div className="w-72 shrink-0 p-4 border-r" style={{ borderColor: "#252628" }}>
+          <div className="sm:w-72 shrink-0 p-4 border-b sm:border-b-0 sm:border-r" style={{ borderColor: "#252628" }}>
             <p className="text-[10px] font-semibold uppercase tracking-widest text-gray-500 mb-3">
               Popular Topics
             </p>

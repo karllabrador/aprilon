@@ -730,5 +730,30 @@ export function getPmGraph(minCount = 1): PmGraphData | null {
   };
 }
 
+export function getTopicIdsForPosts(postIds: number[]): number[] {
+  if (!postIds.length) return [];
+  const db = getDb();
+  if (!db) return [];
+  const placeholders = postIds.map(() => "?").join(",");
+  const rows = db
+    .prepare(`SELECT DISTINCT topic_id FROM posts WHERE id IN (${placeholders})`)
+    .all(...postIds) as Array<{ topic_id: number }>;
+  return rows.map((r) => r.topic_id);
+}
+
+export function getAllTopicsForSitemap(): { id: number; title: string; lastPostAt: number }[] {
+  const forums = getAllowedForums();
+  if (!forums.length) return [];
+  const db = getDb();
+  if (!db) return [];
+  const placeholders = forums.map(() => "?").join(",");
+  const rows = db
+    .prepare(
+      `SELECT id, title, last_post_at FROM topics WHERE forum_id IN (${placeholders}) ORDER BY last_post_at DESC`,
+    )
+    .all(...forums.map((f) => f.id)) as Array<{ id: number; title: string; last_post_at: number }>;
+  return rows.map((r) => ({ id: r.id, title: r.title, lastPostAt: r.last_post_at }));
+}
+
 export { redactions };
 export type { Redactions };

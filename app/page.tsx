@@ -1,25 +1,30 @@
-import Link from "next/link";
+import AprilonLogo from "@/components/common/AprilonLogo";
 import Button from "@/components/common/Button";
 import DiscordSplitButton from "@/components/common/DiscordSplitButton";
 import Footer from "@/components/common/Footer";
+import SteamSplitButton from "@/components/common/SteamSplitButton";
 import ContributorSection from "@/components/contributor/ContributorSection";
 import DownloadsSection from "@/components/downloads/DownloadsSection";
 import Hero from "@/components/hero/Hero";
+import DiscordIcon from "@/components/icons/DiscordIcon";
+import SteamIcon from "@/components/icons/SteamIcon";
 import StatsSection from "@/components/statistics/StatsSection";
 import {
   DISCORD_INVITE_CODE,
   DISCORD_INVITE_URL,
   STEAM_GROUP_URL,
 } from "@/lib/constants";
-import DiscordIcon from "@/components/icons/DiscordIcon";
-import SteamIcon from "@/components/icons/SteamIcon";
 import { getDiscordStats } from "@/lib/discord";
-import AprilonLogo from "@/components/common/AprilonLogo";
+import { getSteamGroupMemberCount } from "@/lib/steam";
+import Link from "next/link";
 
 export const revalidate = 300; // Revalidate this page every 5 minutes for Steam data
 
 export default async function Home() {
-  const discordStats = await getDiscordStats(DISCORD_INVITE_CODE);
+  const [discordStats, steamMemberCount] = await Promise.all([
+    getDiscordStats(DISCORD_INVITE_CODE),
+    getSteamGroupMemberCount(STEAM_GROUP_URL),
+  ]);
 
   return (
     <>
@@ -60,27 +65,37 @@ export default async function Home() {
               Discord
             </Button>
           )}
-          <Button
-            href={STEAM_GROUP_URL}
-            variant="bordered"
-            upperCase={true}
-            iconNode={<SteamIcon />}
-          >
-            Steam Group
-          </Button>
+          {steamMemberCount ? (
+            <SteamSplitButton
+              href={STEAM_GROUP_URL}
+              memberCount={steamMemberCount}
+            />
+          ) : (
+            <Button
+              href={STEAM_GROUP_URL}
+              variant="bordered"
+              upperCase={true}
+              iconNode={<SteamIcon />}
+            >
+              Steam Group
+            </Button>
+          )}
           <span
             className="inline-flex rounded-md p-px"
-            style={{ background: "linear-gradient(to right, #7c3aed, #6d50f0, #4f8ef5, #38bdf8)" }}
+            style={{
+              background:
+                "linear-gradient(to right, #7c3aed, #6d50f0, #4f8ef5, #38bdf8)",
+            }}
           >
             <Link
               href="/archive"
               className="inline-flex items-center gap-2.5 px-4.5 py-2.5 rounded-[5px] text-white text-xs uppercase tracking-wide font-medium transition-opacity hover:opacity-90"
-              style={{ background: "linear-gradient(to right, #7c3aed, #6d50f0, #4f8ef5, #38bdf8)" }}
+              style={{
+                background:
+                  "linear-gradient(to right, #7c3aed, #6d50f0, #4f8ef5, #38bdf8)",
+              }}
             >
               Forum Archive
-              <span className="text-[10px] font-bold px-1.5 py-0.5 rounded tracking-wide leading-none bg-white/20">
-                NEW
-              </span>
             </Link>
           </span>
         </div>

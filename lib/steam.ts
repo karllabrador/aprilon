@@ -1,5 +1,21 @@
 import { Contributor, ContributorWithSteam, SteamProfile } from "@/types";
 
+export async function getSteamGroupMemberCount(groupUrl: string): Promise<number | null> {
+  try {
+    const name = groupUrl.replace(/\/$/, "").split("/").pop();
+    const res = await fetch(
+      `https://steamcommunity.com/groups/${name}/memberslistxml/?xml=1`,
+      { next: { revalidate: 300 } },
+    );
+    if (!res.ok) return null;
+    const xml = await res.text();
+    const m = xml.match(/<memberCount>(\d+)<\/memberCount>/);
+    return m ? Number(m[1]) : null;
+  } catch {
+    return null;
+  }
+}
+
 type SteamApiResponse = {
   response: {
     players: SteamProfile[];

@@ -18,10 +18,7 @@
   },
   "pnpm": {
     "onlyBuiltDependencies": [
-      "better-sqlite3",
-      "esbuild",
-      "sharp",
-      "unrs-resolver"
+      "better-sqlite3"
     ],
     "peerDependencyRules": {
       "allowedVersions": {

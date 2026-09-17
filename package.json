@@ -10,11 +10,11 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "better-sqlite3": "12.9.0",
-    "next": "16.3.3",
-    "react": "19.2.5",
-    "react-dom": "19.2.5",
-    "recharts": "3.8.1"
+    "better-sqlite3": "13.0.3",
+    "next": "16.3.5",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "recharts": "3.10.1"
   },
   "pnpm": {
     "onlyBuiltDependencies": [
@@ -29,16 +29,16 @@
     }
   },
   "devDependencies": {
-    "@tailwindcss/postcss": "4.2.4",
-    "@types/better-sqlite3": "7.6.13",
-    "@types/node": "25.6.0",
-    "@types/react": "19.2.14",
-    "@types/react-dom": "19.2.3",
-    "eslint": "10.3.0",
-    "eslint-config-next": "16.2.4",
-    "tailwindcss": "4.2.4",
-    "tsx": "4.21.0",
-    "typescript": "6.0.3",
-    "vitest": "4.1.11"
+    "@tailwindcss/postcss": "4.3.3",
+    "@types/better-sqlite3": "9.6.0",
+    "@types/node": "26.5.1",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "eslint": "10.10.0",
+    "eslint-config-next": "16.3.5",
+    "tailwindcss": "4.3.3",
+    "tsx": "4.23.13",
+    "typescript": "7.0.2",
+    "vitest": "5.0.0"
   }
 }

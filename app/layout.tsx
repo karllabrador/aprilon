@@ -10,7 +10,6 @@ export const metadata: Metadata = {
   ),
   title: "Aprilon — gaming community (now defunct)",
   description,
-  alternates: { canonical: "/" },
   openGraph: {
     title: "Aprilon — gaming community (now defunct)",
     description,

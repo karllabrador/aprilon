@@ -23,6 +23,7 @@ export async function generateMetadata({ params }: { params: Promise<{ userId: s
   return {
     title,
     description,
+    alternates: { canonical: `/archive/user/${uid}` },
     openGraph: { title, description },
   };
 }

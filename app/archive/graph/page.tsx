@@ -8,6 +8,7 @@ export const dynamic = "force-dynamic";
 export const metadata = {
   title: "Member Direct Message Graph — Aprilon Forum Archive",
   description: "Explore an interactive graph of private message relationships between Aprilon community members, showing connections and message volumes across the forum archive from 2009 to 2016.",
+  alternates: { canonical: "/archive/graph" },
   openGraph: {
     title: "Member Direct Message Graph — Aprilon Forum Archive",
     description: "Explore an interactive graph of private message relationships between Aprilon community members, showing connections and message volumes across the forum archive from 2009 to 2016.",

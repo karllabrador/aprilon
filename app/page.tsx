@@ -20,6 +20,10 @@ import Link from "next/link";
 
 export const revalidate = 300; // Revalidate this page every 5 minutes for Steam data
 
+export const metadata = {
+  alternates: { canonical: "/" },
+};
+
 export default async function Home() {
   const [discordStats, steamMemberCount] = await Promise.all([
     getDiscordStats(DISCORD_INVITE_CODE),

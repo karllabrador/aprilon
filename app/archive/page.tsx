@@ -21,18 +21,55 @@ import { getDisplayName, getAvatarUrl, applyRedaction } from "@/lib/forum-displa
 
 export const dynamic = "force-dynamic";
 
-export const metadata = {
-  title: "Aprilon Forum Archive — Browse Topics, Posts & Members",
-  description: "Explore the complete Aprilon Forum Archive. Browse thousands of topics and posts from the Aprilon gaming community, active between 2009 and 2016.",
-  openGraph: {
-    title: "Aprilon Forum Archive — Browse Topics, Posts & Members",
-    description: "Explore the complete Aprilon Forum Archive. Browse thousands of topics and posts from the Aprilon gaming community, active between 2009 and 2016.",
-  },
-};
-
 type Props = {
   searchParams: Promise<{ q?: string; uid?: string; tp?: string; pp?: string }>;
 };
+
+export async function generateMetadata({ searchParams }: Props) {
+  const { q, uid, tp, pp } = await searchParams;
+  const query = q?.trim() ?? "";
+  const userId = Number(uid) || 0;
+  const topicPage = Math.max(1, Number(tp) || 1);
+  const postPage = Math.max(1, Number(pp) || 1);
+
+  if (userId > 1) {
+    const name = getDisplayName(userId);
+    const pageLabels = [
+      ...(topicPage > 1 ? [`Topics page ${topicPage}`] : []),
+      ...(postPage > 1 ? [`Posts page ${postPage}`] : []),
+    ];
+    const suffix = pageLabels.length > 0 ? ` (${pageLabels.join(", ")})` : "";
+    const title = `${name}'s Activity${suffix} — Aprilon Forum Archive`;
+    const description = `All topics and posts by ${name} (User #${userId}) in the Aprilon Forum Archive, covering the Aprilon gaming community from 2009 to 2016.`;
+    const canonicalParams = new URLSearchParams({ uid: String(userId) });
+    if (topicPage > 1) canonicalParams.set("tp", String(topicPage));
+    if (postPage > 1) canonicalParams.set("pp", String(postPage));
+    return {
+      title,
+      description,
+      alternates: { canonical: `/archive?${canonicalParams}` },
+      openGraph: { title, description },
+    };
+  }
+
+  if (query) {
+    const title = `Search: "${query}" — Aprilon Forum Archive`;
+    return {
+      title,
+      robots: { index: false, follow: true },
+      openGraph: { title },
+    };
+  }
+
+  const title = "Aprilon Forum Archive — Browse Topics, Posts & Members";
+  const description = "Explore the complete Aprilon Forum Archive. Browse thousands of topics and posts from the Aprilon gaming community, active between 2009 and 2016.";
+  return {
+    title,
+    description,
+    alternates: { canonical: "/archive" },
+    openGraph: { title, description },
+  };
+}
 
 export default async function ArchivePage({ searchParams }: Props) {
   const { q, uid, tp, pp } = await searchParams;

@@ -25,10 +25,13 @@ type Props = {
   searchParams: Promise<{ page?: string; q?: string }>;
 };
 
-export async function generateMetadata({ params }: { params: Promise<{ forumId: string }> }) {
+export async function generateMetadata({ params, searchParams }: Props) {
   const { forumId } = await params;
+  const { page: pageParam } = await searchParams;
   const forum = getForum(parseInt(forumId, 10));
   if (!forum) return {};
+  const page = Math.max(1, Number(pageParam) || 1);
+  const canonical = page > 1 ? `${forumHref(forum)}?page=${page}` : forumHref(forum);
   const title = `Forum: ${forum.name} — Aprilon Forum Archive`;
   const description = forum.description
     ? `${forum.description} Browse ${forum.topicCount.toLocaleString()} topics and ${forum.postCount.toLocaleString()} posts in this section of the Aprilon Forum Archive.`
@@ -36,6 +39,7 @@ export async function generateMetadata({ params }: { params: Promise<{ forumId: 
   return {
     title,
     description,
+    alternates: { canonical },
     openGraph: { title, description },
   };
 }

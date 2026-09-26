@@ -20,6 +20,7 @@ import {
   getUserProfileHref,
   rewriteInternalLinks,
   slugify,
+  topicHref,
 } from "@/lib/forum-display";
 import Link from "next/link";
 import { notFound, permanentRedirect } from "next/navigation";
@@ -31,9 +32,12 @@ type Props = {
   searchParams: Promise<{ page?: string; q?: string }>;
 };
 
-export async function generateMetadata({ params }: { params: Promise<{ topicId: string }> }) {
+export async function generateMetadata({ params, searchParams }: Props) {
   const topic = getTopic(parseInt((await params).topicId, 10));
   if (!topic) return {};
+  const { page: pageParam } = await searchParams;
+  const page = Math.max(1, Number(pageParam) || 1);
+  const canonical = page > 1 ? `${topicHref(topic)}?page=${page}` : topicHref(topic);
   const forum = getForum(topic.forumId);
   const title = `${topic.title} (Topic #${topic.id}) — Aprilon Forum Archive`;
   const forumName = forum?.name ?? "the Aprilon community forums";
@@ -42,6 +46,7 @@ export async function generateMetadata({ params }: { params: Promise<{ topicId: 
   return {
     title,
     description,
+    alternates: { canonical },
     openGraph: { title, description },
   };
 }
